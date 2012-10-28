@@ -60,3 +60,13 @@ It uses *bottle* as the frontend solution.
 You can run SNSRouter as a desktop application. 
 Or you can deploy it to a real production HTTP server 
 and access it with your browser. 
+
+Deploy
+----
+
+```
+git clone git://github.com/hupili/sns-router.git
+cd sns-router
+git submodule init
+git submodule update
+```
