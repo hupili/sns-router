@@ -3,7 +3,7 @@
 import sys
 sys.path.append('bottle')
 sys.path.append('snsapi')
-from bottle import route, run, template, static_file, view, Bottle
+from bottle import route, run, template, static_file, view, Bottle, request
 from snsapi.snspocket import SNSPocket
 from snsapi import utils as snsapi_utils
 
@@ -22,6 +22,20 @@ def home_timeline():
     sl = sp.home_timeline(5)
     return {'sl': sl, 'snsapi_utils': snsapi_utils}
     #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
+
+@srfe.route('/update', method = 'GET')
+@view('update')
+def update_get():
+    return {}
+
+@srfe.route('/update', method = 'POST')
+@view('update')
+def update_post():
+    sp.auth()
+    status = request.forms.get('status')
+    status = snsapi_utils.console_input(status)
+    result = sp.update(status)
+    return {'result': result, 'status': status, 'submit': True}
 
 srfe.run(host='localhost', port=8080, debug = True, reloader = True)
 
