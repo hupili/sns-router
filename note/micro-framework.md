@@ -35,6 +35,10 @@ Documentation is limited.
 
 Strange '@' sign notation. I only see this in "@staticmethod" before. 
 
+20121027: This is decorator. 
+There is a awesome tutorial on Stackoverflow. 
+[http://stackoverflow.com/questions/739654/understanding-python-decorators](http://stackoverflow.com/questions/739654/understanding-python-decorators)
+
 ## cherrypy
 
 config is difficult? 
@@ -96,3 +100,5 @@ At least, I get to know the "micro-framework".
 Or otherwise, I will spend more time in setting up the server, and writing app.  
 
 [http://bottlepy.org/docs/dev/](http://bottlepy.org/docs/dev/)
+
+
