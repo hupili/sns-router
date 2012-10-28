@@ -1,3 +1,6 @@
 [submodule "snsapi"]
 	path = snsapi
 	url = git://github.com/hupili/snsapi.git
+[submodule "bottle"]
+	path = bottle
+	url = git://github.com/defnull/bottle.git
