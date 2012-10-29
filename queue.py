@@ -226,14 +226,16 @@ class SRFEQueue(SNSBase):
         cur = self.con.cursor()
         
         r = cur.execute('''
-        SELECT time,userid,username,text,pyobj FROM msg  
+        SELECT id,time,userid,username,text,pyobj FROM msg  
         WHERE flag='unseen'
         ORDER BY time DESC LIMIT ?
         ''', (count,))
 
         message_list = snstype.MessageList()
         for m in r:
-            message_list.append(self._str2pyobj(m[4]))
+            obj = self._str2pyobj(m[5])
+            obj.msg_id = m[0]
+            message_list.append(obj)
         #for m in r:
         #    message_list.append(self.Message({
         #            'time':m[0],
@@ -248,6 +250,16 @@ class SRFEQueue(SNSBase):
         return message_list
 
     def flag(self, message, fl):
+        '''
+        flag v.s. message: 1 <-> 1
+
+        '''
+        if isinstance(message, snstype.Message):
+            #digest = message.digest_pyobj
+            msg_id = message.msg_id
+        else:
+            msg_id = message
+
         cur = self.con.cursor()
 
         ret = False
@@ -255,15 +267,52 @@ class SRFEQueue(SNSBase):
             cur.execute('''
             UPDATE msg
             SET flag=?
-            WHERE digest_pyobj=?
-            ''', (fl, message.digest_pyobj))
-            ret = True
+            WHERE id=?
+            ''', (fl, msg_id))
             self.con.commit()
+            ret = True
         except Exception, e:
             logger.warning("Catch exception: %s", e)
 
-        self.log("[flag]%s;%s;%s" % (message.digest_pyobj, fl, ret))
+        self.log("[flag]%s;%s;%s" % (msg_id, fl, ret))
+        return ret
 
+    def get_tags(self):
+        if not hasattr(self, '_tags'):
+            self._tags = {}
+            cur = self.con.cursor()
+            r = cur.execute('''
+            SELECT id,name FROM tag  
+            ''')
+            for t in cur:
+                self._tags[t[0]] = t[1]
+        return self._tags
+
+    def tag(self, message, tg):
+        '''
+        flag v.s. message: * <-> *
+
+        '''
+        if isinstance(message, snstype.Message):
+            msg_id = message.msg_id
+        else:
+            msg_id = message
+
+        cur = self.con.cursor()
+
+        ret = False
+        try:
+            cur.execute('''
+            INSERT INTO msg_tag(msg_id, tag_id)
+            VALUES (?,?)
+            ''', (msg_id, tg))
+            self.con.commit()
+            ret = True
+        except Exception, e:
+            logger.warning("Catch exception: %s", e)
+
+        self.log("[flag]%s;%s;%s" % (msg_id, tg, ret))
+        return ret
 
 if __name__ == '__main__':
     sp = SNSPocket()

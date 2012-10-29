@@ -44,13 +44,27 @@ def send_static(filename):
 def index():
     return {}
 
+@srfe.route('/flag/:fl/:msg_id')
+@view('result')
+def flag(fl, msg_id):
+    op = "flag %s as %s" % (msg_id, fl)
+    result = q.flag(msg_id, fl)
+    return {'operation': op, 'result': result}
+
+@srfe.route('/tag/:tg/:msg_id')
+@view('result')
+def flag(tg, msg_id):
+    op = "tag %s as %s" % (msg_id, tg)
+    result = q.tag(msg_id, tg)
+    return {'operation': op, 'result': result}
+
 @srfe.route('/home_timeline')
 @view('home_timeline')
 def home_timeline():
     #sp.auth()
     #sl = sp.home_timeline(5)
     sl = q.output(50)
-    return {'sl': sl, 'snsapi_utils': snsapi_utils}
+    return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags()}
     #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
 
 @srfe.route('/update', method = 'GET')
