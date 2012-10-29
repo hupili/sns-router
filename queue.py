@@ -1,0 +1,281 @@
+# -*- coding: utf-8 -*-
+
+import sys
+sys.path.append('bottle')
+sys.path.append('snsapi')
+import snsapi
+from snsapi.snspocket import SNSPocket
+from snsapi.platform import SQLite
+from snsapi import utils as snsapi_utils
+from snsapi import snstype
+from snsapi.utils import Serialize
+from snsapi.snsbase import SNSBase
+from snsapi.snslog import SNSLog as logger
+
+import base64
+import hashlib
+import sqlite3
+
+class SRFEQueue(SNSBase):
+    """
+    The queue facility of SRFE
+
+    One thread will input messages into the Queue. 
+
+    HTTP request handler will read messages from the Queue. 
+    
+    """
+
+    SQLITE_QUEUE_CONF = {
+              "url": "srfe_queue.db", 
+              "channel_name": "srfe_queue", 
+              "open": "yes", 
+              "platform": "SQLite"
+              }
+
+    def __init__(self, snspocket = None):
+        super(SRFEQueue, self).__init__(self.SQLITE_QUEUE_CONF)
+        self.sp = snspocket # SNSPocket object
+
+    def _create_schema(self):
+        cur = self.con.cursor()
+        try:
+            cur.execute("create table meta (time integer, path text)")
+            cur.execute("insert into meta values (?,?)", (int(self.time()), self.jsonconf.url))
+            self.con.commit()
+        except sqlite3.OperationalError, e:
+            if e.message == "table meta already exists":
+                return 
+            else:
+                raise e
+    
+        cur.execute("""
+        CREATE TABLE msg (
+        id INTEGER PRIMARY KEY, 
+        time INTEGER, 
+        text TEXT,
+        userid TEXT, 
+        username TEXT, 
+        mid TEXT, 
+        platform TEXT, 
+        digest TEXT, 
+        digest_parsed TEXT, 
+        digest_pyobj TEXT, 
+        parsed TEXT, 
+        pyobj TEXT, 
+        flag TEXT
+        )
+        """)
+
+        cur.execute("""
+        CREATE TABLE tag (
+        id INTEGER PRIMARY KEY, 
+        name INTEGER 
+        )
+        """)
+
+        cur.execute("""
+        CREATE TABLE msg_tag (
+        id INTEGER PRIMARY KEY, 
+        msg_id INTEGER,  
+        tag_id INTEGER
+        )
+        """)
+
+        cur.execute("""
+        CREATE TABLE log (
+        id INTEGER PRIMARY KEY, 
+        time TEXT,  
+        operation TEXT
+        )
+        """)
+
+        self.con.commit()
+
+    def log(self, text):
+        cur = self.con
+        cur.execute("INSERT INTO log(time,operation) VALUES (?,?)", (int(self.time()), text))
+        self.con.commit()
+        
+    def connect(self):
+        '''
+        Connect to SQLite3 database and create cursor. 
+        Also initialize the schema if necessary. 
+
+        '''
+        url = self.jsonconf.url
+        self.con = sqlite3.connect(url)
+        self.con.isolation_level = None
+        self._create_schema()
+
+    def _pyobj2str(self, message):
+        return base64.encodestring(Serialize.dumps(message))
+
+    def _str2pyobj(self, message):
+        return Serialize.loads(base64.decodestring(message))
+
+    def _digest_pyobj(self, message):
+        return hashlib.sha1(self._pyobj2str(message)).hexdigest()
+
+    def _inqueue(self, message):
+        cur = self.con.cursor()
+        try:
+            #Deduplicate
+            #digest = self._digest_pyobj(message)
+            #digest = message.digest_parsed()
+            digest = message.digest()
+            #logger.debug("message pyobj digest '%s'", digest)
+            r = cur.execute('''
+            SELECT digest FROM msg
+            WHERE digest = ?
+            ''', (digest, ))
+
+            if len(list(r)) > 0:
+                #logger.debug("message '%s' already exists", digest)
+                return False
+            else:
+                logger.debug("message '%s' is new", digest)
+
+            #TODO:
+            #    This is temporary solution for object digestion. 
+            #   
+            #    For our Message object, the following evaluates to False!!
+            #    Serialize.dumps(o) == Serialize.dumps(Serialize.loads(Serialize.dumps(o)))
+            #
+            #    To perform deduplication and further refer to this message, 
+            #    we store the calculated digestion as an attribute of the message. 
+            #    Note however, after this operation the digest of 'message' will not 
+            #    be the valued stored therein! This is common problem in such mechanism, 
+            #    e.g. UDP checksum. Developers should have this in mind. 
+            message.digest_pyobj = self._digest_pyobj(message)
+
+            cur.execute('''
+            INSERT INTO msg(
+            time , 
+            text ,
+            userid , 
+            username , 
+            mid , 
+            platform , 
+            digest , 
+            digest_parsed , 
+            digest_pyobj , 
+            parsed , 
+            pyobj , 
+            flag 
+            )
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+            ''', (\
+                    message.parsed.time,\
+                    message.parsed.text,\
+                    message.parsed.userid,\
+                    message.parsed.username,\
+                    str(message.ID),\
+                    message.platform,\
+                    message.digest(),\
+                    message.digest_parsed(),\
+                    #self._digest_pyobj(message),\
+                    message.digest_pyobj,\
+                    message.dump_parsed(),\
+                    self._pyobj2str(message),\
+                    "unseen"
+                    ))
+            return True
+        except Exception, e:
+            logger.warning("failed: %s", str(e))
+            print message
+            #raise e
+            return False
+
+    def input(self, channel = None):
+        if channel:
+            ml = self.sp[channel].home_timeline()
+        else:
+            ml = self.sp.home_timeline()
+
+        count = 0 
+        for m in ml:
+            if self._inqueue(m):
+                count += 1
+        logger.info("Input %d new message", count)
+        self.log("Input %d new message" % count)
+
+    def output(self, count = 20):
+        cur = self.con.cursor()
+        
+        r = cur.execute('''
+        SELECT time,userid,username,text,pyobj FROM msg  
+        WHERE flag='unseen'
+        ORDER BY time DESC LIMIT ?
+        ''', (count,))
+
+        message_list = snstype.MessageList()
+        for m in r:
+            message_list.append(self._str2pyobj(m[4]))
+        #for m in r:
+        #    message_list.append(self.Message({
+        #            'time':m[0],
+        #            'userid':m[1],
+        #            'username':m[2],
+        #            'text':m[3]
+        #            },\
+        #            platform = self.jsonconf['platform'],\
+        #            channel = self.jsonconf['channel_name']\
+        #            ))
+
+        return message_list
+
+    def flag(self, message, fl):
+        cur = self.con.cursor()
+
+        ret = False
+        try:
+            cur.execute('''
+            UPDATE msg
+            SET flag=?
+            WHERE digest_pyobj=?
+            ''', (fl, message.digest_pyobj))
+            ret = True
+            self.con.commit()
+        except Exception, e:
+            logger.warning("Catch exception: %s", e)
+
+        self.log("[flag]%s;%s;%s" % (message.digest_pyobj, fl, ret))
+
+
+if __name__ == '__main__':
+    sp = SNSPocket()
+    sp.load_config()
+    sp.auth()
+
+    q = SRFEQueue(sp)
+    q.connect()
+    q.input()
+
+    #print sp.home_timeline()
+
+
+#    def _update_text(self, text):
+#        m = self.Message({\
+#                'time':int(self.time()),
+#                'userid':self.jsonconf['userid'],
+#                'username':self.jsonconf['username'],
+#                'text':text
+#                }, \
+#                platform = self.jsonconf['platform'],\
+#                channel = self.jsonconf['channel_name']\
+#                )
+#        return self._update_message(m)
+#
+#    def _update_message(self, message):
+#
+#    def update(self, text):
+#        if isinstance(text, str):
+#            return self._update_text(text)
+#        elif isinstance(text, unicode):
+#            return self._update_text(text)
+#        elif isinstance(text, snstype.Message):
+#            return self._update_message(text)
+#        else:
+#            logger.warning('unknown type: %s', type(text))
+#            return False
