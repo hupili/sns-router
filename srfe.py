@@ -6,10 +6,18 @@ sys.path.append('snsapi')
 from bottle import route, run, template, static_file, view, Bottle, request
 from snsapi.snspocket import SNSPocket
 from snsapi import utils as snsapi_utils
+import sqlite3
+
+from queue import SRFEQueue
 
 sp = SNSPocket()
 sp.load_config()
+sp.auth()
+
 srfe = Bottle()
+
+q = SRFEQueue(sp)
+q.connect()
 
 @srfe.route('/static/<filename:path>')
 def send_static(filename):
@@ -18,8 +26,9 @@ def send_static(filename):
 @srfe.route('/home_timeline')
 @view('home_timeline')
 def home_timeline():
-    sp.auth()
-    sl = sp.home_timeline(5)
+    #sp.auth()
+    #sl = sp.home_timeline(5)
+    sl = q.output(5)
     return {'sl': sl, 'snsapi_utils': snsapi_utils}
     #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
 
