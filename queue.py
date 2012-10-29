@@ -36,6 +36,15 @@ class SRFEQueue(SNSBase):
     def __init__(self, snspocket = None):
         super(SRFEQueue, self).__init__(self.SQLITE_QUEUE_CONF)
         self.sp = snspocket # SNSPocket object
+        #self.__mount_default_home_timeline_count()
+
+    #def __mount_default_home_timeline_count(self):
+    #    for ch in self.sp.values():
+    #        if 'home_timeline' in ch.jsonconf:
+    #            ct = ch.jsonconf['home_timeline']['count']
+    #            func_ht = ch.home_timeline
+    #            ch.home_timeline = lambda : func_ht(count = ct)
+    #            logger.debug("Set channel '%s' default ht count to %d", ch.jsonconf['channel_name'], ct)
 
     def _create_schema(self):
         cur = self.con.cursor()
@@ -104,7 +113,10 @@ class SRFEQueue(SNSBase):
 
         '''
         url = self.jsonconf.url
-        self.con = sqlite3.connect(url)
+        # Disable same thread checking. 
+        # SQLite3 can support multi-threading. 
+        # http://stackoverflow.com/questions/393554/python-sqlite3-and-concurrency
+        self.con = sqlite3.connect(url, check_same_thread = False)
         self.con.isolation_level = None
         self._create_schema()
 
@@ -187,11 +199,21 @@ class SRFEQueue(SNSBase):
             #raise e
             return False
 
+    def _home_timeline(self, channel):
+        ch = self.sp[channel]
+        if 'home_timeline' in ch.jsonconf:
+            ct = ch.jsonconf['home_timeline']['count']
+        else:
+            ct = 20
+        return ch.home_timeline(ct)
+
     def input(self, channel = None):
         if channel:
-            ml = self.sp[channel].home_timeline()
+            ml = self._home_timeline(channel)
         else:
-            ml = self.sp.home_timeline()
+            ml = snstype.MessageList()
+            for chn in self.sp:
+                ml.extend(self._home_timeline(chn))
 
         count = 0 
         for m in ml:
