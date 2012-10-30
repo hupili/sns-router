@@ -1,5 +1,9 @@
 <h1> home_timeline </h1>
 
+<p>
+Unseen Messages: {{meta['unseen_count']}}
+</p>
+
 <hr />
 
 %for s in sl:

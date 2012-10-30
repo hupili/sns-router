@@ -195,7 +195,7 @@ class SRFEQueue(SNSBase):
             return True
         except Exception, e:
             logger.warning("failed: %s", str(e))
-            print message
+            #print message
             #raise e
             return False
 
@@ -221,6 +221,20 @@ class SRFEQueue(SNSBase):
                 count += 1
         logger.info("Input %d new message", count)
         self.log("Input %d new message" % count)
+
+    def get_unseen_count(self):
+        cur = self.con.cursor()
+        
+        r = cur.execute('''
+        SELECT count(*) FROM msg  
+        WHERE flag='unseen'
+        ''')
+        
+        try:
+            return r.next()[0]
+        except Exception, e:
+            logger.warning("Catch Exception: %s", e)
+            return -1
 
     def output(self, count = 20):
         cur = self.con.cursor()

@@ -63,8 +63,11 @@ def flag(tg, msg_id):
 def home_timeline():
     #sp.auth()
     #sl = sp.home_timeline(5)
-    sl = q.output(50)
-    return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags()}
+    sl = q.output(10)
+    meta = {
+            "unseen_count": q.get_unseen_count()
+            }
+    return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags(), 'meta': meta}
     #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
 
 @srfe.route('/update', method = 'GET')
