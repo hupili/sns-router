@@ -1,6 +1,7 @@
 <p>
 <pre>
 Operation: {{operation}}
-Result: {{result}}
+Result: 
+{{str(result)}}
 </pre>
 </p>

@@ -94,6 +94,17 @@ def update_post():
     result = sp.update(status)
     return {'result': result, 'status': status, 'submit': True}
 
+@srfe.route('/forward/:msg_id', method = 'POST')
+@view('result')
+def forward_post(msg_id):
+    sp.auth()
+    comment = request.forms.get('comment')
+    comment = snsapi_utils.console_input(comment)
+    op = "forward status '%s' with comment '%s'" % (msg_id, comment)
+    #result = "s"
+    result = q.forward(msg_id, comment)
+    return {'result': result, 'operation': op}
+
 ith = InputThread(q)
 # The following option make the thread end when our 
 # Bottle server ends. 

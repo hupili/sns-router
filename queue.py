@@ -328,6 +328,24 @@ class SRFEQueue(SNSBase):
         self.log("[flag]%s;%s;%s" % (msg_id, tg, ret))
         return ret
 
+    def forward(self, msg_id, comment):
+        cur = self.con.cursor()
+        try:
+            r = cur.execute('''
+            SELECT pyobj FROM msg
+            WHERE id=?
+            ''', (msg_id, ))
+            str_obj = r.next()[0]
+            message = self._str2pyobj(str_obj)
+
+            result = self.sp.forward(message, comment)
+
+            self.log('[forward]%s;%s;%s' % (msg_id, result, comment)) 
+            return result
+        except Exception, e:
+            logger.warning("Catch exception: %s", e)
+            return {}
+
 if __name__ == '__main__':
     sp = SNSPocket()
     sp.load_config()
