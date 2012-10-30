@@ -18,3 +18,7 @@ Result:
 </div>
 
 %end
+
+<p>
+<a href="/">Back to Home</a>
+</p>

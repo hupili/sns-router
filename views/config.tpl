@@ -1,6 +1,6 @@
-<h1> SNSRouter Config Page
+<h1> SNSRouter Config Page </h1>
 
-<h2> Channel Configs
+<h2> Channel Configs </h2>
 
 <table border=1>
 
@@ -29,3 +29,7 @@
 %end
 
 </table>
+
+<p>
+<a href="/">Back to Home</a>
+</p>
