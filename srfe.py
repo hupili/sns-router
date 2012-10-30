@@ -47,7 +47,12 @@ def index():
 @srfe.route('/config')
 @view('config')
 def config():
-    return {"sp": sp}
+    info = {}
+    for ch in sp:
+        info[ch] = sp[ch].jsonconf
+        info[ch]['expire_after'] = int(sp[ch].expire_after())
+        info[ch]['expire_after']
+    return {"info": info, "sp": sp}
 
 @srfe.route('/flag/:fl/:msg_id')
 @view('result')

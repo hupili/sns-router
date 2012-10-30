@@ -7,16 +7,17 @@
 	<tr>
 		<th>channel name</th>
 		<th>open</th>
+		<th>expire_after (s)</th>
 		<th>authed?</th>
 		<th>platform</th>
 		<th>methods</th>
 	</tr>
 
-%for ch in sp.values():
-	%conf = ch.jsonconf
+%for conf in info.values():
 	<tr>
 		<td>{{conf['channel_name']}}</td>
 		<td>{{conf['open']}}</td>
+		<td>{{conf['expire_after']}}</td>
 		<td>N/A</td>
 		<td>{{conf['platform']}}</td>
 		%if 'methods' in conf:
