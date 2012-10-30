@@ -44,6 +44,11 @@ def send_static(filename):
 def index():
     return {}
 
+@srfe.route('/config')
+@view('config')
+def config():
+    return {"sp": sp}
+
 @srfe.route('/flag/:fl/:msg_id')
 @view('result')
 def flag(fl, msg_id):
