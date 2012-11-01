@@ -22,7 +22,7 @@ Unseen Messages: {{meta['unseen_count']}}
 	<img src="http://t.qq.com/favicon.ico" />
 	%elif s.platform == "SQLite":
 	<img src="http://www.sqlite.org/favicon.ico" />
-	%elif s.platform == "Twitter":
+	%elif s.platform == "TwitterStatus":
 	<img src="https://twitter.com/favicon.ico" />
 	%elif s.platform == "RSS":
 	<img src="http://www.girlmeetsdress.com/images/Favicon_RSS.jpg" />
