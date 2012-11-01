@@ -28,6 +28,8 @@ Unseen Messages: {{meta['unseen_count']}}
 	<img src="http://www.girlmeetsdress.com/images/Favicon_RSS.jpg" />
 	%elif s.platform == "RSS2RW":
 	<img src="http://www.girlmeetsdress.com/images/Favicon_RSS.jpg" />
+	%elif s.platform == "Email":
+	<img src="https://mail.google.com/favicon.ico" />
 	%end
 
 	<b>{{s.parsed.username}}</b> @ <i>{{snsapi_utils.utc2str(s.parsed.time)}}</i>
