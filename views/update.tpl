@@ -1,5 +1,6 @@
 <form method="POST" action="/update">
-<input name="status" type="text" />
+<textarea name="status" cols=100 rows=5>
+</textarea>
 <input type="submit" />
 </form>
 
