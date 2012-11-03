@@ -33,10 +33,9 @@ Unseen Messages: {{meta['unseen_count']}}
 	%end
 
 	<b>{{s.parsed.username}}</b> @ <i>{{snsapi_utils.utc2str(s.parsed.time)}}</i>
+	<a target="_new" href="/flag/seen/{{!s.msg_id}}">[Mark as Seen]</a>
 	<p>
 	{{s.parsed.text}}
-	<br />
-	<a target="_new" href="/flag/seen/{{!s.msg_id}}">[Mark as Seen]</a>
 	<br />
 	%for (k,v) in tags.items():
 		<a target="_new" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
