@@ -33,4 +33,16 @@ The survey of Micro-frameworks, Richard Jones.
 
 The survey of Micro-frameworks, Richard Jones. Youtube Video. 
 
+## Serialization
+
+[http://www.youtube.com/watch?v=G-lGCC4KKok](http://www.youtube.com/watch?v=G-lGCC4KKok)
+
+In the talk given by Youtube designer, he shared some experience on 
+making Youtube scalable. 
+Very interesting. 
+One thing about serialization is to not use pickle, 
+which is in the standard library and currently used in SNSRouter's queue infrastructure. 
+Efficiency is not a major concern in my current project. 
+We have at least one upgrade choice: import cPickle as pickle. 
+
 
