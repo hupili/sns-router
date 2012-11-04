@@ -33,4 +33,11 @@ This file docments the brainstorm of features.
    This is a good symbol in general. 
    * "Xingzuo", it's usually nonsense. 
    * Pure images? Like scenery during one's travel. 
+   * Number of users being @-ed in the message posting. 
+   This may be a symbol of low quality. 
+   * Number of users in the forwarding sequence. 
+   This may be a symbol of high quality. 
+   * Deleted messages, like "抱歉，此微博已被作者删除" on Sina. 
+   It's weird that Sina will return such messages. 
+   It's obvious non-informative. 
 
