@@ -32,4 +32,5 @@ This file docments the brainstorm of features.
    Numerical value may be marked for later use. 
    This is a good symbol in general. 
    * "Xingzuo", it's usually nonsense. 
+   * Pure images? Like scenery during one's travel. 
 
