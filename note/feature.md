@@ -40,4 +40,7 @@ This file docments the brainstorm of features.
    * Deleted messages, like "抱歉，此微博已被作者删除" on Sina. 
    It's weird that Sina will return such messages. 
    It's obvious non-informative. 
+   * Use profile information to analyze the content. 
+   e.g. for big V's, "flight" "late" can be categorized into "daily life". 
+   for ordinary people, "eating" "photograph" can be categorized into "daily life". 
 
