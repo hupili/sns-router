@@ -43,4 +43,6 @@ This file docments the brainstorm of features.
    * Use profile information to analyze the content. 
    e.g. for big V's, "flight" "late" can be categorized into "daily life". 
    for ordinary people, "eating" "photograph" can be categorized into "daily life". 
+   * Locations of the message issuer; 
+   Locations of mentioned in the message. 
 
