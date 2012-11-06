@@ -3,10 +3,11 @@
 import sys
 sys.path.append('bottle')
 sys.path.append('snsapi')
-from bottle import route, run, template, static_file, view, Bottle, request
+from bottle import route, run, template, static_file, view, Bottle, request, response, redirect
 from snsapi.snspocket import SNSPocket
 from snsapi.snslog import SNSLog as logger
 from snsapi import utils as snsapi_utils
+from snsapi.utils import json
 
 import time
 import sqlite3
@@ -23,6 +24,8 @@ srfe = Bottle()
 q = SRFEQueue(sp)
 q.connect()
 
+jsonconf = json.load(open('conf/srfe.json', 'r'))
+
 class InputThread(threading.Thread):
     def __init__(self, queue):
         super(InputThread, self).__init__()
@@ -35,17 +38,56 @@ class InputThread(threading.Thread):
             logger.debug("Invoke input() on queue")
             time.sleep(60 * 5) # 5 Minutes per fetch 
 
+def check_login(func):
+    '''
+    A decorator to check login. 
+    Put it before those URLs where login is required. 
+    '''
+    def wrapper_check_login(*al, **ad):
+        username = request.get_cookie("account", secret = jsonconf['cookie_sign_key'])
+        if username is None or username != jsonconf['username']:
+            redirect('login')
+        else:
+            return func(*al, **ad)
+    return wrapper_check_login
+
+@srfe.route('/logout')
+@view('logout')
+def login_get():
+    response.set_cookie("account", None, secret = jsonconf['cookie_sign_key'])
+    return {}
+
+@srfe.route('/login', method = 'GET')
+@view('login')
+def login_get():
+    return {"state": "new"}
+
+@srfe.route('/login', method = 'POST')
+@view('login')
+def login_post():
+    username = request.forms.get('username')
+    password = request.forms.get('password')
+    if username == jsonconf['username'] and password == jsonconf['password']:
+        response.set_cookie("account", username, secret = jsonconf['cookie_sign_key'])
+        #return "Welcome %s! You are now logged in." % username
+        return {"state": "succ"}
+    else:
+        return {"state": "fail"}
+        #return "Login failed."
+
 @srfe.route('/static/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='./static/')
 
 @srfe.route('/')
 @view('index')
+@check_login
 def index():
     return {}
 
 @srfe.route('/config')
 @view('config')
+@check_login
 def config():
     info = {}
     for ch in sp:
@@ -56,6 +98,7 @@ def config():
 
 @srfe.route('/flag/:fl/:msg_id')
 @view('result')
+@check_login
 def flag(fl, msg_id):
     op = "flag %s as %s" % (msg_id, fl)
     result = q.flag(msg_id, fl)
@@ -63,13 +106,15 @@ def flag(fl, msg_id):
 
 @srfe.route('/tag/:tg/:msg_id')
 @view('result')
-def flag(tg, msg_id):
+@check_login
+def tag(tg, msg_id):
     op = "tag %s as %s" % (msg_id, tg)
     result = q.tag(msg_id, tg)
     return {'operation': op, 'result': result}
 
 @srfe.route('/home_timeline')
 @view('home_timeline')
+@check_login
 def home_timeline():
     #sp.auth()
     #sl = sp.home_timeline(5)
@@ -82,11 +127,13 @@ def home_timeline():
 
 @srfe.route('/update', method = 'GET')
 @view('update')
+@check_login
 def update_get():
     return {}
 
 @srfe.route('/update', method = 'POST')
 @view('update')
+@check_login
 def update_post():
     sp.auth()
     status = request.forms.get('status')
@@ -96,6 +143,7 @@ def update_post():
 
 @srfe.route('/forward/:msg_id', method = 'POST')
 @view('result')
+@check_login
 def forward_post(msg_id):
     sp.auth()
     comment = request.forms.get('comment')
