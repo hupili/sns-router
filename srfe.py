@@ -15,9 +15,31 @@ import sqlite3
 from queue import SRFEQueue
 import threading
 
+class AuthProxy(object):
+    def __init__(self):
+        super(AuthProxy, self).__init__()
+        self.code_url = "((null))"
+        self.requested_url = None
+
+    def fetch_code(self):
+        return self.code_url
+
+    def request_url(self, url):
+        self.requested_url = url
+        self.code_url = "((null))"
+        
+ap = AuthProxy()
+#print ap.code_url
+#print ap.request_url
+#ap.request_url("ss")
+#print ap.requested_url
 sp = SNSPocket()
 sp.load_config()
-sp.auth()
+for c in sp.values():
+    c.request_url = lambda url: ap.request_url(url)
+    c.fetch_code = lambda : ap.fetch_code()
+    c.auth()
+    #c.get_saved_token()
 
 srfe = Bottle()
 
@@ -25,6 +47,7 @@ q = SRFEQueue(sp)
 q.connect()
 
 jsonconf = json.load(open('conf/srfe.json', 'r'))
+
 
 class InputThread(threading.Thread):
     def __init__(self, queue):
@@ -93,7 +116,7 @@ def config():
     for ch in sp:
         info[ch] = sp[ch].jsonconf
         info[ch]['expire_after'] = int(sp[ch].expire_after())
-        info[ch]['expire_after']
+        info[ch]['is_authed'] = sp[ch].is_authed()
     return {"info": info, "sp": sp}
 
 @srfe.route('/flag/:fl/:msg_id')

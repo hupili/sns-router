@@ -18,7 +18,7 @@
 		<td>{{conf['channel_name']}}</td>
 		<td>{{conf['open']}}</td>
 		<td>{{conf['expire_after']}}</td>
-		<td>N/A</td>
+		<td>{{conf['is_authed']}}</td>
 		<td>{{conf['platform']}}</td>
 		%if 'methods' in conf:
 			<td>{{conf['methods']}}</td>
