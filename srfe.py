@@ -20,6 +20,7 @@ class AuthProxy(object):
         super(AuthProxy, self).__init__()
         self.code_url = "((null))"
         self.requested_url = None
+        self.current_channel = None
 
     def fetch_code(self):
         return self.code_url
@@ -48,7 +49,6 @@ q.connect()
 
 jsonconf = json.load(open('conf/srfe.json', 'r'))
 
-
 class InputThread(threading.Thread):
     def __init__(self, queue):
         super(InputThread, self).__init__()
@@ -69,7 +69,7 @@ def check_login(func):
     def wrapper_check_login(*al, **ad):
         username = request.get_cookie("account", secret = jsonconf['cookie_sign_key'])
         if username is None or username != jsonconf['username']:
-            redirect('login')
+            redirect('/login')
         else:
             return func(*al, **ad)
     return wrapper_check_login
@@ -117,7 +117,32 @@ def config():
         info[ch] = sp[ch].jsonconf
         info[ch]['expire_after'] = int(sp[ch].expire_after())
         info[ch]['is_authed'] = sp[ch].is_authed()
-    return {"info": info, "sp": sp}
+    return {"info": info, "sp": sp, "ap": ap}
+
+@srfe.route('/auth/first/:channel_name')
+@view('result')
+@check_login
+def auth_first(channel_name):
+    op = "auth_first for %s" % (channel_name)
+    ap.current_channel = channel_name
+    sp[channel_name].auth_first()
+    result = "request url: %s" % ap.requested_url
+    redirect(ap.requested_url)
+    return {'operation': op, 'result': result}
+
+@srfe.route('/auth/second/')
+@view('result')
+@check_login
+def auth_second():
+    op = "auth_second for %s" % (ap.current_channel)
+    qs = request.query_string
+    # For compatibility with lower level interface. 
+    # The snsbase parses code from the whole url. 
+    ap.code_url = "http://snsapi.snsapi/auth/second/auth?%s" % qs
+    sp[ap.current_channel].auth_second()
+    sp[ap.current_channel].save_token()
+    result = "done: %s" % qs
+    return {'operation': op, 'result': result}
 
 @srfe.route('/flag/:fl/:msg_id')
 @view('result')
@@ -183,7 +208,8 @@ ith = InputThread(q)
 ith.daemon=True
 ith.start()
 #srfe.run(host='localhost', port=8080, debug = True, reloader = True)
-srfe.run(host='localhost', port=8080, debug = True)
+#srfe.run(host='localhost', port=8080, debug = True)
+srfe.run(host='127.0.0.1', port=8080, debug = True)
 ith.keep_running = False
 
 

@@ -30,6 +30,36 @@
 
 </table>
 
+<h2> Auth Flow Management </h2>
+
+<p>
+	Current channel waiting for second stage:
+	{{ap.current_channel}}
+</p>
+
+<table border=1>
+
+	<tr>
+		<th>channel name</th>
+		<th>go to auth</th>
+	</tr>
+
+%for conf in info.values():
+	<tr>
+		%#if not conf['is_authed']:
+		%if True:
+			<td>{{conf['channel_name']}}</td>
+			<td> 
+				<a href="/auth/first/{{conf['channel_name']}}" target="_new">
+					Go Authorization -->
+				</a>
+			</td>
+		%end
+	</tr>
+%end
+
+</table>
+
 <p>
 <a href="/">Back to Home</a>
 </p>
