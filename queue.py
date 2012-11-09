@@ -263,6 +263,16 @@ class SRFEQueue(SNSBase):
 
         return message_list
 
+    def raw(self, msg_id):
+        cur = self.con.cursor()
+        
+        r = cur.execute('''
+        SELECT pyobj FROM msg  
+        WHERE id=?
+        ''', (msg_id,))
+
+        return self._str2pyobj(list(r)[0][0]).raw
+
     def flag(self, message, fl):
         '''
         flag v.s. message: 1 <-> 1

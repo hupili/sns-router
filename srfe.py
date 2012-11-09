@@ -144,6 +144,14 @@ def auth_second():
     result = "done: %s" % qs
     return {'operation': op, 'result': result}
 
+@srfe.route('/raw/:msg_id')
+@view('result')
+@check_login
+def raw(msg_id):
+    op = "check raw of message %s" % (msg_id)
+    result = q.raw(msg_id)
+    return {'operation': op, 'result': result}
+
 @srfe.route('/flag/:fl/:msg_id')
 @view('result')
 @check_login
@@ -166,7 +174,8 @@ def tag(tg, msg_id):
 def home_timeline():
     #sp.auth()
     #sl = sp.home_timeline(5)
-    sl = q.output(10)
+    #sl = q.output(10)
+    sl = q.output(30)
     meta = {
             "unseen_count": q.get_unseen_count()
             }

@@ -12,6 +12,8 @@ Unseen Messages: {{meta['unseen_count']}}
 
 %for s in sl:
 <div>
+	<a target="_new" href="/raw/{{!s.msg_id}}">[raw]</a>
+
 	%if s.platform == "SinaWeiboStatus":
 	<img src="http://weibo.com/favicon.ico" />
 	%elif s.platform == "RenrenStatus":
