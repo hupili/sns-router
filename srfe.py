@@ -182,6 +182,21 @@ def home_timeline():
     return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags(), 'meta': meta}
     #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
 
+@srfe.route('/sql', method = "GET")
+@view('sql')
+@check_login
+def sql_get():
+    return {}
+
+@srfe.route('/sql', method = "POST")
+@view('sql')
+@check_login
+def sql_post():
+    condition = request.forms.get('condition').strip()
+    sl = q.sql(condition)
+    return {'sl': sl, 'snsapi_utils': snsapi_utils, \
+            'tags': q.get_tags(), 'submit': True, 'condition': condition}
+
 @srfe.route('/update', method = 'GET')
 @view('update')
 @check_login

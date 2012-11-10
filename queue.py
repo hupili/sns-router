@@ -263,6 +263,25 @@ class SRFEQueue(SNSBase):
 
         return message_list
 
+    def sql(self, condition):
+        cur = self.con.cursor()
+        
+        try:
+            # We trust the client string. This software is intended for personal use. 
+            qs = "SELECT id,pyobj FROM msg WHERE %s" % condition
+            r = cur.execute(qs)
+            logger.debug("SQL query string: %s", qs)
+
+            message_list = snstype.MessageList()
+            for m in r:
+                obj = self._str2pyobj(m[1])
+                obj.msg_id = m[0]
+                message_list.append(obj)
+            return message_list
+        except Exception, e:
+            logger.warning("Catch exception when executing '%s': %s", condition, e)
+            return snstype.MessageList()
+
     def raw(self, msg_id):
         cur = self.con.cursor()
         
