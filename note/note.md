@@ -45,4 +45,29 @@ which is in the standard library and currently used in SNSRouter's queue infrast
 Efficiency is not a major concern in my current project. 
 We have at least one upgrade choice: import cPickle as pickle. 
 
+## Preliminary Data (20121108)
 
+```
+sqlite> select count(*) from msg;
+7404
+sqlite> select count(*) from msg where flag="seen";
+2994
+sqlite> select count(*) from msg_tag;
+343
+sqlite> select count(*) from log;
+4535
+sqlite> select count(*) from log where operation like "%forward%";
+55
+sqlite> select name,count(*) from msg_tag,tag where tag_id = tag.id group by tag_id;
+null|2
+mark|84
+gold|2
+silver|16
+bronze|10
+news|75
+interesting|27
+shit|26
+nonsense|101
+```
+
+Line of code (20121108): 5523

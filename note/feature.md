@@ -46,3 +46,7 @@ This file docments the brainstorm of features.
    * Locations of the message issuer; 
    Locations of mentioned in the message. 
 
+## Preprocessing 
+
+Aggregate messages according to their original messages. 
+Aggregate messages using similarity measures, e.g. LCS. 
