@@ -233,7 +233,10 @@ ith.daemon=True
 ith.start()
 #srfe.run(host='localhost', port=8080, debug = True, reloader = True)
 #srfe.run(host='localhost', port=8080, debug = True)
-srfe.run(host='127.0.0.1', port=8080, debug = True)
+
+srfe.run(host = jsonconf.get('host', '127.0.0.1'),\
+        port = jsonconf.get('port', 8080),\
+        debug = jsonconf.get('debug', True))
 ith.keep_running = False
 
 
