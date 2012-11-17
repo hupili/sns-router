@@ -12,7 +12,7 @@ Unseen Messages: {{meta['unseen_count']}}
 
 %for s in sl:
 <div>
-	<a target="_new" href="/raw/{{!s.msg_id}}">[raw]</a>
+	<a target="_blank" href="/raw/{{!s.msg_id}}">[raw]</a>
 
 	%if s.platform == "SinaWeiboStatus":
 	<img src="http://weibo.com/favicon.ico" />
@@ -35,15 +35,15 @@ Unseen Messages: {{meta['unseen_count']}}
 	%end
 
 	<b>{{s.parsed.username}}</b> @ <i>{{snsapi_utils.utc2str(s.parsed.time)}}</i>
-	<a target="_new" href="/flag/seen/{{!s.msg_id}}">[Mark as Seen]</a>
+	<a target="result" href="/flag/seen/{{!s.msg_id}}">[Mark as Seen]</a>
 	<p>
 	{{s.parsed.text}}
 	<br />
 	%for (k,v) in tags.items():
-		<a target="_new" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
+		<a target="result" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
 	%end
 	<br />
-	<form target="_new" method="POST" action="/forward/{{!s.msg_id}}">
+	<form target="result" method="POST" action="/forward/{{!s.msg_id}}">
 	<input name="comment" type="text" />
 	<input type="submit" />
 	</form>
@@ -51,3 +51,11 @@ Unseen Messages: {{meta['unseen_count']}}
 
 </div>
 %end
+
+<hr />
+
+Operation result frame: <br />
+
+<iframe name="result">
+Init
+</iframe>

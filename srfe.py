@@ -174,8 +174,8 @@ def tag(tg, msg_id):
 def home_timeline():
     #sp.auth()
     #sl = sp.home_timeline(5)
-    #sl = q.output(10)
-    sl = q.output(30)
+    sl = q.output(10)
+    #sl = q.output(30)
     meta = {
             "unseen_count": q.get_unseen_count()
             }
