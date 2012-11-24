@@ -71,3 +71,88 @@ nonsense|101
 ```
 
 Line of code (20121108): 5523
+
+## Resources
+
+Google prediction API:
+
+https://developers.google.com/prediction/
+
+Looks strong. 
+
+## Algorithm Framework
+
+### A Rank Preserving Framework
+
+Originally, I want a classification formulation. 
+Later I found that it is really hard to tell 
+which message should be tagged as what category. 
+Step back, I think the system does not have to so accurately. 
+Human is natural better filtering system. 
+If the system can rank the messages reasonably, 
+it is already a significant saving of time. 
+
+For example, I can specify some partial order: 
+
+gold > silver
+silver > bronze
+bronze > null
+mark > news
+mark > null
+news > null
+news > interesting
+interesting > null
+null > nonsense
+nonsense > shit
+
+We want to regress from a set of features to 
+get a combined real value so that the real value 
+preserves this expected rank of tags. 
+
+I term this as rank preserving regression. 
+Are there well known existing techniques?
+
+#### "ordinal regression"? 
+
+From the 
+[wikipedia's description](http://en.wikipedia.org/wiki/Ordinal_regression)
+, it is not the model I'm pursuing. 
+
+Some references:
+
+   * Peter McCullagh, 1980, Regression Models for Ordinal Data, 
+   http://www.jstor.org/stable/10.2307/2984952
+   * Yang Liu, Yan Liu, Keith C. C. Chan, 
+   Ordinal Regression via Manifold Learning. 
+   The search of "ranking preserving regression" on Google 
+   hits this paper. 
+
+#### "order preserving regression"?
+
+Reference:
+
+   * Peter H ALL and Hans-Georg M ÜLLER, 
+   2003, *Order-Preserving Nonparametric Regression,
+   With Applications to Conditional Distribution and
+   Quantile Function Estimation*. 
+
+The input is X and y, regress the weights so that 
+the output g(X) preserves the order of y. 
+However, our tag only has categorical meaning. 
+
+Data types:
+
+   * Nominal
+   * Ordinal
+   * Interval
+   * Ratio
+
+http://changingminds.org/explanations/research/measurement/types_data.htm
+
+> Parametric vs. Non-parametric
+> Interval and ratio data are parametric, and are used with parametric tools in which distributions are predictable (and often Normal).  
+> Nominal and ordinal data are non-parametric, and do not assume any particular distribution. They are used with non-parametric tools such as the Histogram.
+
+We are dealing with ordinal data. 
+
+
