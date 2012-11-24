@@ -354,7 +354,7 @@ class SRFEQueue(SNSBase):
         except Exception, e:
             logger.warning("Catch exception: %s", e)
 
-        self.log("[flag]%s;%s;%s" % (msg_id, tg, ret))
+        self.log("[tag]%s;%s;%s" % (msg_id, tg, ret))
         return ret
 
     def forward(self, msg_id, comment):
