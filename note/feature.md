@@ -50,3 +50,15 @@ This file docments the brainstorm of features.
 
 Aggregate messages according to their original messages. 
 Aggregate messages using similarity measures, e.g. LCS. 
+
+## User Extraction from Text
+
+   * We use username to "identify" a user. 
+   username may not be unique, so there will be some noise. 
+   Some platforms do not provide structured forwarding sequence, 
+   so we can only extract users from observed texts. 
+   * pattern like "@ xxx", "via: xxx", "转自 xxx" are all symbol of users. 
+   * Sina's and Renren's '@' symbol are followed by username, 
+   however Tecent's '@' symbol is followed by userid. 
+
+

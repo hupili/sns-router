@@ -26,6 +26,27 @@ class Feature(object):
         super(Feature, self).__init__()
 
     @staticmethod
+    def face(msg):
+        msg.feature['test'] = 1
+
+    @staticmethod
+    def length(msg):
+        msg.feature['text_len'] = len(msg.parsed.text)
+
+        if 'text_orig' in msg.parsed:
+            msg.feature['text_orig_len'] = len(msg.parsed.text_orig)
+        else:
+            msg.feature['text_orig_len'] = 0
+
+    @staticmethod
+    def link(msg):
+        r = re.compile(r'https?://')
+        if r.search(msg.parsed.text):
+            msg.feature['contain_link'] = 1
+        else:
+            msg.feature['contain_link'] = 0 
+        
+    @staticmethod
     def extract(msg):
         '''
         Feature extraction. 
@@ -38,22 +59,13 @@ class Feature(object):
             logger.warning("Cannot extract feature for non snstype.Message object")
             return 
         
-        feature = {}
-
         # Add all kinds of features
-        feature['text_len'] = len(msg.parsed.text)
-        if 'text_orig' in msg.parsed:
-            feature['text_orig_len'] = len(msg.parsed.text_orig)
-        else:
-            feature['text_orig_len'] = 0
+        msg.feature = {}
+        Feature.length(msg)
+        Feature.link(msg)
+        Feature.face(msg)
 
-        r = re.compile(r'https?://')
-        if r.search(msg.parsed.text):
-            feature['contain_link'] = 1
-        else:
-            feature['contain_link'] = 0 
-
-        msg.feature = feature
+        #msg.feature = feature
 
 def extract_all():
     import time
@@ -72,6 +84,17 @@ def extract_all():
     open('workspace.pickle', 'w').write(Serialize.dumps(message))
     end = time.time()
     print "Dump finish. Time elapsed: %.3f" % (end - begin)
+
+def get_test_case():
+    message = Serialize.loads(open('workspace.pickle').read())
+    case_id_list = [
+            2, #length, http link
+            1116, #test face icon (Tencent)
+            ]
+    case = []
+    for cid in case_id_list:
+        case.append(message['dict_msg'][cid])
+    open('case.pickle', 'w').write(Serialize.dumps(case))
 
 def run_test_case():
     message_list = Serialize.loads(open('case.pickle').read())
