@@ -2,6 +2,15 @@
 
 # https://github.com/pluskid/pymmseg-cpp/
 import mmseg
+
+# The way shown in README file. Does not work. 
+#mmseg.dict_load_words('kdb/mmseg_words.dic')
+#mmseg.dict_load_chars('kdb/mmseg_chars.dic')
+
+# Read from code
+tp_dict =  mmseg.Dictionary.dictionaries
+#mmseg.Dictionary.dictionaries = (tp_dict[0], ('words', 'kdb/mmseg_words.dic'))
+mmseg.Dictionary.dictionaries = (tp_dict[0], ('words', 'kdb/Freq/SogouLabDic.dic.utf-8.pymmseg-format'))
 mmseg.Dictionary.load_dictionaries()
 
 def wordseg(text):
