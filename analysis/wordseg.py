@@ -10,7 +10,10 @@ import mmseg
 # Read from code
 tp_dict =  mmseg.Dictionary.dictionaries
 #mmseg.Dictionary.dictionaries = (tp_dict[0], ('words', 'kdb/mmseg_words.dic'))
-mmseg.Dictionary.dictionaries = (tp_dict[0], ('words', 'kdb/Freq/SogouLabDic.dic.utf-8.pymmseg-format'))
+# Use Sogo dict only
+#mmseg.Dictionary.dictionaries = (tp_dict[0], ('words', 'kdb/Freq/SogouLabDic.dic.utf-8.pymmseg-format'))
+# Use Sogo + pymmseg dict merged version
+mmseg.Dictionary.dictionaries = (tp_dict[0], ('words', 'kdb/words.merged.dic'))
 mmseg.Dictionary.load_dictionaries()
 
 def wordseg(text):
@@ -25,3 +28,6 @@ if __name__ == '__main__':
                 print '%s' % tok.text
         except EOFError:
             break
+
+# Quick test of this script
+# sed -n '3p' data/text.SinaWeiboStatus | python wordseg.py
