@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Dump sqlite3 data to python pickle
-# About:
-# 1.5G, 1 minute
-
 import sys
 sys.path.append('../bottle')
 sys.path.append('../snsapi')
@@ -27,6 +23,6 @@ import sqlite3
 if __name__ == '__main__':
     import time
     begin = time.time()
-    message = Serialize.loads(open('message.pickle').read())
+    message = Serialize.loads(open('workspace.pickle').read())
     end = time.time()
     print "Load finish. Time elapsed: %.3f" % (end - begin)
