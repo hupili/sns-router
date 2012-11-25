@@ -30,12 +30,6 @@ if __name__ == '__main__':
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
     # Preprocessing
-    ml = message['message_list']
-    md = {}
-    for m in ml:
-        md[m.msg_id] = m
-    message['dict_msg'] = md 
-
     tl = message['tag_list']
     td = {}
     td_r = {}
@@ -52,6 +46,16 @@ if __name__ == '__main__':
     #dl_r = dict(tl_r)
     message['dict_msg2tag'] = td
     message['dict_tag2msg'] = td_r
+
+    ml = message['message_list']
+    md = {}
+    for m in ml:
+        if m.msg_id in td:
+            m.tags = td[m.msg_id]
+        else:
+            m.tags = {}
+        md[m.msg_id] = m
+    message['dict_msg'] = md 
 
     # save 
     begin = time.time()
