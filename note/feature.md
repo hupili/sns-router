@@ -61,4 +61,12 @@ Aggregate messages using similarity measures, e.g. LCS.
    * Sina's and Renren's '@' symbol are followed by username, 
    however Tecent's '@' symbol is followed by userid. 
 
+## Word Segmentation
 
+   * Use pymmseg as the base. 
+   * Merged pymmseg dict and Sogo dict (2006). 
+
+TODO:
+
+   * Remove url before wordseg. 
+   * Remove username (e.g. "@xxx") before wordseg. 
