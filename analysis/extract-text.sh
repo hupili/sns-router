@@ -8,8 +8,8 @@ $sql "select text from msg where platform='SinaWeiboStatus'" > data/text.SinaWei
 $sql "select text from msg where platform='RenrenStatus'" > data/text.RenrenStatus
 $sql "select text from msg where platform='TencentWeiboStatus'" > data/text.TencentWeiboStatus
 
-#cd data
-#
-#cd -
+cd data
+cat text.SinaWeiboStatus text.RenrenStatus text.TencentWeiboStatus > text.all
+cd -
 
 exit 0 
