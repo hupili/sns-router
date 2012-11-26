@@ -174,13 +174,23 @@ def tag(tg, msg_id):
 def home_timeline():
     #sp.auth()
     #sl = sp.home_timeline(5)
-    sl = q.output(10)
+    sl = q.output(20)
     #sl = q.output(30)
     meta = {
             "unseen_count": q.get_unseen_count()
             }
     return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags(), 'meta': meta}
     #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
+
+@srfe.route('/ranked_timeline')
+@view('home_timeline')
+@check_login
+def ranked_timeline():
+    sl = q.output_ranked(20, 86400)
+    meta = {
+            "unseen_count": q.get_unseen_count()
+            }
+    return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags(), 'meta': meta}
 
 @srfe.route('/sql', method = "GET")
 @view('sql')

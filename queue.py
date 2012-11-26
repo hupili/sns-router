@@ -180,9 +180,11 @@ class SRFEQueue(SNSBase):
             digest_pyobj , 
             parsed , 
             pyobj , 
-            flag 
+            flag , 
+            weight ,
+            weight_time
             )
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ''', (\
                     message.parsed.time,\
                     message.parsed.text,\
@@ -196,7 +198,9 @@ class SRFEQueue(SNSBase):
                     message.digest_pyobj,\
                     message.dump_parsed(),\
                     self._pyobj2str(message),\
-                    "unseen"
+                    "unseen", 
+                    self._weight_feature(message),
+                    int(self.time())
                     ))
             return True
         except Exception, e:
@@ -266,6 +270,24 @@ class SRFEQueue(SNSBase):
         #            platform = self.jsonconf['platform'],\
         #            channel = self.jsonconf['channel_name']\
         #            ))
+
+        return message_list
+
+    def output_ranked(self, count, younger_than):
+        latest_time = int(self.time() - younger_than)
+        cur = self.con.cursor()
+        
+        r = cur.execute('''
+        SELECT id,time,userid,username,text,pyobj FROM msg  
+        WHERE flag='unseen' AND time>?
+        ORDER BY weight DESC LIMIT ?
+        ''', (latest_time, count))
+
+        message_list = snstype.MessageList()
+        for m in r:
+            obj = self._str2pyobj(m[5])
+            obj.msg_id = m[0]
+            message_list.append(obj)
 
         return message_list
 
@@ -382,6 +404,7 @@ class SRFEQueue(SNSBase):
             return {}
 
     def _weight_feature(self, msg):
+        Feature.extract(msg)
         score = 0.0
         for (f, w) in self.feature_weight.items():
             if f in msg.feature:
@@ -396,7 +419,6 @@ class SRFEQueue(SNSBase):
             WHERE id=?
             ''', (msg_id,))
             m = self._str2pyobj(list(r)[0][0])
-            Feature.extract(m)
             w = self._weight_feature(m)
             t = int(self.time())
             r = cur.execute('''
@@ -407,19 +429,20 @@ class SRFEQueue(SNSBase):
         except Exception, e:
             logger.warning("Catch exception: %s", e)
 
-    def reweight_all(self, last_update_time = None):
+    def reweight_all(self, younger_than = 86400):
         begin = self.time()
         cur = self.con.cursor()
         try:
-            if last_update_time is None:
-                r = cur.execute('''
-                SELECT id from msg
-                ''')
-            else:
-                r = cur.execute('''
-                SELECT id from msg
-                WHERE weight_time is NULL or weight_time < ?
-                ''', (last_update_time, ))
+            #if last_update_time is None:
+            #    r = cur.execute('''
+            #    SELECT id from msg
+            #    ''')
+            #else:
+            latest_time = int(self.time() - younger_than)
+            r = cur.execute('''
+            SELECT id from msg
+            WHERE time >= ?
+            ''', (latest_time, ))
             for m in r:
                 self.reweight(m[0])
         except Exception, e:
