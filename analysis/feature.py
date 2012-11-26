@@ -18,12 +18,33 @@ import cPickle as Serialize
 import snsapi
 from snsapi import snstype
 from snsapi.snslog import SNSLog as logger
+from wordseg import wordseg_clean
 import re
 
 class Feature(object):
     """docstring for Feature"""
+
+    # Topic dict
+    tdict = Serialize.loads(open('kdb/tdict.pickle').read())
+
     def __init__(self):
         super(Feature, self).__init__()
+
+    @staticmethod
+    def _topic(dct, msg):
+        score = 0.0
+        terms = wordseg_clean(msg.parsed.text)
+        for t in terms:
+            if t.text in dct:
+                score += dct[t.text]
+        return score
+
+    @staticmethod
+    def topic(msg):
+        msg.feature['topic_tech'] = Feature._topic(Feature.tdict['tech'], msg)
+        msg.feature['topic_news'] = Feature._topic(Feature.tdict['news'], msg)
+        msg.feature['topic_interesting'] = Feature._topic(Feature.tdict['interesting'], msg)
+        msg.feature['topic_nonsense'] = Feature._topic(Feature.tdict['nonsense'], msg)
 
     @staticmethod
     def face(msg):
@@ -64,6 +85,7 @@ class Feature(object):
         Feature.length(msg)
         Feature.link(msg)
         Feature.face(msg)
+        Feature.topic(msg)
 
         #msg.feature = feature
 
@@ -87,9 +109,23 @@ def extract_all():
 
 def get_test_case():
     message = Serialize.loads(open('workspace.pickle').read())
+    # The following list mean nothing without concrete data. 
+    # If you want to use my feature extraction module, please 
+    # construct your own test case list. 
     case_id_list = [
             2, #length, http link
             1116, #test face icon (Tencent)
+            3897, #topic tech
+            9535, #topic tech
+            18202, #topic tech
+            15700, #topic news
+            22076, #topic news
+            23106, #topic news
+            13401, #interesting
+            3838, #topic nonsense
+            834, #topic nonsense
+            21182, #topic nonsense
+            5414, #topic nonsense
             ]
     case = []
     for cid in case_id_list:
@@ -103,7 +139,9 @@ def run_test_case():
         print "===="
         print m
         print "----"
-        print m.feature
+        #print m.feature
+        for f in sorted([f for f in m.feature]):
+            print "%s: %.5f" % (f, m.feature[f])
         print "===="
 
 if __name__ == '__main__':

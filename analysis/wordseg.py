@@ -24,12 +24,17 @@ for sw in _STOPWORD:
     STOPWORD[sw] = 1
 
 def wordseg(text):
+    if isinstance(text, unicode):
+        text = text.encode('utf-8')
     algor = mmseg.Algorithm(text)
     return list(algor)
 
 def wordseg_clean(text):
     from userext import user_extract
     from urlext import url_extract
+
+    if isinstance(text, unicode):
+        text = text.encode('utf-8')
     
     t = url_extract(text)
     t = user_extract(t['text'])
