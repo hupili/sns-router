@@ -7,10 +7,12 @@ import snsapi
 from snsapi.snspocket import SNSPocket
 from snsapi.platform import SQLite
 from snsapi import utils as snsapi_utils
+from snsapi.utils import json
 from snsapi import snstype
 from snsapi.utils import Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
+from analysis.feature import Feature
 
 import base64
 import hashlib
@@ -37,6 +39,8 @@ class SRFEQueue(SNSBase):
         super(SRFEQueue, self).__init__(self.SQLITE_QUEUE_CONF)
         self.sp = snspocket # SNSPocket object
         #self.__mount_default_home_timeline_count()
+        self.queue_conf = json.load(open('conf/queue.json', 'r'))
+        self.feature_weight = self.queue_conf['feature_weight']
 
     #def __mount_default_home_timeline_count(self):
     #    for ch in self.sp.values():
@@ -72,7 +76,9 @@ class SRFEQueue(SNSBase):
         digest_pyobj TEXT, 
         parsed TEXT, 
         pyobj TEXT, 
-        flag TEXT
+        flag TEXT, 
+        weight FLOAT, 
+        weight_time INTEGER
         )
         """)
 
@@ -375,6 +381,52 @@ class SRFEQueue(SNSBase):
             logger.warning("Catch exception: %s", e)
             return {}
 
+    def _weight_feature(self, msg):
+        score = 0.0
+        for (f, w) in self.feature_weight.items():
+            if f in msg.feature:
+                score += msg.feature[f] * w
+        return score
+
+    def reweight(self, msg_id):
+        cur = self.con.cursor()
+        try:
+            r = cur.execute('''
+            SELECT pyobj FROM msg
+            WHERE id=?
+            ''', (msg_id,))
+            m = self._str2pyobj(list(r)[0][0])
+            Feature.extract(m)
+            w = self._weight_feature(m)
+            t = int(self.time())
+            r = cur.execute('''
+            UPDATE msg
+            SET weight=?,weight_time=?
+            WHERE id=?
+            ''', (w, t, msg_id))
+        except Exception, e:
+            logger.warning("Catch exception: %s", e)
+
+    def reweight_all(self, last_update_time = None):
+        begin = self.time()
+        cur = self.con.cursor()
+        try:
+            if last_update_time is None:
+                r = cur.execute('''
+                SELECT id from msg
+                ''')
+            else:
+                r = cur.execute('''
+                SELECT id from msg
+                WHERE weight_time is NULL or weight_time < ?
+                ''', (last_update_time, ))
+            for m in r:
+                self.reweight(m[0])
+        except Exception, e:
+            logger.warning("Catch exception: %s", e)
+        end = self.time()
+        logger.info("Reweight done. Time elapsed: %.2f", end - begin)
+
 if __name__ == '__main__':
     sp = SNSPocket()
     sp.load_config()
@@ -382,7 +434,7 @@ if __name__ == '__main__':
 
     q = SRFEQueue(sp)
     q.connect()
-    q.input()
+    #q.input()
 
     #print sp.home_timeline()
 
