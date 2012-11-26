@@ -155,4 +155,13 @@ http://changingminds.org/explanations/research/measurement/types_data.htm
 
 We are dealing with ordinal data. 
 
+#### Metric
+
+I thought to use the number reversed pairs as a metric. 
+Kendall's tau turns out to be a normalized version of this metric. 
+Anyway, it already has an official definition and wide acceptance.
+I'd use Kendall's tau as the measurement. 
+
+[http://en.wikipedia.org/wiki/Kendall_tau_rank_correlation_coefficient](http://en.wikipedia.org/wiki/Kendall_tau_rank_correlation_coefficient)
+
 
