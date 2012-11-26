@@ -4,7 +4,8 @@ import re
 
 def user_extract(text):
     # v6
-    separator = [u'，', u'：', u'；', u'！', u'）', u'（', u'《', u'》', u'】', u'【', u'。']
+    #separator = [u'，', u'：', u'；', u'！', u'）', u'（', u'《', u'》', u'】', u'【', u'。']
+    separator = [u"，：；！）（《》】【。"]
     ret = {}
     # v1
     #r = re.compile(r'(@.+?)( |$)')
