@@ -46,12 +46,13 @@ class SQLite2Pickle(object):
         cur = self.con.cursor()
         
         r = cur.execute('''
-        SELECT id,time,userid,username,text,pyobj FROM msg  
+        SELECT id,time,userid,username,text,pyobj,flag FROM msg  
         ''')
         message_list = snstype.MessageList()
         for m in r:
             obj = self._str2pyobj(m[5])
             obj.msg_id = m[0]
+            obj.flag = m[6]
             message_list.append(obj)
 
         r = cur.execute('''

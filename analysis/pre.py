@@ -30,32 +30,37 @@ if __name__ == '__main__':
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
     # Preprocessing
+
+    # tag2msg and msg2tag dict
     tl = message['tag_list']
     td = {}
     td_r = {}
     for (msg_id, tag_id) in tl:
-        #print "msg_id: %d, tag_id: %d" % (msg_id, tag_id)
         if not msg_id in td:
             td[msg_id] = {}
         td[msg_id][tag_id] = 1
         if not tag_id in td_r:
             td_r[tag_id] = {}
         td_r[tag_id][msg_id] = 1
-    #tl_r = [(t(2), t(1)) for t in tl]
-    #dl = dict(tl)
-    #dl_r = dict(tl_r)
     message['dict_msg2tag'] = td
     message['dict_tag2msg'] = td_r
 
+    # 1. add tags attributes to msg
+    # 2. make msg dict
+    # 3. make seen list
     ml = message['message_list']
     md = {}
+    seen_list = []
     for m in ml:
+        if m.flag == "seen":
+            seen_list.append(m)
         if m.msg_id in td:
             m.tags = td[m.msg_id]
         else:
             m.tags = {}
         md[m.msg_id] = m
     message['dict_msg'] = md 
+    message['seen_list'] = seen_list
 
     # save 
     begin = time.time()
