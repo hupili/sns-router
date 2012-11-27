@@ -55,4 +55,5 @@ if __name__ == '__main__':
 
     aw = AutoWeight()
     ranked = sorted(samples, key = lambda m: aw._weight_feature(m), reverse = True)
+    #ranked = sorted(samples, key = lambda m: m.parsed.time)
     open('ranking.pickle', 'w').write(Serialize.dumps(ranked))

@@ -87,15 +87,19 @@ def evaluate_kendall(fn_ranking):
     conc = 0 # in order
     disc = 0 # reversed order
 
+    total = 0 # number of to be compared pairs
     n = len(ranking)
     for i in range(0, n - 1):
         for j in range(i+1, n):
-            if is_inorder(rel_gt, ranking[i].tags.keys(), ranking[j].tags.keys()):
-                conc += 1
-            if is_inorder(rel_gt, ranking[j].tags.keys(), ranking[i].tags.keys()):
-                disc += 1
+            if ranking[i].tags != ranking[j].tags:
+                total += 1 
+                if is_inorder(rel_gt, ranking[i].tags.keys(), ranking[j].tags.keys()):
+                    conc += 1
+                if is_inorder(rel_gt, ranking[j].tags.keys(), ranking[i].tags.keys()):
+                    disc += 1
 
-    return 1.0 * (conc - disc) / (n * (n-1) / 2)
+    return 1.0 * (conc - disc) / total
+    #return 1.0 * (conc - disc) / (n * (n-1) / 2)
 
 if __name__ == '__main__':
     ret = evaluate_kendall('ranking.pickle')
