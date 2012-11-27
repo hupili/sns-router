@@ -25,7 +25,7 @@ import sqlite3
 import random
 
 # Number of 'null' labeled messages to extract
-NULL_SAMPLES = 2000
+NULL_SAMPLES = 800
 
 if __name__ == '__main__':
     import time
@@ -52,6 +52,7 @@ if __name__ == '__main__':
 
     for m in null_msg:
         if random.random() < prob:
+            m.tags = {"null": 1}
             candidates.append(m)
 
     print "Total %d samples extracted" % (len(candidates))
