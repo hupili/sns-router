@@ -164,4 +164,56 @@ I'd use Kendall's tau as the measurement.
 
 [http://en.wikipedia.org/wiki/Kendall_tau_rank_correlation_coefficient](http://en.wikipedia.org/wiki/Kendall_tau_rank_correlation_coefficient)
 
+#### Test Results -- 20121127
 
+Commit: cd18ca368cbb631ba4748b53c4e470f451d00d78
+
+Evaluate the direct sampled output:
+
+```
+-0.0152395941749
+```
+
+Using the test `autoweight.py` script:
+
+```
+0.108986274117
+```
+
+Sort by time:
+
+```
+-0.0151794217999
+```
+
+Well done! I'm half on the way. 
+
+At least, my manual configured weights are meaningful. 
+Let's try to train the weights automatically. 
+
+```
+{
+  "preference": [
+    ["gold", "mark"],
+    ["silver", "mark"],
+    ["bronze", "mark"],
+    ["mark", "news"],
+    ["mark", "interesting"],
+    ["mark", "null"],
+    ["news", "null"],
+    ["news", "interesting"],
+    ["interesting", "null"],
+    ["null", "nonsense"],
+    ["null", "shit"]
+  ]
+}
+```
+
+#### Test Results -- 20121127 -- modified Kendall
+
+Modifed Kenall. Only count non-equally tagged pairs. 
+
+Commit: 954c97d3985928e08b786993f3309047664ae5c1
+
+   * My manual weight: 0.170852101217
+   * Time ordering: -0.0237963989246
