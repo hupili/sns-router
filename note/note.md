@@ -217,3 +217,17 @@ Commit: 954c97d3985928e08b786993f3309047664ae5c1
 
    * My manual weight: 0.170852101217
    * Time ordering: -0.0237963989246
+
+#### Test Results -- 20121128
+
+Commit: 8c8d1ea6cf6095a6d6ea64f79f41d2da12aa1ef3
+
+The evaluation process is very slow. 
+Major cause is the enumeration of all possible pairs. 
+In this commit, all derived ordered pairs are precomputed. 
+Then in the evaluation stage, we don't have to 
+enumerate all pairs of messages anymore. 
+We only enumerate those known relations and check whether 
+their order in the ranking list is correct. 
+
+
