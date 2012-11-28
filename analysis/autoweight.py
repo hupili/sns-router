@@ -17,10 +17,12 @@ from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
 
 from feature import Feature
+from evaluation import evaluate_kendall
 
 import base64
 import hashlib
 import sqlite3
+import random
 
 class AutoWeight(object):
     """docstring for AutoWeight"""
@@ -49,11 +51,15 @@ class AutoWeight(object):
 if __name__ == '__main__':
     import time
     begin = time.time()
-    samples = Serialize.loads(open('samples.pickle').read())
+    data = Serialize.loads(open('samples.pickle').read())
+    samples = data['samples']
+    order = data['order']
     end = time.time()
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
     aw = AutoWeight()
-    ranked = sorted(samples, key = lambda m: aw._weight_feature(m), reverse = True)
-    #ranked = sorted(samples, key = lambda m: m.parsed.time)
-    open('ranking.pickle', 'w').write(Serialize.dumps(ranked))
+    ranked = sorted(samples.values(), key = lambda m: random.random())
+    #ranked = sorted(samples.values(), key = lambda m: m.parsed.time)
+    #ranked = sorted(samples.values(), key = lambda m: aw._weight_feature(m), reverse = True)
+    ret = evaluate_kendall([m.msg_id for m in ranked], order)
+    print ret
