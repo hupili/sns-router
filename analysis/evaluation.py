@@ -67,6 +67,7 @@ def evaluate_kendall(ranking, order):
     #            if is_inorder(rel_gt, ranking[j].tags.keys(), ranking[i].tags.keys()):
     #                disc += 1
 
+    print "total:%d; conc:%d; disc:%d" % (total, conc, disc)
     return 1.0 * (conc - disc) / total
 
 if __name__ == '__main__':

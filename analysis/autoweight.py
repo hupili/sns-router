@@ -23,30 +23,116 @@ import base64
 import hashlib
 import sqlite3
 import random
+import numpy
 
 class AutoWeight(object):
     """docstring for AutoWeight"""
-    def __init__(self):
+
+    def __init__(self, samples, order, init_weight):
         super(AutoWeight, self).__init__()
-        
-    feature_weight = {
-    "contain_link": 1.00000, 
-    "test": 1.00000, 
-    "text_len": 0, 
-    "text_orig_len": 0.01, 
-    "topic_interesting": 30, 
-    "topic_news": 30, 
-    "topic_nonsense": -100, 
-    "topic_tech": 500
-    }
+        self.feature_name = init_weight.keys()
+        self.w = self.initw(init_weight)
+        self.X = self.msg2X(samples)
+        self.samples = samples
+        self.order = order
 
     def _weight_feature(self, msg):
         Feature.extract(msg)
         score = 0.0
-        for (f, w) in self.feature_weight.items():
+        for i in range(len(self.feature_name)):
+            f = self.feature_name[i]
+            w = self.w[i]
             if f in msg.feature:
                 score += msg.feature[f] * w
         return score
+
+    def _S(self, t):
+        return 1.0 / (1.0 + numpy.exp(-t))
+    
+    def _dS(self, t):
+        return self._S(t) * (1 - self._S(t))
+
+    def _Gij(self, xi, xj, w):
+        '''
+        Compute per pair gradient
+
+        xi, xj: data points
+        w: current weights
+
+        xi, xj, and w are all lists
+        '''
+        inner = 0.0
+        for k in range(len(w)):
+            inner += (xi[k] - xj[k]) * w[k]
+        part1 = 2.0 * (self._S(inner) - 1)
+        part2 = self._dS(inner)
+        ret = []
+        for k in range(len(w)):
+            ret.append(xi[k] - xj[k])
+        return ret
+
+    def _G(self, X, w, order):
+        '''
+        Compute full gradient
+
+        X: A dict of data points. 
+           * values: One data point is a list.
+           * keys: msg_id from database. 
+        w: current weights
+        order: derived order (edges on priority graph)
+        '''
+        G = [0] * len(w)
+        for (i,j) in order:
+            Gij = self._Gij(X[i], X[j], w)
+            for k in range(len(w)):
+                G[k] += Gij[k]
+        return G
+
+    def initw(self, init_weight):
+        w = []
+        for name in self.feature_name:
+            w.append(init_weight[name])
+        return w
+
+    def msg2X(self, samples):
+        '''
+        Convert messages to data matrix format. 
+
+        X: A dict. See explanation of _G()
+        '''
+        X = {}
+        for m in samples.values():
+            Feature.extract(m)
+            x = []
+            for name in self.feature_name:
+                x.append(m.feature[name])
+            X[m.msg_id] = x
+        return X
+
+    def gd(self):
+        a = 10 ** -7
+        g = self._G(self.X, self.w, self.order)
+        print "Gradient: %s" % g
+        new_w = []
+        for i in range(len(self.w)):
+            new_w.append(self.w[i] - a * g[i])
+        self.w = new_w
+
+    def train(self):
+        print "---- init ----"
+        print "Weights: %s" % self.w
+        print "Kendall's coefficient: %.3f" % self.evaluate()
+        for i in range(5):
+            print "Round %d" % i
+            self.gd()
+            print "Weights: %s" % self.w
+            print "Kendall's coefficient: %.3f" % self.evaluate()
+
+    def evaluate(self):
+        ranked = sorted(self.samples.values(), key = lambda m: self._weight_feature(m), reverse = True)
+        ret = evaluate_kendall([m.msg_id for m in ranked], order)
+        return ret
+
 
 if __name__ == '__main__':
     import time
@@ -57,9 +143,19 @@ if __name__ == '__main__':
     end = time.time()
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
-    aw = AutoWeight()
-    ranked = sorted(samples.values(), key = lambda m: random.random())
+    aw = AutoWeight(samples, order, {
+        "contain_link": 1.00000, 
+        "test": 1.00000, 
+        "text_len": 0, 
+        "text_orig_len": 0.01, 
+        "topic_interesting": 30, 
+        "topic_news": 30, 
+        "topic_nonsense": -100, 
+        "topic_tech": 500
+    })
+    aw.train()
+    #ranked = sorted(samples.values(), key = lambda m: random.random())
     #ranked = sorted(samples.values(), key = lambda m: m.parsed.time)
     #ranked = sorted(samples.values(), key = lambda m: aw._weight_feature(m), reverse = True)
-    ret = evaluate_kendall([m.msg_id for m in ranked], order)
-    print ret
+    #ret = evaluate_kendall([m.msg_id for m in ranked], order)
+    #print ret
