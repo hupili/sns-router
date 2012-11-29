@@ -911,3 +911,51 @@ The observation:
    * If one want to find reasonably close direction to gradient, 
    maybe 5% of the samples is a cutting point. 
 
+Test of SGD:
+
+```
+$ipython -i autoweight.py
+[DEBUG][20121129-220413][tencent.py][<module>][12]../snsapi/snsapi/plugin/tencent.pyc plugged!
+[DEBUG][20121129-220413][sina.py][<module>][13]../snsapi/snsapi/plugin/sina.pyc plugged!
+[DEBUG][20121129-220413][renren.py][<module>][17]../snsapi/snsapi/plugin/renren.pyc plugged!
+[DEBUG][20121129-220413][rss.py][<module>][18]../snsapi/snsapi/plugin/rss.pyc plugged!
+[DEBUG][20121129-220413][sqlite.py][<module>][18]../snsapi/snsapi/plugin_trial/sqlite.pyc plugged!
+[DEBUG][20121129-220413][twitter.py][<module>][19]../snsapi/snsapi/plugin_trial/twitter.pyc plugged!
+[DEBUG][20121129-220413][emails.py][<module>][34]../snsapi/snsapi/plugin_trial/emails.pyc plugged!
+Load finish. Time elapsed: 0.593
+[INFO][20121129-220651][utils.py][report_time_wrapper][173]Function 'sgd' execution time: 155.57
+
+In [1]: aw.evaluate()
+total:168095; conc:147070; disc:21025
+Out[1]: 0.74984383830572
+```
+
+   * 10 * len(order) rounds, about 1.6 million rounds. 
+   * The same amount of time can only be used to train 5 rounds of full gradient descent. 
+   * The SGD trained weights are larger in magnitude..
+
+```
+$cat weights.json
+{
+  "topic_nonsense": -4.8443593614580225, 
+  "topic_interesting": -0.10935901251138158, 
+  "text_orig_len": -0.078293811712158684, 
+  "contain_link": 0.04371088430921076, 
+  "test": -0.010714179481840625, 
+  "topic_tech": 5.1596085987427465, 
+  "text_len": 0.16374785502596151, 
+  "topic_news": 1.323680773249819
+}
+
+$cat weights.json.back 
+{
+  "topic_nonsense": -0.65756949578471435, 
+  "topic_interesting": -0.01187361884409446, 
+  "text_orig_len": 0.011541341040050229, 
+  "contain_link": 0.010435263366801817, 
+  "test": -0.010714179481840625, 
+  "topic_tech": 0.98361416982880168, 
+  "text_len": 0.018320958241528143, 
+  "topic_news": 0.29200466227781985
+}
+```

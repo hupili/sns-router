@@ -264,17 +264,37 @@ class AutoWeight(object):
             X[m.msg_id] = x
         return X
 
+    @snsapi_utils.report_time
     def sgd(self):
-        g = self.learner.gradient(self.X, self.w, self.order)
-        g = self.normalize(g)
-        print "Full Gradient: %s" % g
-        o = sorted(self.order, key = lambda m: random.random())
-        num = 10
-        while num < len(o):
-            g_partial = self.learner.gradient(self.X, self.w, o[0:num])
-            print "Number of samples: %d" % num
-            print "Partial Gradient: %s" % self.normalize(g_partial)
-            num *= 2
+        M = len(self.order)
+        for i in range(0, M * 10):
+            tmp = []
+            tmp.append(self.order[random.randint(0, M-1)])
+            g = self.learner.gradient(self.X, self.w, tmp)
+            g = self.normalize(g)
+            #print "Stochastic Gradient: %s" % g
+            #a = self.learner.line_search(self.X, self.w, self.order, g)
+            a = 1e-3
+            #print "Step size: %.7f" % a
+            new_w = []
+            for i in range(len(self.w)):
+                new_w.append(self.w[i] - a * g[i])
+            self.w = new_w
+            #print "Kendall's score %.7f" % self.evaluate()
+
+        return self.dictw()
+        
+        # Pre Test sections
+        #g = self.learner.gradient(self.X, self.w, self.order)
+        #g = self.normalize(g)
+        #print "Full Gradient: %s" % g
+        #o = sorted(self.order, key = lambda m: random.random())
+        #num = 10
+        #while num < len(o):
+        #    g_partial = self.learner.gradient(self.X, self.w, o[0:num])
+        #    print "Number of samples: %d" % num
+        #    print "Partial Gradient: %s" % self.normalize(g_partial)
+        #    num *= 2
     
     def gd(self):
         g = self.learner.gradient(self.X, self.w, self.order)
@@ -363,9 +383,10 @@ if __name__ == '__main__':
         iweight = None
     aw = AutoWeight(samples, order, iweight, LearnerSigmoid())
 
-    aw.sgd()
+    ret = aw.sgd()
+
     #ret = aw.train()
-    #open('weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))
+    open('weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))
 
     #aw = AutoWeight(samples, order, {
     #    "contain_link": 0.0078408868790964727,
