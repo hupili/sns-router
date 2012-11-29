@@ -235,17 +235,40 @@ if __name__ == '__main__':
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
     aw = AutoWeight(samples, order, {
-        "contain_link": 1.00000, 
-        "test": 1.00000, 
-        "text_len": 0, 
-        "text_orig_len": 0.01, 
-        "topic_interesting": 30, 
-        "topic_news": 30, 
-        "topic_nonsense": -100, 
-        "topic_tech": 500
-    #}, LearnerSquareSigmoid())
+        "contain_link": 0.00000, 
+        "test": 0.00000, 
+        "text_len": 0.0, 
+        "text_orig_len": 0.00, 
+        "topic_interesting": 0.0, 
+        "topic_news": 0.0, 
+        "topic_nonsense": 0.0, 
+        "topic_tech": 0.0
     }, LearnerSigmoid())
+
+    #aw = AutoWeight(samples, order, {
+    #    "contain_link": 1.00000, 
+    #    "test": 1.00000, 
+    #    "text_len": 0, 
+    #    "text_orig_len": 0.01, 
+    #    "topic_interesting": 30, 
+    #    "topic_news": 30, 
+    #    "topic_nonsense": -100, 
+    #    "topic_tech": 500
+    #}, LearnerSigmoid())
+
+    #aw = AutoWeight(samples, order, {
+    #    "contain_link": 1.00000, 
+    #    "test": 1.00000, 
+    #    "text_len": 0, 
+    #    "text_orig_len": 0.01, 
+    #    "topic_interesting": 30, 
+    #    "topic_news": 30, 
+    #    "topic_nonsense": -100, 
+    #    "topic_tech": 500
+    #}, LearnerSquareSigmoid())
+
     aw.train()
+
     #ranked = sorted(samples.values(), key = lambda m: random.random())
     #ranked = sorted(samples.values(), key = lambda m: m.parsed.time)
     #ranked = sorted(samples.values(), key = lambda m: aw._weight_feature(m), reverse = True)
