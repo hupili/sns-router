@@ -263,6 +263,18 @@ class AutoWeight(object):
                 x.append(m.feature[name])
             X[m.msg_id] = x
         return X
+
+    def sgd(self):
+        g = self.learner.gradient(self.X, self.w, self.order)
+        g = self.normalize(g)
+        print "Full Gradient: %s" % g
+        o = sorted(self.order, key = lambda m: random.random())
+        num = 10
+        while num < len(o):
+            g_partial = self.learner.gradient(self.X, self.w, o[0:num])
+            print "Number of samples: %d" % num
+            print "Partial Gradient: %s" % self.normalize(g_partial)
+            num *= 2
     
     def gd(self):
         g = self.learner.gradient(self.X, self.w, self.order)
@@ -300,12 +312,13 @@ class AutoWeight(object):
             ret[self.feature_name[i]] = self.w[i]
         return ret
 
+    @snsapi_utils.report_time
     def train(self):
         print "---- init ----"
         print "Weights: %s" % self.w
         print "Kendall's coefficient: %.3f" % self.evaluate()
         last_obj = self.learner.objective(self.X, self.w, self.order)
-        for i in range(0, 20):
+        for i in range(0, 1):
             print "Round %d" % i
             print "Kendall's coefficient: %.3f" % self.evaluate()
             ret = self.gd()
@@ -350,8 +363,9 @@ if __name__ == '__main__':
         iweight = None
     aw = AutoWeight(samples, order, iweight, LearnerSigmoid())
 
-    ret = aw.train()
-    open('weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))
+    aw.sgd()
+    #ret = aw.train()
+    #open('weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))
 
     #aw = AutoWeight(samples, order, {
     #    "contain_link": 0.0078408868790964727,
