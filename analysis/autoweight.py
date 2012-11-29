@@ -25,27 +25,26 @@ import sqlite3
 import random
 import numpy
 
-class AutoWeight(object):
-    """docstring for AutoWeight"""
+class Learner(object):
+    """
+    Base class for a learner
+    
+    One can implement different objective and gradient here
+    """
+    def __init__(self):
+        super(Learner, self).__init__()
 
-    def __init__(self, samples, order, init_weight):
-        super(AutoWeight, self).__init__()
-        self.feature_name = init_weight.keys()
-        self.w = self.initw(init_weight)
-        self.X = self.msg2X(samples)
-        self.samples = samples
-        self.order = order
+    def objective(self, X, w, order):
+        pass
 
-    def _weight_feature(self, msg):
-        Feature.extract(msg)
-        score = 0.0
-        for i in range(len(self.feature_name)):
-            f = self.feature_name[i]
-            w = self.w[i]
-            if f in msg.feature:
-                score += msg.feature[f] * w
-        return score
-
+    def gradient(self, X, w, order):
+        pass
+        
+class LearnerSquareSigmoid(object):
+    """docstring for LearnerSquareSigmoid"""
+    def __init__(self):
+        super(LearnerSquareSigmoid, self).__init__()
+        
     def _S(self, t):
         return 1.0 / (1.0 + numpy.exp(-t))
     
@@ -68,7 +67,7 @@ class AutoWeight(object):
         part2 = self._dS(inner)
         ret = []
         for k in range(len(w)):
-            ret.append(xi[k] - xj[k])
+            ret.append((xi[k] - xj[k]) * part1 * part2)
         return ret
 
     def _G(self, X, w, order):
@@ -87,6 +86,40 @@ class AutoWeight(object):
             for k in range(len(w)):
                 G[k] += Gij[k]
         return G
+
+    def objective(self, X, w, order):
+        o = 0.0
+        for (i,j) in order:
+            inner = 0.0
+            for k in range(len(w)):
+                inner += (X[i][k] - X[j][k]) * w[k]
+            o += (self._S(inner) - 1) ** 2
+        return o
+
+    def gradient(self, X, w, order):
+        return self._G(X, w, order)
+
+class AutoWeight(object):
+    """docstring for AutoWeight"""
+
+    def __init__(self, samples, order, init_weight, learner):
+        super(AutoWeight, self).__init__()
+        self.feature_name = init_weight.keys()
+        self.w = self.initw(init_weight)
+        self.X = self.msg2X(samples)
+        self.samples = samples
+        self.order = order
+        self.learner = learner
+
+    def _weight_feature(self, msg):
+        Feature.extract(msg)
+        score = 0.0
+        for i in range(len(self.feature_name)):
+            f = self.feature_name[i]
+            w = self.w[i]
+            if f in msg.feature:
+                score += msg.feature[f] * w
+        return score
 
     def initw(self, init_weight):
         w = []
@@ -110,13 +143,14 @@ class AutoWeight(object):
         return X
 
     def gd(self):
-        a = 10 ** -7
-        g = self._G(self.X, self.w, self.order)
+        a = 10 ** -8
+        g = self.learner.gradient(self.X, self.w, self.order)
         print "Gradient: %s" % g
         new_w = []
         for i in range(len(self.w)):
             new_w.append(self.w[i] - a * g[i])
         self.w = new_w
+        print "New objective %.3f" % self.learner.objective(self.X, self.w, self.order)
 
     def train(self):
         print "---- init ----"
@@ -152,7 +186,7 @@ if __name__ == '__main__':
         "topic_news": 30, 
         "topic_nonsense": -100, 
         "topic_tech": 500
-    })
+    }, LearnerSquareSigmoid())
     aw.train()
     #ranked = sorted(samples.values(), key = lambda m: random.random())
     #ranked = sorted(samples.values(), key = lambda m: m.parsed.time)
