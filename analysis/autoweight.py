@@ -39,8 +39,65 @@ class Learner(object):
 
     def gradient(self, X, w, order):
         pass
+
+class LearnerSigmoid(Learner):
+    def __init__(self):
+        super(LearnerSigmoid, self).__init__()
         
-class LearnerSquareSigmoid(object):
+    def _S(self, t):
+        return 1.0 / (1.0 + numpy.exp(-t))
+    
+    def _dS(self, t):
+        return self._S(t) * (1 - self._S(t))
+
+    def _Gij(self, xi, xj, w):
+        '''
+        Compute per pair gradient
+
+        xi, xj: data points
+        w: current weights
+
+        xi, xj, and w are all lists
+        '''
+        inner = 0.0
+        for k in range(len(w)):
+            inner += (xi[k] - xj[k]) * w[k]
+        part2 = self._dS(inner)
+        ret = []
+        for k in range(len(w)):
+            ret.append(-(xi[k] - xj[k]) * part2)
+        return ret
+
+    def _G(self, X, w, order):
+        '''
+        Compute full gradient
+
+        X: A dict of data points. 
+           * values: One data point is a list.
+           * keys: msg_id from database. 
+        w: current weights
+        order: derived order (edges on priority graph)
+        '''
+        G = [0] * len(w)
+        for (i,j) in order:
+            Gij = self._Gij(X[i], X[j], w)
+            for k in range(len(w)):
+                G[k] += Gij[k]
+        return G
+
+    def objective(self, X, w, order):
+        o = 0.0
+        for (i,j) in order:
+            inner = 0.0
+            for k in range(len(w)):
+                inner += (X[i][k] - X[j][k]) * w[k]
+            o += 1 - self._S(inner)
+        return o
+
+    def gradient(self, X, w, order):
+        return self._G(X, w, order)
+        
+class LearnerSquareSigmoid(Learner):
     """docstring for LearnerSquareSigmoid"""
     def __init__(self):
         super(LearnerSquareSigmoid, self).__init__()
@@ -143,7 +200,7 @@ class AutoWeight(object):
         return X
 
     def gd(self):
-        a = 10 ** -8
+        a = 10 ** -7
         g = self.learner.gradient(self.X, self.w, self.order)
         print "Gradient: %s" % g
         new_w = []
@@ -186,7 +243,8 @@ if __name__ == '__main__':
         "topic_news": 30, 
         "topic_nonsense": -100, 
         "topic_tech": 500
-    }, LearnerSquareSigmoid())
+    #}, LearnerSquareSigmoid())
+    }, LearnerSigmoid())
     aw.train()
     #ranked = sorted(samples.values(), key = lambda m: random.random())
     #ranked = sorted(samples.values(), key = lambda m: m.parsed.time)
