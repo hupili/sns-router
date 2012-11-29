@@ -45,7 +45,10 @@ class LearnerSigmoid(Learner):
         super(LearnerSigmoid, self).__init__()
         
     def _S(self, t):
-        return 1.0 / (1.0 + numpy.exp(-t))
+        #coeff = 10.0
+        coeff = 100.0
+        #coeff = 1000.0
+        return 1.0 / (1.0 + numpy.exp(- coeff * t))
     
     def _dS(self, t):
         return self._S(t) * (1 - self._S(t))
@@ -100,6 +103,10 @@ class LearnerSigmoid(Learner):
 
     def gradient(self, X, w, order):
         return self._G(X, w, order)
+
+    def line_search(self, X, w, order, g):
+        a = 10e-2
+        return a
         
 class LearnerSquareSigmoid(Learner):
     """docstring for LearnerSquareSigmoid"""
@@ -224,17 +231,18 @@ class AutoWeight(object):
                 x.append(m.feature[name])
             X[m.msg_id] = x
         return X
-
+    
     def gd(self):
-        a = 1e-2
         g = self.learner.gradient(self.X, self.w, self.order)
         g = self.normalize(g)
         print "Gradient: %s" % g
+        a = self.learner.line_search(self.X, self.w, self.order, g)
         new_w = []
         for i in range(len(self.w)):
             new_w.append(self.w[i] - a * g[i])
+        self.w = new_w
         #self.w = self.normalize(new_w)
-        self.w = self.normalize_sum(new_w)
+        #self.w = self.normalize_sum(new_w)
         print "New objective %.3f" % self.learner.objective(self.X, self.w, self.order)
         print "New weights: %s" % self.w
 
@@ -283,6 +291,13 @@ if __name__ == '__main__':
     }, LearnerSigmoid())
     
     aw.w = aw.initw(init_weight_kendall(aw.feature_name, aw.samples, aw.order))
+
+    # A better manual weight under current feature configuration
+    #In [17]: aw.w = [0.01,-1,1,0,1,0.01,0,0]
+    #In [18]: aw.evaluate()
+    #total:168095; conc:134586; disc:33509
+    #Out[18]: 0.6013087837234897
+
 
     #aw = AutoWeight(samples, order, \
     #        init_weight_kendall(\
