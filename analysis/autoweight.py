@@ -8,10 +8,7 @@ from snsapi.snspocket import SNSPocket
 from snsapi.platform import SQLite
 from snsapi import utils as snsapi_utils
 from snsapi import snstype
-# On my server, pickle uses 24s to load 
-# cPickle uses 6s to load. 
-# very significant
-#from snsapi.utils import Serialize
+from snsapi.utils import json
 import cPickle as Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
@@ -199,12 +196,23 @@ class AutoWeight(object):
 
     def __init__(self, samples, order, init_weight, learner):
         super(AutoWeight, self).__init__()
-        self.feature_name = init_weight.keys()
-        self.w = self.initw(init_weight)
-        self.X = self.msg2X(samples)
         self.samples = samples
         self.order = order
         self.learner = learner
+        if init_weight is None:
+            # Use one of the samples keys as sets of features to be trained. 
+            # This is deprecated. Whenever possible, please init your features
+            # with weight in 'weights.json'
+            m = samples.values()[0]
+            Feature.extract(m)
+            self.feature_name = m.feature.keys()
+        else:
+            self.feature_name = init_weight.keys()
+        self.X = self.msg2X(samples)
+        if init_weight is None:
+            self.w = self.initw(self.init_weight_kendall(self.feature_name, self.samples, self.order))
+        else:
+            self.w = self.initw(init_weight)
 
     def _weight_feature(self, msg):
         Feature.extract(msg)
@@ -238,7 +246,8 @@ class AutoWeight(object):
         w = []
         for name in self.feature_name:
             w.append(init_weight[name])
-        return self.normalize(w)
+        #return self.normalize(w)
+        return w
 
     def msg2X(self, samples):
         '''
@@ -279,31 +288,51 @@ class AutoWeight(object):
         self.w = new_w
         #self.w = self.normalize(new_w)
         #self.w = self.normalize_sum(new_w)
-        print "New objective %.3f" % self.learner.objective(self.X, self.w, self.order)
+        new_obj = self.learner.objective(self.X, self.w, self.order)
+        print "New objective %.3f" % new_obj
         print "New weights: %s" % self.w
+
+        return {'alpha': a, 'new_obj': new_obj}
+
+    def dictw(self):
+        ret = {}
+        for i in range(len(self.w)):
+            ret[self.feature_name[i]] = self.w[i]
+        return ret
 
     def train(self):
         print "---- init ----"
         print "Weights: %s" % self.w
         print "Kendall's coefficient: %.3f" % self.evaluate()
-        for i in range(1):
+        last_obj = self.learner.objective(self.X, self.w, self.order)
+        for i in range(0, 20):
             print "Round %d" % i
-            self.gd()
             print "Kendall's coefficient: %.3f" % self.evaluate()
+            ret = self.gd()
+            alpha = ret['alpha']
+            new_obj = ret['new_obj']
+            if alpha < 1.0 / len(self.X) or float(last_obj - new_obj) / last_obj < 1e-4:
+                # Termination criterion
+                #    1. Step size too small, we are in the unstable region. 
+                #    2. relative improvement in objective is too small. 
+                break
+            last_obj = new_obj
+        print "Training terminated!"
+        return self.dictw()
 
     def evaluate(self):
         ranked = sorted(self.samples.values(), key = lambda m: self._weight_feature(m), reverse = True)
         ret = evaluate_kendall([m.msg_id for m in ranked], order)
         return ret
 
-def init_weight_kendall(feature_name, samples, order):
-    iw = {}
-    for f in feature_name:
-        print "Feature: %s" % f
-        k = evaluate_kendall(sorted(samples.keys(), key = lambda m: samples[m].feature[f], reverse = True), order)
-        iw[f] = k
-    print "Init weight by Kendall: %s" % iw
-    return iw
+    def init_weight_kendall(self, feature_name, samples, order):
+        iw = {}
+        for f in feature_name:
+            print "Feature: %s" % f
+            k = evaluate_kendall(sorted(samples.keys(), key = lambda m: samples[m].feature[f], reverse = True), order)
+            iw[f] = k
+        print "Init weight by Kendall: %s" % iw
+        return iw
 
 
 if __name__ == '__main__':
@@ -315,18 +344,36 @@ if __name__ == '__main__':
     end = time.time()
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
-    aw = AutoWeight(samples, order, {
-        "contain_link": 1, 
-        "test": 1, 
-        "text_len": 1, 
-        "text_orig_len": 1, 
-        "topic_interesting": 1, 
-        "topic_news": 1, 
-        "topic_nonsense": 1, 
-        "topic_tech": 1
-    }, LearnerSigmoid())
-    
-    aw.w = aw.initw(init_weight_kendall(aw.feature_name, aw.samples, aw.order))
+    try:
+        iweight = json.loads(open('weights.json', 'r').read())
+    except:
+        iweight = None
+    aw = AutoWeight(samples, order, iweight, LearnerSigmoid())
+
+    ret = aw.train()
+    open('weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))
+
+    #aw = AutoWeight(samples, order, {
+    #    "contain_link": 0.0078408868790964727,
+    #    "test": -0.010018632810608647,
+    #    "text_len": 0.022876906485363457,
+    #    "text_orig_len": 0.013349336089729578,
+    #    "topic_interesting": -0.014742666918673125,
+    #    "topic_news": 0.26628657037192432,
+    #    "topic_nonsense": -0.5638193540760924,
+    #    "topic_tech": 0.88305683823732894
+    #}, LearnerSigmoid())
+
+    #aw = AutoWeight(samples, order, {
+    #    "contain_link": 1, 
+    #    "test": 1, 
+    #    "text_len": 1, 
+    #    "text_orig_len": 1, 
+    #    "topic_interesting": 1, 
+    #    "topic_news": 1, 
+    #    "topic_nonsense": 1, 
+    #    "topic_tech": 1
+    #}, LearnerSigmoid())
 
     # A better manual weight under current feature configuration
     #In [17]: aw.w = [0.01,-1,1,0,1,0.01,0,0]
