@@ -688,49 +688,49 @@ Enumerating alpha from 1 to 1e-5:
 
 ```
 ---- init ----
-Weights: [0.19755029211071207, -0.4058633123582101, 0.18813916239110384, -0.010017402260646801, 0.62284213644917719, 0.28330726493395048, 0.37950992428994551, 0.38539466143140266]
-total:168095; conc:128322; disc:39773
+Weights: [0.19735242677037174, -0.40564755187639734, 0.18817324412988931, -0.010019216930611401, 0.62292158654711305, 0.28336971282318324, 0.37957867317742727, 0.38546447634932451]
+total:168095; conc:128301; disc:39794
 Kendall's coefficient: 0.527
 Round 0
-Gradient: [0.37641658810035988, 0.17894260879157745, 0.69449507081509143, 0.0, -0.50708175016666646, 0.026404893321830988, 0.2125283792647534, 0.20240864566257957]
-origin line obj: 48668.1503858
+Gradient: [0.3755815667599362, 0.17886901601627472, 0.69551976437592533, 0.0, -0.5066417996025917, 0.026515967899250259, 0.21213834311111374, 0.2020023091597298]
+origin line obj: 39951.9697935
 alpha: 1.0000000
-line obj: 48668.1503858
+line obj: 72789.5292472
 alpha: 0.5000000
-line obj: 45780.5873981
+line obj: 45695.2904692
 alpha: 0.2500000
-line obj: 43381.5423497
+line obj: 38553.1236712
 alpha: 0.1250000
-line obj: 41670.6083076
+line obj: 38612.3581747
 alpha: 0.0625000
-line obj: 40833.7505661
+line obj: 39195.5105322
 alpha: 0.0312500
-line obj: 40393.8101709
+line obj: 39548.5353718
 alpha: 0.0156250
-line obj: 40171.5885118
+line obj: 39740.3564080
 alpha: 0.0078125
-line obj: 40060.3710787
+line obj: 39844.1091423
 alpha: 0.0039062
-line obj: 40005.0661855
+line obj: 39897.6322799
 alpha: 0.0019531
-line obj: 39977.5550956
+line obj: 39924.7132338
 alpha: 0.0009766
-line obj: 39963.8447329
+line obj: 39938.3212732
 alpha: 0.0004883
-line obj: 39957.0021807
+line obj: 39945.1406826
 alpha: 0.0002441
-line obj: 39953.5842347
+line obj: 39948.5540513
 alpha: 0.0001221
-line obj: 39951.8761162
+line obj: 39950.2616289
 alpha: 0.0000610
-line obj: 39951.0222733
+line obj: 39951.1156382
 alpha: 0.0000305
-line obj: 39950.5954062
+line obj: 39951.5426977
 alpha: 0.0000153
-line obj: 39950.3819864
-New objective 39950.062
-New weights: [0.19754742028005334, -0.40586467758197103, 0.18813386381420857, -0.010017402260646801, 0.62284600517590882, 0.28330706348060175, 0.37950830282709103, 0.38539311717598834]
-total:168095; conc:128321; disc:39774
+line obj: 39951.7562411
+New objective 39951.863
+New weights: [0.19734956131042025, -0.40564891653868995, 0.1881679377352026, -0.010019216930611401, 0.62292545191728821, 0.28336951052240278, 0.3795770546903125, 0.3854629351940117]
+total:168095; conc:128318; disc:39777
 Kendall's coefficient: 0.527
 ```
 
@@ -792,6 +792,18 @@ Kendall 0.5267557
 
 Observation:
 
+   * Sigmoid objective minimum happens earlier than Kendall's coefficient 
+   maximimum (with decreasing step size from 1 to 1e-5). 
+   * Heuristic: find farthest descending step size and shy away by half? 
+   * When farthest descending step size is less than 
+   1 over number of samples, we may stop. 
+   (obj abs value is in proportion to number of pairs; 
+   so is gradient magnitude; but we already normalized it?;
+   try...)
+
+{evermd:comment:begin}
+The following are false observations... 
+The data is fixed as above. 
    * The objective value of Sigmoid is monotonic in this testing. 
    * The Kendall's value is not monotonic or quadratic. 
    However, it is nearly quadratic. 
@@ -802,3 +814,4 @@ Observation:
    if the alpha is less than 1 over number of samples, 
    it may generate poor result. 
    (good in Sigmoid objective but poor Kendall's correlation)
+{evermd:comment:end}

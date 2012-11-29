@@ -120,10 +120,10 @@ class LearnerSigmoid(Learner):
                 a += (X[i][k] - X[j][k]) * w[k]
                 b += (X[i][k] - X[j][k]) * g[k]
             coeff[(i,j)] = {'a': a, 'b': b}
-        print "origin line obj: %.7f" % self._line_obj(coeff, alpha)
+        print "origin line obj: %.7f" % self._line_obj(coeff, 0.0)
         while alpha > 1e-5:
             print "alpha: %.7f" % alpha
-            print "line obj: %.7f" % self._line_obj(coeff, alpha)
+            print "line obj: %.7f" % self._line_obj(coeff, -alpha)
             alpha /= 2
         return alpha
         
@@ -256,18 +256,18 @@ class AutoWeight(object):
         g = self.normalize(g)
         print "Gradient: %s" % g
 
-        #a = self.learner.line_search(self.X, self.w, self.order, g)
-        a = 1.0
-        while a > 1e-5:
-            print "Current alpha: %.7f" % a 
-            tmp_w = []
-            for i in range(len(self.w)):
-                tmp_w.append(self.w[i] - a * g[i])
-            old_w = self.w
-            self.w = tmp_w
-            print "Kendall %.7f" % self.evaluate()
-            self.w = old_w
-            a /= 2
+        a = self.learner.line_search(self.X, self.w, self.order, g)
+        #a = 1.0
+        #while a > 1e-5:
+        #    print "Current alpha: %.7f" % a 
+        #    tmp_w = []
+        #    for i in range(len(self.w)):
+        #        tmp_w.append(self.w[i] - a * g[i])
+        #    old_w = self.w
+        #    self.w = tmp_w
+        #    print "Kendall %.7f" % self.evaluate()
+        #    self.w = old_w
+        #    a /= 2
 
         new_w = []
         for i in range(len(self.w)):
