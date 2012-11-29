@@ -480,7 +480,7 @@ Kendall's coefficient: 0.520
 The starting point is better in objective. 
 With step size `10e-2` and gradient normalized, this does not improve further...
 
-#### Test Result -- 20121128
+#### Test Result -- 20121129
 
 New findings!
 
@@ -624,7 +624,7 @@ The observation:
    is smaller. 
    * How to set a reasonable Sigmoid coefficient??
 
-#### Test Result -- 20121128
+#### Test Result -- 20121129
 
 Let's see what happens for larger step size. 
 a = 1e-1. 
@@ -680,4 +680,125 @@ total:168095; conc:133457; disc:34638
 Kendall's coefficient: 0.588
 ```
 
+#### Test Result -- 20121129
 
+Try line search for a suitable alpha. 
+
+Enumerating alpha from 1 to 1e-5:
+
+```
+---- init ----
+Weights: [0.19755029211071207, -0.4058633123582101, 0.18813916239110384, -0.010017402260646801, 0.62284213644917719, 0.28330726493395048, 0.37950992428994551, 0.38539466143140266]
+total:168095; conc:128322; disc:39773
+Kendall's coefficient: 0.527
+Round 0
+Gradient: [0.37641658810035988, 0.17894260879157745, 0.69449507081509143, 0.0, -0.50708175016666646, 0.026404893321830988, 0.2125283792647534, 0.20240864566257957]
+origin line obj: 48668.1503858
+alpha: 1.0000000
+line obj: 48668.1503858
+alpha: 0.5000000
+line obj: 45780.5873981
+alpha: 0.2500000
+line obj: 43381.5423497
+alpha: 0.1250000
+line obj: 41670.6083076
+alpha: 0.0625000
+line obj: 40833.7505661
+alpha: 0.0312500
+line obj: 40393.8101709
+alpha: 0.0156250
+line obj: 40171.5885118
+alpha: 0.0078125
+line obj: 40060.3710787
+alpha: 0.0039062
+line obj: 40005.0661855
+alpha: 0.0019531
+line obj: 39977.5550956
+alpha: 0.0009766
+line obj: 39963.8447329
+alpha: 0.0004883
+line obj: 39957.0021807
+alpha: 0.0002441
+line obj: 39953.5842347
+alpha: 0.0001221
+line obj: 39951.8761162
+alpha: 0.0000610
+line obj: 39951.0222733
+alpha: 0.0000305
+line obj: 39950.5954062
+alpha: 0.0000153
+line obj: 39950.3819864
+New objective 39950.062
+New weights: [0.19754742028005334, -0.40586467758197103, 0.18813386381420857, -0.010017402260646801, 0.62284600517590882, 0.28330706348060175, 0.37950830282709103, 0.38539311717598834]
+total:168095; conc:128321; disc:39774
+Kendall's coefficient: 0.527
+```
+
+Corresponding Kendall's coefficient:
+
+```
+Current alpha: 1.0000000
+total:168095; conc:95496; disc:72599
+Kendall 0.1362146
+Current alpha: 0.5000000
+total:168095; conc:122589; disc:45506
+Kendall 0.4585681
+Current alpha: 0.2500000
+total:168095; conc:129753; disc:38342
+Kendall 0.5438056
+Current alpha: 0.1250000
+total:168095; conc:129697; disc:38398
+Kendall 0.5431393
+Current alpha: 0.0625000
+total:168095; conc:129061; disc:39034
+Kendall 0.5355721
+Current alpha: 0.0312500
+total:168095; conc:128704; disc:39391
+Kendall 0.5313245
+Current alpha: 0.0156250
+total:168095; conc:128567; disc:39528
+Kendall 0.5296945
+Current alpha: 0.0078125
+total:168095; conc:128439; disc:39656
+Kendall 0.5281716
+Current alpha: 0.0039062
+total:168095; conc:128377; disc:39718
+Kendall 0.5274339
+Current alpha: 0.0019531
+total:168095; conc:128341; disc:39754
+Kendall 0.5270056
+Current alpha: 0.0009766
+total:168095; conc:128324; disc:39771
+Kendall 0.5268033
+Current alpha: 0.0004883
+total:168095; conc:128315; disc:39780
+Kendall 0.5266962
+Current alpha: 0.0002441
+total:168095; conc:128318; disc:39777
+Kendall 0.5267319
+Current alpha: 0.0001221
+total:168095; conc:128319; disc:39776
+Kendall 0.5267438
+Current alpha: 0.0000610
+total:168095; conc:128319; disc:39776
+Kendall 0.5267438
+Current alpha: 0.0000305
+total:168095; conc:128320; disc:39775
+Kendall 0.5267557
+Current alpha: 0.0000153
+total:168095; conc:128320; disc:39775
+Kendall 0.5267557
+```
+
+Observation:
+
+   * The objective value of Sigmoid is monotonic in this testing. 
+   * The Kendall's value is not monotonic or quadratic. 
+   However, it is nearly quadratic. 
+   There seem to be some good points in the middle. 
+   * Heuristics for upperbound: 
+   if the alpha reduce Sigmoid objective by 10%, the point may be OK. 
+   * Heuristics for lowerbound:
+   if the alpha is less than 1 over number of samples, 
+   it may generate poor result. 
+   (good in Sigmoid objective but poor Kendall's correlation)

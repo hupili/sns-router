@@ -104,9 +104,28 @@ class LearnerSigmoid(Learner):
     def gradient(self, X, w, order):
         return self._G(X, w, order)
 
+    def _line_obj(self, coeff, alpha):
+        o = 0.0
+        for v in coeff.values():
+            o += 1 - self._S(v['a'] + v['b'] * alpha)
+        return o
+
     def line_search(self, X, w, order, g):
-        a = 10e-2
-        return a
+        alpha = 1.0
+        coeff = {}
+        for (i,j) in order:
+            a = 0.0
+            b = 0.0
+            for k in range(len(w)):
+                a += (X[i][k] - X[j][k]) * w[k]
+                b += (X[i][k] - X[j][k]) * g[k]
+            coeff[(i,j)] = {'a': a, 'b': b}
+        print "origin line obj: %.7f" % self._line_obj(coeff, alpha)
+        while alpha > 1e-5:
+            print "alpha: %.7f" % alpha
+            print "line obj: %.7f" % self._line_obj(coeff, alpha)
+            alpha /= 2
+        return alpha
         
 class LearnerSquareSigmoid(Learner):
     """docstring for LearnerSquareSigmoid"""
@@ -236,7 +255,20 @@ class AutoWeight(object):
         g = self.learner.gradient(self.X, self.w, self.order)
         g = self.normalize(g)
         print "Gradient: %s" % g
-        a = self.learner.line_search(self.X, self.w, self.order, g)
+
+        #a = self.learner.line_search(self.X, self.w, self.order, g)
+        a = 1.0
+        while a > 1e-5:
+            print "Current alpha: %.7f" % a 
+            tmp_w = []
+            for i in range(len(self.w)):
+                tmp_w.append(self.w[i] - a * g[i])
+            old_w = self.w
+            self.w = tmp_w
+            print "Kendall %.7f" % self.evaluate()
+            self.w = old_w
+            a /= 2
+
         new_w = []
         for i in range(len(self.w)):
             new_w.append(self.w[i] - a * g[i])
@@ -250,7 +282,7 @@ class AutoWeight(object):
         print "---- init ----"
         print "Weights: %s" % self.w
         print "Kendall's coefficient: %.3f" % self.evaluate()
-        for i in range(5):
+        for i in range(1):
             print "Round %d" % i
             self.gd()
             print "Kendall's coefficient: %.3f" % self.evaluate()
