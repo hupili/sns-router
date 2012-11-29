@@ -218,7 +218,7 @@ Commit: 954c97d3985928e08b786993f3309047664ae5c1
    * My manual weight: 0.170852101217
    * Time ordering: -0.0237963989246
 
-#### Test Results -- 20121128
+#### Test Results -- 20121128 -- improve evaluation stage
 
 Commit: 8c8d1ea6cf6095a6d6ea64f79f41d2da12aa1ef3
 
@@ -230,7 +230,7 @@ enumerate all pairs of messages anymore.
 We only enumerate those known relations and check whether 
 their order in the ranking list is correct. 
 
-#### Test Results -- 20121128
+#### Test Results -- 20121128 -- Squared Sigmoid Objective
 
 Sample running, 5 rounds, squared sigmoid objective. 
 Gradient descent at least works, but not working very efficient. 
@@ -295,7 +295,7 @@ More to do:
    How about coordinate descent? 
    * Stochastic Coordinate Descent? 
 
-#### Test Results -- 20121129
+#### Test Results -- 20121129 -- Sigmoid Objective
 
 Use step size of fixed `1e-7`. 
 Sigmoid performs 
@@ -341,7 +341,7 @@ Kendall's coefficient: 0.661
 
 The Sigmoid one is easier for line search along gradient. 
 
-#### Test Results -- 20121129
+#### Test Results -- 20121129 -- 0 init weights
 
 Initialize from all zero's, step size is fixed `1e-7`. 
 Seems to converge to Kendall's value about `0.416`. 
@@ -393,7 +393,7 @@ total:168095; conc:118983; disc:49112
 Kendall's coefficient: 0.416
 ```
 
-#### Test Result -- 20121129
+#### Test Result -- 20121129 -- test single feature Kendall
 
 I tried different step size and start from all zero or all one's. 
 I also tried to normalize the weight every step.  
@@ -480,7 +480,7 @@ Kendall's coefficient: 0.520
 The starting point is better in objective. 
 With step size `10e-2` and gradient normalized, this does not improve further...
 
-#### Test Result -- 20121129
+#### Test Result -- 20121129 -- Sigmoid coefficient
 
 New findings!
 
@@ -624,7 +624,7 @@ The observation:
    is smaller. 
    * How to set a reasonable Sigmoid coefficient??
 
-#### Test Result -- 20121129
+#### Test Result -- 20121129 -- larger step size
 
 Let's see what happens for larger step size. 
 a = 1e-1. 
@@ -680,7 +680,7 @@ total:168095; conc:133457; disc:34638
 Kendall's coefficient: 0.588
 ```
 
-#### Test Result -- 20121129
+#### Test Result -- 20121129 -- line search preliminaries
 
 Try line search for a suitable alpha. 
 
@@ -815,3 +815,46 @@ The data is fixed as above.
    it may generate poor result. 
    (good in Sigmoid objective but poor Kendall's correlation)
 {evermd:comment:end}
+
+#### Test Results -- 20121129 -- line search result
+
+Using the above heuristics of line search, 
+the Kendall's score increases faster. 
+
+After 16 rounds it almost stablize. 
+
+   * Kendall's score increase from `0.527` to `0.738`. 
+   * Sigmoid obj decrease from `39931.0853697` to `24971.187`. 
+
+```
+In [16]: aw.train()
+---- init ----
+Weights: [-0.017157887058912642, -0.56173540874714678, 0.0087083069096290915, -0.010018632810608647, 0.88148520903254768, 0.26612641551563387, 0.023717826182296578, 0.014411146440627057]
+total:168095; conc:145935; disc:22160
+Kendall's coefficient: 0.736
+Round 0
+Gradient: [-0.61829635590131649, 0.53349000421007464, 0.22205952781635052, 0.0, -0.4023370764240084, -0.040999643210360301, 0.21527544241487911, 0.27182344982975487]
+origin line obj: 24994.3785284
+alpha: 1.0000000
+line obj: 83804.6184326
+alpha: 0.5000000
+line obj: 68125.9086417
+alpha: 0.2500000
+line obj: 50020.6710651
+alpha: 0.1250000
+line obj: 34388.6512812
+alpha: 0.0625000
+line obj: 27018.2106409
+alpha: 0.0312500
+line obj: 25317.5793520
+alpha: 0.0156250
+line obj: 25001.7431056
+alpha: 0.0078125
+line obj: 24963.8388651
+New objective 24971.187
+New weights: [-0.014742666918673125, -0.5638193540760924, 0.0078408868790964727, -0.010018632810608647, 0.88305683823732894, 0.26628657037192432, 0.022876906485363457, 0.013349336089729578]
+total:168095; conc:146053; disc:22042
+Kendall's coefficient: 0.738
+```
+
+

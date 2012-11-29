@@ -120,11 +120,15 @@ class LearnerSigmoid(Learner):
                 a += (X[i][k] - X[j][k]) * w[k]
                 b += (X[i][k] - X[j][k]) * g[k]
             coeff[(i,j)] = {'a': a, 'b': b}
-        print "origin line obj: %.7f" % self._line_obj(coeff, 0.0)
-        while alpha > 1e-5:
+        orig_line_obj = self._line_obj(coeff, 0.0)
+        print "origin line obj: %.7f" % orig_line_obj
+        while alpha > 1.0 / len(X):
             print "alpha: %.7f" % alpha
-            print "line obj: %.7f" % self._line_obj(coeff, -alpha)
+            cur_line_obj = self._line_obj(coeff, -alpha)
+            print "line obj: %.7f" % cur_line_obj
             alpha /= 2
+            if cur_line_obj < orig_line_obj:
+                return alpha
         return alpha
         
 class LearnerSquareSigmoid(Learner):
