@@ -267,7 +267,8 @@ class AutoWeight(object):
     @snsapi_utils.report_time
     def sgd(self):
         M = len(self.order)
-        for i in range(0, M * 10):
+        last_obj = self.learner.objective(self.X, self.w, self.order)
+        for i in range(1, M):
             tmp = []
             tmp.append(self.order[random.randint(0, M-1)])
             g = self.learner.gradient(self.X, self.w, tmp)
@@ -277,10 +278,19 @@ class AutoWeight(object):
             a = 1e-3
             #print "Step size: %.7f" % a
             new_w = []
-            for i in range(len(self.w)):
-                new_w.append(self.w[i] - a * g[i])
+            for k in range(len(self.w)):
+                new_w.append(self.w[k] - a * g[k])
             self.w = new_w
+            #print "%d" % i
+            if i % 10000 == 0:
+                print "Round %d" % i
+                new_obj = self.learner.objective(self.X, new_w, self.order)
+                print "Obj: %.7f" % new_obj
+                if abs(new_obj - last_obj) / last_obj < 1e-4:
+                    print "Small gap, termiante"
+                    break
             #print "Kendall's score %.7f" % self.evaluate()
+        print "Terminate due to maximum number of rounds"
 
         return self.dictw()
         
