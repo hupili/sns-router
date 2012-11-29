@@ -393,4 +393,89 @@ total:168095; conc:118983; disc:49112
 Kendall's coefficient: 0.416
 ```
 
+#### Test Result -- 20121129
 
+I tried different step size and start from all zero or all one's. 
+I also tried to normalize the weight every step.  
+There does not seem to be a reasonable result. 
+It seems a slight deviation from all zero can result in about `0.44` Kendall's score. 
+However, further gradient descent does not help too much. 
+
+One thought is to test the Kendall's coefficient of single feature first!
+It looks they are informative!
+
+```
+In [4]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['topic_tech'], reverse = True), order)
+total:168095; conc:140038; disc:28057
+Out[4]: 0.6661768642731789
+
+In [5]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['topic_news'], reverse = True), order)
+total:168095; conc:109511; disc:58584
+Out[5]: 0.30296558493708914
+
+In [6]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['topic_interesting'], reverse = True), order)
+total:168095; conc:101805; disc:66290
+Out[6]: 0.21127933608971117
+
+In [7]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['topic_nonsense'], reverse = True), order)
+total:168095; conc:47570; disc:120525
+Out[7]: -0.4340105297599572
+
+In [9]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['text_len'], reverse = True), order)
+total:168095; conc:118163; disc:49932
+Out[9]: 0.40590737380647846
+
+In [10]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['text_orig_len'], reverse = True), order)
+total:168095; conc:118692; disc:49403
+Out[10]: 0.41220143371307894
+
+In [11]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['contain_link'], reverse = True), order)
+total:168095; conc:100960; disc:67135
+Out[11]: 0.20122549748654034
+
+In [12]: evaluate_kendall(sorted(aw.samples, key = lambda m: aw.samples[m].feature['test'], reverse = True), order)
+total:168095; conc:83147; disc:84948
+Out[12]: -0.010714179481840625
+```
+
+So let's try to initialize the weights using single feature Kendall's score. 
+
+```
+---- init ----
+Weights: [0.19758879924347028, -0.40586213285278738, 0.18813345909670323, -0.010017098590780859, 0.62284550332671451, 0.28330980062110195, 0.37949841973768395, 0.38538297848784842]
+total:168095; conc:128318; disc:39777
+Kendall's coefficient: 0.527
+Round 0
+Gradient: [0.023595681932085697, 0.064325781504381077, -0.70953836462429964, 0.0, -0.25831647137155006, -0.017775352939474236, -0.41651307309586683, -0.50133246866779968]
+New objective 77372.319
+New weights: [0.15322004167010889, -0.31560109361580396, 0.15157101895696337, -0.0077770365232156463, 0.48556790670834138, 0.22009297827362451, 0.29786723346891114, 0.30309438215082857]
+total:168095; conc:128226; disc:39869
+Kendall's coefficient: 0.526
+Round 1
+Gradient: [0.022412073880935541, 0.063414438210569149, -0.71060725435866912, 0.0, -0.25652243654572138, -0.017947849363759108, -0.41657016931549856, -0.50085631303992362]
+New objective 78079.109
+New weights: [0.13386734363164007, -0.27669738523623055, 0.13883821611107908, -0.0068046991995074852, 0.42710344954089863, 0.19273251524064799, 0.26427074965984682, 0.26958184635787069]
+total:168095; conc:128105; disc:39990
+Kendall's coefficient: 0.524
+Round 2
+Gradient: [0.022006944682225377, 0.063114714450163326, -0.71089612801191371, 0.0, -0.25596832751649728, -0.01801105484678581, -0.41663628810633435, -0.50072841244329769]
+New objective 78384.410
+New weights: [0.12403155007826666, -0.25737515382876774, 0.135446493404311, -0.0063151111362294505, 0.39874950461738951, 0.17903284711369558, 0.24912345852217496, 0.2548328478534167]
+total:168095; conc:127965; disc:40130
+Kendall's coefficient: 0.523
+Round 3
+Gradient: [0.021839790890864592, 0.063004951399853432, -0.71093848507329982, 0.0, -0.25579584558311502, -0.018040407982776258, -0.41670977145239063, -0.50071535378192411]
+New objective 78513.576
+New weights: [0.11828262444823587, -0.24648053973248094, 0.13618814411142083, -0.0060330256179388676, 0.38338172569934476, 0.17120809312790466, 0.24197648807656205, 0.24823338040169055]
+total:168095; conc:127837; disc:40258
+Kendall's coefficient: 0.521
+Round 4
+Gradient: [0.021763993345352343, 0.06296954253477241, -0.71087998811781583, 0.0, -0.25577382150619787, -0.01805687169648279, -0.41678972793026126, -0.50075026920483057]
+New objective 78561.028
+New weights: [0.11440899303975011, -0.2394582381085501, 0.13885962154862305, -0.0058462073981382801, 0.37398849135680717, 0.16608145336813801, 0.23852229673927386, 0.24539904485926706]
+total:168095; conc:127713; disc:40382
+Kendall's coefficient: 0.520
+```
+
+The starting point is better in objective. 
+With step size `10e-2` and gradient normalized, this does not improve further...

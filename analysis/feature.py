@@ -45,6 +45,11 @@ class Feature(object):
         msg.feature['topic_news'] = Feature._topic(Feature.tdict['news'], msg)
         msg.feature['topic_interesting'] = Feature._topic(Feature.tdict['interesting'], msg)
         msg.feature['topic_nonsense'] = Feature._topic(Feature.tdict['nonsense'], msg)
+        
+        msg.feature['topic_interesting'] /= 0.08772
+        msg.feature['topic_nonsense'] /= 0.25152
+        msg.feature['topic_tech'] /= 0.04399
+        msg.feature['topic_news'] /= 0.37376
 
     @staticmethod
     def face(msg):
@@ -58,6 +63,16 @@ class Feature(object):
             msg.feature['text_orig_len'] = len(msg.parsed.text_orig)
         else:
             msg.feature['text_orig_len'] = 0
+
+        # Normalize
+        max_text_len = 400.0
+        max_text_orig_len = 250.0
+        if msg.feature['text_len'] > max_text_len:
+            msg.feature['text_len'] = max_text_len
+        if msg.feature['text_orig_len'] > max_text_orig_len:
+            msg.feature['text_orig_len'] = max_text_orig_len
+        msg.feature['text_len'] /= max_text_len
+        msg.feature['text_orig_len'] /= max_text_orig_len
 
     @staticmethod
     def link(msg):
@@ -126,6 +141,7 @@ def get_test_case():
             834, #topic nonsense
             21182, #topic nonsense
             5414, #topic nonsense
+            63, #renren long message
             ]
     case = []
     for cid in case_id_list:
