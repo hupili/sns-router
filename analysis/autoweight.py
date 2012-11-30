@@ -306,35 +306,50 @@ class AutoWeight(object):
         #    print "Partial Gradient: %s" % self.normalize(g_partial)
         #    num *= 2
     
+    @snsapi_utils.report_time
     def gd(self):
-        g = self.learner.gradient(self.X, self.w, self.order)
-        g = self.normalize(g)
-        print "Gradient: %s" % g
+        print "---- init ----"
+        print "Weights: %s" % self.w
+        print "Kendall's coefficient: %.3f" % self.evaluate()
 
-        a = self.learner.line_search(self.X, self.w, self.order, g)
-        #a = 1.0
-        #while a > 1e-5:
-        #    print "Current alpha: %.7f" % a 
-        #    tmp_w = []
-        #    for i in range(len(self.w)):
-        #        tmp_w.append(self.w[i] - a * g[i])
-        #    old_w = self.w
-        #    self.w = tmp_w
-        #    print "Kendall %.7f" % self.evaluate()
-        #    self.w = old_w
-        #    a /= 2
+        last_obj = self.learner.objective(self.X, self.w, self.order)
 
-        new_w = []
-        for i in range(len(self.w)):
-            new_w.append(self.w[i] - a * g[i])
-        self.w = new_w
-        #self.w = self.normalize(new_w)
-        #self.w = self.normalize_sum(new_w)
-        new_obj = self.learner.objective(self.X, self.w, self.order)
-        print "New objective %.3f" % new_obj
-        print "New weights: %s" % self.w
+        for i in range(0, 1):
+            print "Round %d" % i
+            print "Kendall's coefficient: %.3f" % self.evaluate()
+            g = self.learner.gradient(self.X, self.w, self.order)
+            g = self.normalize(g)
+            print "Gradient: %s" % g
 
-        return {'alpha': a, 'new_obj': new_obj}
+            alpha = self.learner.line_search(self.X, self.w, self.order, g)
+            #a = 1.0
+            #while a > 1e-5:
+            #    print "Current alpha: %.7f" % a 
+            #    tmp_w = []
+            #    for i in range(len(self.w)):
+            #        tmp_w.append(self.w[i] - a * g[i])
+            #    old_w = self.w
+            #    self.w = tmp_w
+            #    print "Kendall %.7f" % self.evaluate()
+            #    self.w = old_w
+            #    a /= 2
+
+            new_w = []
+            for i in range(len(self.w)):
+                new_w.append(self.w[i] - alpha * g[i])
+            self.w = new_w
+            new_obj = self.learner.objective(self.X, self.w, self.order)
+            print "New objective %.3f" % new_obj
+            print "New weights: %s" % self.w
+            if alpha < 1.0 / len(self.X) or float(last_obj - new_obj) / last_obj < 1e-4:
+                # Termination criterion
+                #    1. Step size too small, we are in the unstable region. 
+                #    2. relative improvement in objective is too small. 
+                break
+            last_obj = new_obj
+
+        print "Training terminated!"
+        return self.dictw()
 
     def dictw(self):
         ret = {}
@@ -344,24 +359,7 @@ class AutoWeight(object):
 
     @snsapi_utils.report_time
     def train(self):
-        print "---- init ----"
-        print "Weights: %s" % self.w
-        print "Kendall's coefficient: %.3f" % self.evaluate()
-        last_obj = self.learner.objective(self.X, self.w, self.order)
-        for i in range(0, 1):
-            print "Round %d" % i
-            print "Kendall's coefficient: %.3f" % self.evaluate()
-            ret = self.gd()
-            alpha = ret['alpha']
-            new_obj = ret['new_obj']
-            if alpha < 1.0 / len(self.X) or float(last_obj - new_obj) / last_obj < 1e-4:
-                # Termination criterion
-                #    1. Step size too small, we are in the unstable region. 
-                #    2. relative improvement in objective is too small. 
-                break
-            last_obj = new_obj
-        print "Training terminated!"
-        return self.dictw()
+        return self.sgd()
 
     def evaluate(self):
         ranked = sorted(self.samples.values(), key = lambda m: self._weight_feature(m), reverse = True)
@@ -388,15 +386,15 @@ if __name__ == '__main__':
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
     try:
-        iweight = json.loads(open('weights.json', 'r').read())
+        iweight = json.loads(open('conf/weights.json', 'r').read())
     except:
         iweight = None
     aw = AutoWeight(samples, order, iweight, LearnerSigmoid())
 
-    ret = aw.sgd()
+    #ret = aw.sgd()
 
     #ret = aw.train()
-    open('weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))
+    #open('conf/weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))
 
     #aw = AutoWeight(samples, order, {
     #    "contain_link": 0.0078408868790964727,
