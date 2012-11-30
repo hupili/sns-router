@@ -13,6 +13,7 @@ from snsapi.utils import Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
 from analysis.feature import Feature
+from analysis.score import Score
 
 import base64
 import hashlib
@@ -39,8 +40,9 @@ class SRFEQueue(SNSBase):
         super(SRFEQueue, self).__init__(self.SQLITE_QUEUE_CONF)
         self.sp = snspocket # SNSPocket object
         #self.__mount_default_home_timeline_count()
-        self.queue_conf = json.load(open('conf/queue.json', 'r'))
-        self.feature_weight = self.queue_conf['feature_weight']
+        #self.queue_conf = json.load(open('conf/queue.json', 'r'))
+        #self.feature_weight = self.queue_conf['feature_weight']
+        self.score = Score()
 
     #def __mount_default_home_timeline_count(self):
     #    for ch in self.sp.values():
@@ -419,12 +421,18 @@ class SRFEQueue(SNSBase):
             return {}
 
     def _weight_feature(self, msg):
-        Feature.extract(msg)
-        score = 0.0
-        for (f, w) in self.feature_weight.items():
-            if f in msg.feature:
-                score += msg.feature[f] * w
-        return score
+        #TODO:
+        #    Change the name!
+        #    Final value used to rank should be called "score"
+        #    This is distinguished from "weight". 
+        return self.score.get_score(msg)
+
+    #    Feature.extract(msg)
+    #    score = 0.0
+    #    for (f, w) in self.feature_weight.items():
+    #        if f in msg.feature:
+    #            score += msg.feature[f] * w
+    #    return score
 
     def reweight(self, msg_id):
         cur = self.con.cursor()

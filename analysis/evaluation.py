@@ -26,7 +26,8 @@ import base64
 import hashlib
 import sqlite3
 
-import networkx as nx
+from score import Score
+sc = Score()
 
 def load_pickle(fn):
     import time
@@ -70,7 +71,47 @@ def evaluate_kendall(ranking, order):
     print "total:%d; conc:%d; disc:%d" % (total, conc, disc)
     return 1.0 * (conc - disc) / total
 
+def get_disc_pair(ranking, order):
+    total = len(order)
+    d_rank = {}
+    for i in range(0, len(ranking)):
+        d_rank[ranking[i]] = i
+    l = []
+    for (i,j) in order:
+        if d_rank[i] > d_rank[j]: 
+            l.append((i,j))
+    return l
+
+def np_msg(m):
+    info = {
+            "id": m.msg_id,
+            "score": sc.get_score(m),
+            "tags": m.tags,
+            "feature": m.feature
+            }
+    return "%s\n%s\n\n" % (str(m), str(snsapi_utils.JsonDict(info)))
+
+def nice_printing(message_list, fn_out):
+    with open(fn_out, 'w') as fp:
+        for m in message_list:
+            fp.write(np_msg(m))
+
+def nice_printing_pair(samples, pairs, fn_out):
+    with open(fn_out, 'w') as fp:
+        for (i,j) in pairs:
+            fp.write(">>>>>>\n")
+            fp.write(np_msg(samples[i]))
+            fp.write("======\n")
+            fp.write(np_msg(samples[j]))
+            fp.write("<<<<<<\n")
+
 if __name__ == '__main__':
-    samples = load_pickle('samples.pickle')
-    ret = evaluate_kendall(samples['samples'].keys(), samples['order'])
+    data = load_pickle('samples.pickle')
+    samples = data['samples']
+    order = data['order']
+    ranked = sorted(samples.values(), key = lambda m: sc.get_score(m), reverse = True)
+    ranking = [m.msg_id for m in ranked]
+    ret = evaluate_kendall(ranking, order)
     print ret
+    nice_printing(ranked, 'np-msg-all')
+    nice_printing_pair(samples, get_disc_pair(ranking, order), 'np-msg-disc')

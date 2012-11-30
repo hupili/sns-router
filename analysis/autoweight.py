@@ -193,7 +193,6 @@ class LearnerSquareSigmoid(Learner):
 
 class AutoWeight(object):
     """docstring for AutoWeight"""
-
     def __init__(self, samples, order, init_weight, learner):
         super(AutoWeight, self).__init__()
         self.samples = samples
