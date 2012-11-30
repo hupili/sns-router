@@ -48,7 +48,10 @@ q = SRFEQueue(sp)
 q.connect()
 q.refresh_tags()
 
-jsonconf = json.load(open('conf/srfe.json', 'r'))
+try:
+    jsonconf = json.load(open('conf/srfe.json', 'r'))
+except IOError:
+    jsonconf = {}
 
 class InputThread(threading.Thread):
     def __init__(self, queue):
@@ -124,6 +127,13 @@ def config():
 @check_login
 def config_tag_toggle(tag_id):
     q.tag_toggle(int(tag_id))
+    redirect('/config')
+
+@srfe.route('/config/tag/add', method = 'POST')
+@check_login
+def config_tag_add():
+    name = request.forms.get('name').strip()
+    q.tag_add(name)
     redirect('/config')
 
 @srfe.route('/auth/first/:channel_name')

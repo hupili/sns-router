@@ -375,7 +375,16 @@ class SRFEQueue(SNSBase):
         SET visible=?
         WHERE id=?
         ''', (1 - cur_visible, tag_id))
-        logger.debug("setting tag %d to visibility %d", tag_id, 1 - cur_visible)
+        logger.debug("Set tag %d to visibility %d", tag_id, 1 - cur_visible)
+        self.refresh_tags()
+
+    def tag_add(self, name):
+        cur = self.con.cursor()
+        r = cur.execute('''
+        INSERT INTO tag(name, visible)
+        VALUES(?, ?)
+        ''', (name, 1))
+        logger.debug("Add tag %s", name)
         self.refresh_tags()
 
     def get_tags(self):

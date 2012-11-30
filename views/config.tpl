@@ -1,5 +1,9 @@
 <h1> SNSRouter Config Page </h1>
 
+<p>
+<a href="/">Back to Home</a>
+</p>
+
 <h2> Channel Configs </h2>
 
 <table border=1>
@@ -75,7 +79,7 @@
 %end
 </table>
 
-<h2> Feature Weight </h2>
+<h2> Tags </h2>
 
 <table border=1>
 	<tr>
@@ -100,6 +104,10 @@
 %end
 </table>
 
-<p>
-<a href="/">Back to Home</a>
-</p>
+<form method="POST" action="/config/tag/add">
+	Add new tag:
+	<br />
+	<input type="text" name="name" />
+	<input type="submit" />
+</form>
+
