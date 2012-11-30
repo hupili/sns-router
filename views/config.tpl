@@ -60,6 +60,17 @@
 
 </table>
 
+<h2> Feature Weight </h2>
+
+<table border=1>
+%for (f, w) in q.feature_weight.iteritems():
+	<tr>
+		<td> {{f}} </td>
+		<td> {{w}} </td>
+	</tr>
+%end
+</table>
+
 <p>
 <a href="/">Back to Home</a>
 </p>

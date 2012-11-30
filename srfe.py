@@ -117,7 +117,7 @@ def config():
         info[ch] = sp[ch].jsonconf
         info[ch]['expire_after'] = int(sp[ch].expire_after())
         info[ch]['is_authed'] = sp[ch].is_authed()
-    return {"info": info, "sp": sp, "ap": ap}
+    return {"info": info, "sp": sp, "ap": ap, "q": q}
 
 @srfe.route('/auth/first/:channel_name')
 @view('result')
@@ -150,6 +150,14 @@ def auth_second():
 def raw(msg_id):
     op = "check raw of message %s" % (msg_id)
     result = q.raw(msg_id)
+    return {'operation': op, 'result': result}
+
+@srfe.route('/why/:msg_id')
+@view('result')
+@check_login
+def raw(msg_id):
+    op = "check why of message %s" % (msg_id)
+    result = q.why(msg_id)
     return {'operation': op, 'result': result}
 
 @srfe.route('/flag/:fl/:msg_id')

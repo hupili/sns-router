@@ -36,6 +36,8 @@ Unseen Messages: {{meta['unseen_count']}}
 
 	<b>{{s.parsed.username}}</b> @ <i>{{snsapi_utils.utc2str(s.parsed.time)}}</i>
 	<a target="result" href="/flag/seen/{{!s.msg_id}}">[Mark as Seen]</a>
+	<font color="red"> {{s.weight}} </font> 
+	<a href="/why/{{!s.msg_id}}" > why? </a>
 	<p>
 	{{s.parsed.text}}
 	<br />

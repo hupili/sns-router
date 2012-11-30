@@ -250,7 +250,7 @@ class SRFEQueue(SNSBase):
         cur = self.con.cursor()
         
         r = cur.execute('''
-        SELECT id,time,userid,username,text,pyobj FROM msg  
+        SELECT id,time,userid,username,text,pyobj,weight FROM msg  
         WHERE flag='unseen'
         ORDER BY time DESC LIMIT ?
         ''', (count,))
@@ -259,6 +259,7 @@ class SRFEQueue(SNSBase):
         for m in r:
             obj = self._str2pyobj(m[5])
             obj.msg_id = m[0]
+            obj.weight = m[6]
             message_list.append(obj)
         #for m in r:
         #    message_list.append(self.Message({
@@ -278,7 +279,7 @@ class SRFEQueue(SNSBase):
         cur = self.con.cursor()
         
         r = cur.execute('''
-        SELECT id,time,userid,username,text,pyobj FROM msg  
+        SELECT id,time,userid,username,text,pyobj,weight FROM msg  
         WHERE flag='unseen' AND time>?
         ORDER BY weight DESC LIMIT ?
         ''', (latest_time, count))
@@ -287,6 +288,7 @@ class SRFEQueue(SNSBase):
         for m in r:
             obj = self._str2pyobj(m[5])
             obj.msg_id = m[0]
+            obj.weight = m[6]
             message_list.append(obj)
 
         return message_list
@@ -319,6 +321,19 @@ class SRFEQueue(SNSBase):
         ''', (msg_id,))
 
         return self._str2pyobj(list(r)[0][0]).raw
+
+    def why(self, msg_id):
+        cur = self.con.cursor()
+        
+        r = cur.execute('''
+        SELECT pyobj FROM msg  
+        WHERE id=?
+        ''', (msg_id,))
+
+        m = self._str2pyobj(list(r)[0][0])
+        Feature.extract(m)
+
+        return m.feature
 
     def flag(self, message, fl):
         '''
