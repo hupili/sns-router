@@ -46,6 +46,7 @@ srfe = Bottle()
 
 q = SRFEQueue(sp)
 q.connect()
+q.refresh_tags()
 
 jsonconf = json.load(open('conf/srfe.json', 'r'))
 
@@ -118,6 +119,12 @@ def config():
         info[ch]['expire_after'] = int(sp[ch].expire_after())
         info[ch]['is_authed'] = sp[ch].is_authed()
     return {"info": info, "sp": sp, "ap": ap, "q": q}
+
+@srfe.route('/config/tag/toggle/:tag_id')
+@check_login
+def config_tag_toggle(tag_id):
+    q.tag_toggle(int(tag_id))
+    redirect('/config')
 
 @srfe.route('/auth/first/:channel_name')
 @view('result')

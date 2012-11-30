@@ -87,7 +87,9 @@ class SRFEQueue(SNSBase):
         cur.execute("""
         CREATE TABLE tag (
         id INTEGER PRIMARY KEY, 
-        name INTEGER 
+        name INTEGER, 
+        visible INTEGER,
+        parent INTEGER
         )
         """)
 
@@ -365,16 +367,43 @@ class SRFEQueue(SNSBase):
         self.log("[flag]%s;%s;%s" % (msg_id, fl, ret))
         return ret
 
+    def tag_toggle(self, tag_id):
+        cur_visible = self.tags_all[tag_id]['visible']
+        cur = self.con.cursor()
+        r = cur.execute('''
+        UPDATE tag
+        SET visible=?
+        WHERE id=?
+        ''', (1 - cur_visible, tag_id))
+        logger.debug("setting tag %d to visibility %d", tag_id, 1 - cur_visible)
+        self.refresh_tags()
+
     def get_tags(self):
-        if not hasattr(self, '_tags'):
-            self._tags = {}
-            cur = self.con.cursor()
-            r = cur.execute('''
-            SELECT id,name FROM tag  
-            ''')
-            for t in cur:
-                self._tags[t[0]] = t[1]
-        return self._tags
+        '''
+        Only return visible tags
+
+        '''
+        return self.tags_visible
+
+    def get_all_tags(self):
+        return self.tags_all
+
+    def refresh_tags(self):
+        self.tags_all = {}
+        self.tags_visible = {}
+        cur = self.con.cursor()
+        r = cur.execute('''
+        SELECT id,name,visible,parent FROM tag  
+        ''')
+        for t in cur:
+            self.tags_all[t[0]] = {
+                    "id": t[0],
+                    "name": t[1], 
+                    "visible": t[2],
+                    "parent": t[3], 
+                    }
+            if t[2] == 1:
+                self.tags_visible[t[0]] = t[1]
 
     def tag(self, message, tg):
         '''
@@ -480,6 +509,7 @@ if __name__ == '__main__':
 
     q = SRFEQueue(sp)
     q.connect()
+    q.refresh_tags()
     #q.input()
 
     #print sp.home_timeline()

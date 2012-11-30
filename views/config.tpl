@@ -63,10 +63,39 @@
 <h2> Feature Weight </h2>
 
 <table border=1>
-%for (f, w) in q.feature_weight.iteritems():
+	<tr>
+		<th> Feature </th>
+		<th> Weight </th>
+	</tr>
+%for (f, w) in q.score.feature_weight.iteritems():
 	<tr>
 		<td> {{f}} </td>
 		<td> {{w}} </td>
+	</tr>
+%end
+</table>
+
+<h2> Feature Weight </h2>
+
+<table border=1>
+	<tr>
+		<th> id </th>
+		<th> name </th>
+		<th> visible </th>
+		<th> parent </th>
+		<th> Toggle </th>
+	</tr>
+%for t in q.tags_all.values():
+	<tr>
+		<td> {{t['id']}} </td>
+		<td> {{t['name']}} </td>
+		<td> {{t['visible']}} </td>
+		<td> {{t['parent']}} </td>
+		<td>
+			<a href="/config/tag/toggle/{{t['id']}}">
+				Toggle
+			</a>
+		</td>
 	</tr>
 %end
 </table>
