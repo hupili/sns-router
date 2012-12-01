@@ -959,3 +959,23 @@ $cat weights.json.back
   "topic_news": 0.29200466227781985
 }
 ```
+
+#### Test Results -- 20121201 -- null tag
+
+This commit is to fix the null tag bug. 
+In my test deployment, I created a tag called "null". 
+Now "null" is a preserved tag for the system. 
+Users can create a tag called "null" but it's no effect in the training. 
+
+Before fixing, the number of pairs derived is:
+
+```
+total:254291; conc:223382; disc:30909
+```
+
+After:
+
+```
+total:923371; conc:807918; disc:115453
+```
+

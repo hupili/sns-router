@@ -44,7 +44,10 @@ def select_samples(message):
 
     for m in null_msg:
         if random.random() < prob:
-            m.tags = {"null": 1}
+            #m.tags = {"null": 1}
+            # All tag id is greater than or equal to 1. 
+            # 0 is reserved as "null" tag if the user has not defined one. 
+            m.tags = {0: 1}
             #candidates.append(m)
             candidates[m.msg_id] = m
 
@@ -63,6 +66,11 @@ def get_gt_relation():
     preference = json_autoweight['preference']
     # tag name to id
     tag_mapping = json.load(open('tag_mapping.json'))
+    #if not 'null' in tag_mapping:
+    #    tag_mapping['null'] = 0 
+    # Force 0 to be the 'null' tag_id
+    # User defined 'null' is not effective. 
+    tag_mapping['null'] = 0 
     edges = []
     for p in preference:
         if p[0] in tag_mapping and p[1] in tag_mapping:

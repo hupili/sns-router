@@ -25,6 +25,7 @@ class Score(object):
             fn = 'conf/weights.json'
         self.feature_weight = json.loads(open(fn, 'r').read())
         self.feature_name = self.feature_weight.keys()
+        logger.info("Loaded weights: %s", self.feature_weight)
 
     def get_score(self, msg):
         Feature.extract(msg)
