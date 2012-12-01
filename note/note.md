@@ -998,4 +998,84 @@ Testing: 0.745766362807
 Does not see very strong overfitting phenomenon. 
 So I do not consider regularization for now. 
 
+#### Test Results -- 20121201 -- add new feature
+
+Test add "echo" feature. 
+
+After adding echo tag to partial relation graph, more relations are derived:
+
+```
+Training samples: 807
+Training order: 224602
+Testing samples: 808
+Testing order: 230139
+```
+
+First round of GD:
+
+```
+{'contain_link': 0.0081270005166864858,
+'echo': -0.023510000798363007,
+'test': -0.010714179481840625,
+'text_len': -0.053384960002645095,
+'text_orig_len': 0.063083392774866201,
+'topic_interesting': 0.10888488215231651,
+'topic_news': 0.39813412019592981,
+'topic_nonsense': -2.0146057775262007,
+'topic_tech': 2.5379988552605517}
+```
+
+2nd round of GD:
+
+```
+{'contain_link': 0.019822972501529292,
+'echo': -0.032339012166108294,
+'test': -0.010714179481840625,
+'text_len': -0.058251207129864445,
+'text_orig_len': 0.065154438506658696,
+'topic_interesting': 0.10945369472098074,
+'topic_news': 0.39897043519360736,
+'topic_nonsense': -2.0150917881009582,
+'topic_tech': 2.537593079116276}
+```
+
+3rd round of GD:
+
+```
+{'contain_link': 0.0110405533753417,
+'echo': -0.043498638211027063,
+'test': -0.010714179481840625,
+'text_len': -0.064436792113386515,
+'text_orig_len': 0.06617001569993046,
+'topic_interesting': 0.11046275563381745,
+'topic_news': 0.40006659502034314,
+'topic_nonsense': -2.0159023565099941,
+'topic_tech': 2.5370427739569452}
+```
+
+Start Kendall, end Kendall. 
+
+```
+0.739131568313
+0.7548641597136267
+```
+
+Three rounds of GD is more than 90s now. 
+
+Let's Try SGD.
+
+20W rounds of SGD:
+
+```
+{'contain_link': 0.033797105592615791,
+'echo': -0.28679197707948184,
+'test': -0.010714179481840625,
+'text_len': -0.22235930603667214,
+'text_orig_len': 0.18263521701155958,
+'topic_interesting': 0.98456623929760356,
+'topic_news': 7.6946692334176365,
+'topic_nonsense': -8.083878873451587,
+'topic_tech': 5.9213244215834253}
+```
+
 

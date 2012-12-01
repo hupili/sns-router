@@ -1,0 +1,16 @@
+{
+  "preference": [
+    ["gold", "mark"],
+    ["silver", "mark"],
+    ["bronze", "mark"],
+    ["mark", "news"],
+    ["mark", "interesting"],
+    ["mark", "null"],
+    ["news", "null"],
+    ["news", "interesting"],
+    ["interesting", "null"],
+    ["null", "nonsense"],
+    ["null", "shit"],
+    ["null", "echo"]
+  ]
+}

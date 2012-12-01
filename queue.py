@@ -336,8 +336,13 @@ class SRFEQueue(SNSBase):
 
         m = self._str2pyobj(list(r)[0][0])
         Feature.extract(m)
+        
+        ret = {
+                "feature": m.feature, 
+                "score": self._weight_feature(m)
+                } 
 
-        return m.feature
+        return str(snsapi_utils.JsonDict(ret))
 
     def flag(self, message, fl):
         '''

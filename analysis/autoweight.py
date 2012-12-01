@@ -276,14 +276,15 @@ class AutoWeight(object):
             g = self.normalize(g)
             #print "Stochastic Gradient: %s" % g
             #a = self.learner.line_search(self.X, self.w, self.order, g)
-            a = 1e-3
+            #a = 1e-3
+            a = 1e-2
             #print "Step size: %.7f" % a
             new_w = []
             for k in range(len(self.w)):
                 new_w.append(self.w[k] - a * g[k])
             self.w = new_w
             #print "%d" % i
-            if i % 10000 == 0:
+            if i % 100000 == 0:
                 print "Round %d" % i
                 new_obj = self.learner.objective(self.X, new_w, self.order)
                 print "Obj: %.7f" % new_obj

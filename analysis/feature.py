@@ -18,8 +18,28 @@ import cPickle as Serialize
 import snsapi
 from snsapi import snstype
 from snsapi.snslog import SNSLog as logger
+from snsapi.utils import json
 from wordseg import wordseg_clean
 import re
+
+class FeatureEcho(object):
+    """docstring for FeatureEcho"""
+    def __init__(self, fn_channel = 'conf/channel.json'):
+        super(FeatureEcho, self).__init__()
+
+        self.username = []
+        fields = ["user_name", "username", "address"]    
+        with open(fn_channel) as fp:
+            for ch in json.loads(fp.read()):
+                for f in fields:
+                    if f in ch:
+                        self.username.append(ch[f])
+
+    def get_echo_factor(self, msg):
+        for un in self.username:
+            if msg.parsed['username'].count(un):
+                return 1
+        return 0
 
 class Feature(object):
     """docstring for Feature"""
@@ -27,8 +47,14 @@ class Feature(object):
     # Topic dict
     tdict = Serialize.loads(open('kdb/tdict.pickle').read())
 
+    featureecho = FeatureEcho()
+
     def __init__(self):
         super(Feature, self).__init__()
+
+    @staticmethod
+    def echo(msg):
+        msg.feature['echo'] = Feature.featureecho.get_echo_factor(msg)
 
     @staticmethod
     def _topic(dct, msg):
@@ -101,6 +127,7 @@ class Feature(object):
         Feature.link(msg)
         Feature.face(msg)
         Feature.topic(msg)
+        Feature.echo(msg)
 
         #msg.feature = feature
 
@@ -142,6 +169,7 @@ def get_test_case():
             21182, #topic nonsense
             5414, #topic nonsense
             63, #renren long message
+            32505, #echo 
             ]
     case = []
     for cid in case_id_list:
@@ -161,4 +189,7 @@ def run_test_case():
         print "===="
 
 if __name__ == '__main__':
-    run_test_case()
+    try:
+        run_test_case()
+    except Exception, e:
+        print e
