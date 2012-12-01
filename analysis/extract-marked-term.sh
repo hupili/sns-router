@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Extract terms in marked messages. For simple topic mining. 
 
 mkdir -p data
 

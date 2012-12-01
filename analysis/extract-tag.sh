@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Extract tags for user statistics
 
 mkdir -p data
 

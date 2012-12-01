@@ -1,4 +1,5 @@
 #!/bin/bash
+# Dump log entries for use statistics 
 
 mkdir -p data
 

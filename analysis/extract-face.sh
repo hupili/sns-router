@@ -1,4 +1,5 @@
 #!/bin/bash
+# Extract face icons for further cleanup messages
 
 mkdir -p kdb
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+#Dump text files for word segmentation
 
 mkdir -p data
 

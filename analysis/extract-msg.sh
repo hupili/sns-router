@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-#only run for the latest week
+# Dump message meta info for statistics
+#
+# Only run for the latest week
 #
 
 # octave:1> 60 * 60 * 24 * 7
