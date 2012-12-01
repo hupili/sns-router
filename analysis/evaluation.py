@@ -26,9 +26,6 @@ import base64
 import hashlib
 import sqlite3
 
-from score import Score
-sc = Score()
-
 def load_pickle(fn):
     import time
     begin = time.time()
@@ -82,7 +79,7 @@ def get_disc_pair(ranking, order):
             l.append((i,j))
     return l
 
-def np_msg(m):
+def np_msg(sc, m):
     info = {
             "id": m.msg_id,
             "score": sc.get_score(m),
@@ -91,21 +88,23 @@ def np_msg(m):
             }
     return "%s\n%s\n\n" % (str(m), str(snsapi_utils.JsonDict(info)))
 
-def nice_printing(message_list, fn_out):
+def nice_printing(sc, message_list, fn_out):
     with open(fn_out, 'w') as fp:
         for m in message_list:
-            fp.write(np_msg(m))
+            fp.write(np_msg(sc, m))
 
-def nice_printing_pair(samples, pairs, fn_out):
+def nice_printing_pair(sc, samples, pairs, fn_out):
     with open(fn_out, 'w') as fp:
         for (i,j) in pairs:
             fp.write(">>>>>>\n")
-            fp.write(np_msg(samples[i]))
+            fp.write(np_msg(sc, samples[i]))
             fp.write("======\n")
-            fp.write(np_msg(samples[j]))
+            fp.write(np_msg(sc, samples[j]))
             fp.write("<<<<<<\n")
 
 if __name__ == '__main__':
+    from score import Score
+    sc = Score()
     data = load_pickle('testing_samples.pickle')
     samples = data['samples']
     order = data['order']
@@ -113,9 +112,9 @@ if __name__ == '__main__':
     ranking = [m.msg_id for m in ranked]
     ret = evaluate_kendall(ranking, order)
     print ret
-    nice_printing(ranked, 'np-msg-all')
+    nice_printing(sc, ranked, 'np-msg-all')
 
     # Printing out all disc pairs is too slow. 
     # Deprecated. 
     # Or, one can sample them before printing. 
-    #nice_printing_pair(samples, get_disc_pair(ranking, order), 'np-msg-disc')
+    #nice_printing_pair(sc, samples, get_disc_pair(ranking, order), 'np-msg-disc')

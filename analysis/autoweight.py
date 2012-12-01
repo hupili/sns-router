@@ -48,6 +48,11 @@ class LearnerSigmoid(Learner):
         return 1.0 / (1.0 + numpy.exp(- coeff * t))
     
     def _dS(self, t):
+        # Warning:
+        #     This is not the correct derivative of S, when 
+        #     S has a coefficient other than '1'. For simplicity, 
+        #     we do not multiply the coefficient here. This is 
+        #     because we'll normalize the gradient before use it. 
         return self._S(t) * (1 - self._S(t))
 
     def _Gij(self, xi, xj, w):
