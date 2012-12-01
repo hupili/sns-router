@@ -264,10 +264,12 @@ class AutoWeight(object):
         return X
 
     @snsapi_utils.report_time
-    def sgd(self):
+    def sgd(self, step = None):
         M = len(self.order)
         last_obj = self.learner.objective(self.X, self.w, self.order)
-        for i in range(1, M):
+        if step is None:
+            step = M
+        for i in range(1, step):
             tmp = []
             tmp.append(self.order[random.randint(0, M-1)])
             g = self.learner.gradient(self.X, self.w, tmp)
@@ -306,14 +308,14 @@ class AutoWeight(object):
         #    num *= 2
     
     @snsapi_utils.report_time
-    def gd(self):
+    def gd(self, step = 1):
         print "---- init ----"
         print "Weights: %s" % self.w
         print "Kendall's coefficient: %.3f" % self.evaluate()
 
         last_obj = self.learner.objective(self.X, self.w, self.order)
 
-        for i in range(0, 1):
+        for i in range(0, step):
             print "Round %d" % i
             print "Kendall's coefficient: %.3f" % self.evaluate()
             g = self.learner.gradient(self.X, self.w, self.order)
@@ -340,10 +342,14 @@ class AutoWeight(object):
             new_obj = self.learner.objective(self.X, self.w, self.order)
             print "New objective %.3f" % new_obj
             print "New weights: %s" % self.w
-            if alpha < 1.0 / len(self.X) or float(last_obj - new_obj) / last_obj < 1e-4:
-                # Termination criterion
-                #    1. Step size too small, we are in the unstable region. 
-                #    2. relative improvement in objective is too small. 
+            # Termination criterion
+            #    1. Step size too small, we are in the unstable region. 
+            #    2. relative improvement in objective is too small. 
+            if alpha < 1.0 / len(self.X):
+                print "Terminated due to small alpha"
+                break
+            if float(last_obj - new_obj) / last_obj < 1e-4:
+                print "Terminated due to small improvement in objective"
                 break
             last_obj = new_obj
 
@@ -374,6 +380,15 @@ class AutoWeight(object):
         print "Init weight by Kendall: %s" % iw
         return iw
 
+def load_weights():
+    try:
+        iweight = json.loads(open('conf/weights.json', 'r').read())
+    except:
+        iweight = None
+    return iweight
+
+def save_weights(aw):
+    open('conf/weights.json', 'w').write(str(snsapi_utils.JsonDict(aw.dictw())))
 
 if __name__ == '__main__':
     import time
@@ -384,13 +399,14 @@ if __name__ == '__main__':
     end = time.time()
     print "Load finish. Time elapsed: %.3f" % (end - begin)
 
-    try:
-        iweight = json.loads(open('conf/weights.json', 'r').read())
-    except:
-        iweight = None
+    iweight = load_weights()
     aw = AutoWeight(samples, order, iweight, LearnerSigmoid())
 
-    #ret = aw.sgd()
+    #aw.gd(step = 2)
+    #aw.sgd(step = 10000)
+    
+    #aw.gd(step = 40)
+    #save_weights(aw)
 
     #ret = aw.train()
     #open('conf/weights.json', 'w').write(str(snsapi_utils.JsonDict(ret)))

@@ -114,4 +114,8 @@ if __name__ == '__main__':
     ret = evaluate_kendall(ranking, order)
     print ret
     nice_printing(ranked, 'np-msg-all')
-    nice_printing_pair(samples, get_disc_pair(ranking, order), 'np-msg-disc')
+
+    # Printing out all disc pairs is too slow. 
+    # Deprecated. 
+    # Or, one can sample them before printing. 
+    #nice_printing_pair(samples, get_disc_pair(ranking, order), 'np-msg-disc')
