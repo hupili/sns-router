@@ -18,7 +18,7 @@ mmseg.Dictionary.load_dictionaries()
 
 # ？ is not included. Question mark is a strong symbol 
 # of the type of message. We keep it for future use.  
-_STOPWORD = u"的了是在有而以但一我你他它个啊这…、，！。：【】；（）“”《》\";,./1234567890"
+_STOPWORD = u"的了是在有而以但一我你他它个啊这…、，！。：【】；（）“”《》\";,./1234567890(): ~|/·"
 STOPWORD = {}
 for sw in _STOPWORD:
     STOPWORD[sw] = 1

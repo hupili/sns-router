@@ -1171,3 +1171,158 @@ total:230139; conc:206007; disc:24132
    * Testing Kendall becomes `0.790283263593`. 
 
 Conclusion: our method is robust to noise. 
+
+#### Test Results -- add feature: clean text length
+
+Original feature set. 
+
+Start with empty `weights.json`. 
+That is, let autoweight script to init itself. 
+
+Train 1 million rounds of SGD. 
+
+```
+In [1]: aw.sgd(1000000)
+Round 100000
+Obj: 26001.7187406
+Round 200000
+Obj: 24031.2460625
+Round 300000
+Obj: 23725.1065630
+Round 400000
+Obj: 22442.6170323
+Round 500000
+Obj: 21894.6381623
+Round 600000
+Obj: 21310.9103596
+Round 700000
+Obj: 21193.6697712
+Round 800000
+Obj: 21015.2003613
+Round 900000
+Obj: 21569.7252586
+Terminate due to maximum number of rounds
+[INFO][20121201-180444][utils.py][report_time_wrapper][173]Function 'sgd' execution time: 165.77
+Out[1]: 
+{'contain_link': 0.023405986310782972,
+'echo': -0.41990839756436549,
+'noise': -0.060879099710085038,
+'test': 0.014265233613235857,
+'text_len': -0.18003681553235829,
+'text_orig_len': 0.15591151871600553,
+'topic_interesting': 1.2763684561402988,
+'topic_news': 9.6008443258403116,
+'topic_nonsense': -10.269945924515754,
+'topic_tech': 6.8715082680846633}
+
+$python evaluation.py
+0.789718387583
+```
+
+Add one more feature: clean length. 
+This is the length with '@xxx' and URLs removed.
+
+```
+In [1]: aw.sgd(1000000)
+Round 100000
+Obj: 25208.1151041
+Round 200000
+Obj: 23648.3998749
+Round 300000
+Obj: 24961.1346787
+Round 400000
+Obj: 22259.1246294
+Round 500000
+Obj: 22681.1398709
+Round 600000
+Obj: 21873.6184402
+Round 700000
+Obj: 21088.1935524
+Round 800000
+Obj: 21495.4149170
+Round 900000
+Obj: 21758.0442106
+Terminate due to maximum number of rounds
+[INFO][20121201-182522][utils.py][report_time_wrapper][173]Function 'sgd' execution time: 174.63
+Out[1]: 
+{'contain_link': 0.0780291858610761,
+'echo': -0.38212804689199642,
+'noise': -0.031236283331422823,
+'test': 0.014265233613235857,
+'text_len': -0.017531675297471759,
+'text_len_clean': -0.232390172627086,
+'text_orig_len': 0.15830788072705923,
+'topic_interesting': 1.2042662851275558,
+'topic_news': 9.4086486597431129,
+'topic_nonsense': -10.208358540732377,
+'topic_tech': 6.8684959265266263}
+
+In [2]: aw.evaluate()
+total:224602; conc:202806; disc:21796
+Out[2]: 0.8059144620261618
+
+In [3]: save_weights(aw)
+
+In [4]: quit()
+
+$python evaluation.py
+[INFO][20121201-182555][score.py][load_weight][28]Loaded weights: {'text_len': -0.01753167529747176, 'noise': -0.031236283331422823, 'topic_nonsense': -10.208358540732377, 'echo': -0.3821280468919964, 'contain_link': 0.0780291858610761, 'topic_interesting': 1.2042662851275558, 'topic_news': 9.408648659743113, 'test': 0.014265233613235857, 'topic_tech': 6.868495926526626, 'text_len_clean': -0.232390172627086, 'text_orig_len': 0.15830788072705923}
+Load 'testing_samples.pickle' finish. Time elapsed: 0.539
+total:230139; conc:205744; disc:24395
+0.787997688354
+```
+
+The clean text length is not well developed. 
+Then I removed the face icons.
+
+```
+In [1]: aw.sgd(1000000)
+Round 100000
+Obj: 25397.0501771
+Round 200000
+Obj: 25218.6178529
+Round 300000
+Obj: 23685.1995227
+Round 400000
+Obj: 22387.1577528
+Round 500000
+Obj: 21847.2883801
+Round 600000
+Obj: 21854.9256909
+Round 700000
+Obj: 21868.2446058
+Round 800000
+Obj: 21767.4519476
+Round 900000
+Obj: 21961.8654805
+Terminate due to maximum number of rounds
+[INFO][20121201-185825][utils.py][report_time_wrapper][173]Function 'sgd' execution time: 175.71
+Out[1]: 
+{'contain_link': 0.10476140027762838,
+'echo': -0.29147767277118575,
+'noise': -0.01889903839656645,
+'test': 0.014265233613235857,
+'text_len': -0.057577492160141568,
+'text_len_clean': -0.23489599461911193,
+'text_orig_len': 0.14708057586460344,
+'topic_interesting': 1.2751274459850155,
+'topic_news': 9.6429879521773412,
+'topic_nonsense': -10.221608132423988,
+'topic_tech': 6.8270632401304177}
+
+In [2]: aw.evaluate()
+total:224602; conc:202511; disc:22091
+Out[2]: 0.8032875931647981
+
+$python evaluation.py
+0.782444522658
+```
+
+The single feature's Kendall correlation for modified 'text_len_clean' is higher. 
+However, this does not help too much in the final training result. 
+(numerically speaking)
+
+It's also troublesome to interpret... 
+The longer the worse?.. It's contradictory to my intuition. 
+
+

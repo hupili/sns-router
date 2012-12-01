@@ -23,6 +23,9 @@ from wordseg import wordseg_clean
 import re
 import random
 
+from urlext import url_extract
+from userext import user_extract
+
 class FeatureEcho(object):
     """docstring for FeatureEcho"""
     def __init__(self, fn_channel = 'conf/channel.json'):
@@ -42,6 +45,18 @@ class FeatureEcho(object):
                 return 1
         return 0
 
+class FeatureLength(object):
+    def __init__(self):
+        super(FeatureLength, self).__init__()
+        self.face = []
+        self.add_face_icons('kdb/face.SinaWeiboStatus')
+        self.add_face_icons('kdb/face.RenrenStatus')
+
+    def add_face_icons(self, fn_face):
+        with open(fn_face, 'r') as fp:
+            for f in fp.read().split('\n'):
+                self.face.append(f.decode('utf-8'))
+
 class Feature(object):
     """docstring for Feature"""
 
@@ -49,6 +64,7 @@ class Feature(object):
     tdict = Serialize.loads(open('kdb/tdict.pickle').read())
 
     featureecho = FeatureEcho()
+    featurelength = FeatureLength()
 
     def __init__(self):
         super(Feature, self).__init__()
@@ -87,9 +103,27 @@ class Feature(object):
         msg.feature['noise'] = random.random()
 
     @staticmethod
-    def length(msg):
-        msg.feature['text_len'] = len(msg.parsed.text)
+    def _clean(text):
+        ct = text.encode('utf-8')
+        ct = url_extract(ct)['text']
+        #print ct
+        ct = user_extract(ct)['text']
+        #print ct
+        ct = ct.decode('utf-8')
+        for f in Feature.featurelength.face:
+            ct = ct.replace(f, '')
+        #print ct
+        #_STOPWORD = u"的了是在有而以但一我你他它个啊这…、，！。：【】；（）“”《》\";,./1234567890"
+        from wordseg import _STOPWORD
+        for w in _STOPWORD:
+            ct = ct.replace(w, '')
+        #print ct
+        return ct
 
+    @staticmethod
+    def length(msg):
+        # Literal length
+        msg.feature['text_len'] = len(msg.parsed.text)
         if 'text_orig' in msg.parsed:
             msg.feature['text_orig_len'] = len(msg.parsed.text_orig)
         else:
@@ -104,6 +138,14 @@ class Feature(object):
             msg.feature['text_orig_len'] = max_text_orig_len
         msg.feature['text_len'] /= max_text_len
         msg.feature['text_orig_len'] /= max_text_orig_len
+
+        # Clean length
+        max_text_len_clean = 400.0
+        text_clean = Feature._clean(msg.parsed.text)
+        msg.feature['text_len_clean'] = len(text_clean)
+        if msg.feature['text_len_clean'] > max_text_len_clean:
+            msg.feature['text_len_clean'] = max_text_len_clean
+        msg.feature['text_len_clean'] /= max_text_len_clean
 
     @staticmethod
     def link(msg):
@@ -176,6 +218,7 @@ def get_test_case():
             5414, #topic nonsense
             63, #renren long message
             32505, #echo 
+            5027, #remove face
             ]
     case = []
     for cid in case_id_list:
