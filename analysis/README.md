@@ -2,9 +2,56 @@
 
 ## Usage
 
-link a `srfe.db` file to the current folder. 
+After preparing all the resources, run:
+
+```
+./run-all.sh
+```
+
+You are highly recommended to look into the script first
+and get some impression of what is being done there. 
+Depending on the data amount, it may taks several seconds to several minutes. 
+
+When my `srfe.db` is about 200M, it takes several minutes to complete. 
+
+After this, some preparation work is done. 
+You can use the `exp.py` script to play around. 
+
+```
+python -i exp.py
+```
+
+Messages are abstracted as Python objects. 
+You can start by exploring the following components
+(defaultly loaded when you invoke `exp.py`):
+
+   * `message['message_list']`: 
+   List of `snsapi.snstype.Message` object. 
+   All messages from `srfe.db` will be put in. 
+   * `message['seen_list']`:
+   List of `snsapi.snstype.Message` object. 
+   Only messages with "seen" flag will be put in.
+   * `message['dict_msg']`:
+   Dict of `snsapi.snstype.Message` object. 
+   Key is the `msg_id` in SRFE's SQLite database. 
+   * `message['tag_list']`:
+   List of `(msg_id, tag_id)` pairs dumped from 
+   SRFE's SQLite database. 
+   * `message['dict_msg2tag']`: 
+   Key is `msg_id` and value is a dict of tags. 
+   If message m and tag t appears in `tag_list`, 
+   one can asserts that `message['dict_msg2tag'][m][t] == 1`. 
+   * `message['dict_tag2msg']`: 
+   Reverse for the above. 
 
 ## Resources to prepare
+
+### SRFE DB file
+
+Link a `srfe.db` file to the current folder. 
+It is an SRFE DB file. 
+You can do any preprocessing (e.g. only keep entries within a certain time span). 
+All the mining modules are based on this `srfe.db` file. 
 
 ### Wordseg dict
 
