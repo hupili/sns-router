@@ -393,7 +393,7 @@ def save_weights(aw):
 if __name__ == '__main__':
     import time
     begin = time.time()
-    data = Serialize.loads(open('samples.pickle').read())
+    data = Serialize.loads(open('training_samples.pickle').read())
     samples = data['samples']
     order = data['order']
     end = time.time()

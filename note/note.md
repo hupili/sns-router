@@ -979,3 +979,23 @@ After:
 total:923371; conc:807918; disc:115453
 ```
 
+#### Test Results -- 20121201 -- training and testing
+
+Before this, I was all play on one data set. 
+
+Do three steps of gradient descent. 
+One for training Kendall's score and one line for testing Kendall's score. 
+
+```
+Training: 0.7500665829623712
+Testing: 0.744033951593
+Training: 0.7506658296237111
+Testing: 0.743153996691
+Training: 0.7545847125518396
+Testing: 0.745766362807
+```
+
+Does not see very strong overfitting phenomenon. 
+So I do not consider regularization for now. 
+
+

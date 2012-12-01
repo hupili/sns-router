@@ -24,7 +24,7 @@ import sqlite3
 import random
 
 # Number of 'null' labeled messages to extract
-NULL_SAMPLES = 800
+#NULL_SAMPLES = 800
 
 def select_samples(message):
     candidates = {}
@@ -37,7 +37,9 @@ def select_samples(message):
         else:
             null_msg.append(m)
 
-    prob = float(NULL_SAMPLES) / (len(message['seen_list']) - len(candidates))
+    #prob = float(NULL_SAMPLES) / (len(message['seen_list']) - len(candidates))
+    # Sample same number of null tag messages
+    prob = float(len(candidates)) / (len(message['seen_list']) - len(candidates))
     if prob > 1.0:
         prob = 1.0
     print "Selecting null message probability: %.3f" % (prob)
@@ -115,6 +117,23 @@ def compute_order(samples):
                     order.append((i.msg_id, j.msg_id))
     return order
 
+def divide_samples(samples, training_ratio = 0.5):
+    N = len(samples)
+    shuffled = sorted(samples.keys(), key = lambda m: random.random())
+    training = {}
+    testing = {}
+    for i in range(0, int(N * training_ratio)):
+        training[shuffled[i]] = samples[shuffled[i]]
+    for i in range(int(N * training_ratio), N):
+        testing[shuffled[i]] = samples[shuffled[i]]
+    return {"training": training, "testing": testing}
+
+def save_samples(samples, order, fn_out):
+    open(fn_out, 'w').write(Serialize.dumps({\
+            "samples": samples,\
+            "order": order,\
+            }))
+
 if __name__ == '__main__':
     import time
     begin = time.time()
@@ -124,11 +143,23 @@ if __name__ == '__main__':
 
     print "Start to extract samples"
     samples = select_samples(message)
+
+    print "Divide into training and testing set"
+    ret = divide_samples(samples, 0.5)
+    training_samples = ret['training']
+    testing_samples = ret['testing']
     
-    print "Start to compute order"
-    order = compute_order(samples)
+    print "Start to compute order for training set"
+    training_order = compute_order(training_samples)
+
+    print "Start to compute order for testing set"
+    testing_order = compute_order(testing_samples)
+
+    print "Save to file"
+    save_samples(training_samples, training_order, 'training_samples.pickle')
+    save_samples(testing_samples, testing_order, 'testing_samples.pickle')
     
-    open('samples.pickle', 'w').write(Serialize.dumps({\
-            "samples": samples,\
-            "order": order,\
-            }))
+    print "Training samples: %d" % len(training_samples)
+    print "Training order: %d" % len(training_order)
+    print "Testing samples: %d" % len(testing_samples)
+    print "Testing order: %d" % len(testing_order)

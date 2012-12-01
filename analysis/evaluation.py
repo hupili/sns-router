@@ -106,7 +106,7 @@ def nice_printing_pair(samples, pairs, fn_out):
             fp.write("<<<<<<\n")
 
 if __name__ == '__main__':
-    data = load_pickle('samples.pickle')
+    data = load_pickle('testing_samples.pickle')
     samples = data['samples']
     order = data['order']
     ranked = sorted(samples.values(), key = lambda m: sc.get_score(m), reverse = True)
