@@ -1078,4 +1078,96 @@ Let's Try SGD.
 'topic_tech': 5.9213244215834253}
 ```
 
+#### Test Results -- 20121201 -- noise feature
 
+Add one dimension of noise feature: random.random()
+
+```
+$python evaluation.py
+[INFO][20121201-173423][score.py][load_weight][28]Loaded weights: {'topic_nonsense': -8.083878873451587, 'contain_link': 0.03379710559261579, 'echo': -0.28679197707948184, 'topic_interesting': 0.9845662392976036, 'noise': 10.0, 'topic_news': 7.6946692334176365, 'test': -0.010714179481840625, 'topic_tech': 5.921324421583425, 'text_len': -0.22235930603667214, 'text_orig_len': 0.18263521701155958}
+Load 'testing_samples.pickle' finish. Time elapsed: 0.442
+total:230139; conc:123958; disc:106181
+0.0772446217286
+
+$cat conf/weights.json
+{
+"topic_nonsense": -8.083878873451587, 
+"echo": -0.28679197707948184, 
+"contain_link": 0.033797105592615791, 
+"topic_interesting": 0.98456623929760356, 
+"topic_news": 7.6946692334176365, 
+"test": -0.010714179481840625, 
+"topic_tech": 5.9213244215834253, 
+"text_len": -0.22235930603667214, 
+"text_orig_len": 0.18263521701155958, 
+"noise": 10.0
+}
+
+$ipython -i autoweight.py
+[INFO][20121201-173508][score.py][load_weight][28]Loaded weights: {'topic_nonsense': -8.083878873451587, 'contain_link': 0.03379710559261579, 'echo': -0.28679197707948184, 'topic_interesting': 0.9845662392976036, 'noise': 10.0, 'topic_news': 7.6946692334176365, 'test': -0.010714179481840625, 'topic_tech': 5.921324421583425, 'text_len': -0.22235930603667214, 'text_orig_len': 0.18263521701155958}
+Load finish. Time elapsed: 0.343
+
+In [1]: aw.sgd(200000)
+Round 100000
+Obj: 69246.6287363
+Terminate due to maximum number of rounds
+[INFO][20121201-173600][utils.py][report_time_wrapper][173]Function 'sgd' execution time: 30.88
+Out[1]: 
+{'contain_link': 2.2044055927017983,
+'echo': -1.1956661006988245,
+'noise': 1.3407107730100154,
+'test': -0.010714179481840625,
+'text_len': 1.4942336429946812,
+'text_orig_len': 4.3976766579494964,
+'topic_interesting': 1.2314182268385958,
+'topic_news': 8.066024007548247,
+'topic_nonsense': -9.0202696149079244,
+'topic_tech': 9.1430719900370239}
+
+In [2]: aw.evaluate()
+total:224602; conc:173339; disc:51263
+Out[2]: 0.5435214290166606
+
+In [3]: aw.sgd(200000)
+Round 100000
+Obj: 23536.0026903
+Terminate due to maximum number of rounds
+[INFO][20121201-173653][utils.py][report_time_wrapper][173]Function 'sgd' execution time: 33.60
+Out[3]: 
+{'contain_link': 0.055660525396769717,
+'echo': -0.50567603479053436,
+'noise': -0.01322348599003908,
+'test': -0.010714179481840625,
+'text_len': -0.2502747081741592,
+'text_orig_len': 0.11359552082672011,
+'topic_interesting': 1.380549192080825,
+'topic_news': 8.9611303118169872,
+'topic_nonsense': -10.231808660003605,
+'topic_tech': 9.5383716431950916}
+
+In [4]: aw.evaluate()
+total:224602; conc:202817; disc:21785
+Out[4]: 0.80601241306845
+
+In [5]: save_weights(aw)
+
+In [6]: quit()
+
+$python evaluation.py
+[INFO][20121201-173755][score.py][load_weight][28]Loaded weights: {'noise': -0.01322348599003908, 'topic_nonsense': -10.231808660003605, 'echo': -0.5056760347905344, 'topic_interesting': 1.380549192080825, 'topic_news': 8.961130311816987, 'contain_link': 0.05566052539676972, 'test': -0.010714179481840625, 'topic_tech': 9.538371643195092, 'text_len': -0.2502747081741592, 'text_orig_len': 0.11359552082672011}
+Load 'testing_samples.pickle' finish. Time elapsed: 0.401
+total:230139; conc:206007; disc:24132
+0.790283263593
+```
+
+   * Use [0, 1] uniform distribution to generate noise. 
+   * Manual configure the noise weight to be 10 (relatively large compared to others). 
+   * The testing Kendall descrease from `0.8` to `0.077`. 
+   (expected because the noise is dominating)
+   * After 20W SGD, the weight of noise becomes `1.3407107730100154`. 
+   Training Kendall becomes `0.5435214290166606`. 
+   * After another 20W SGD, the weight of noise becomes `-0.01322348599003908`. 
+   Training Kendall becomes `0.80601241306845`. 
+   * Testing Kendall becomes `0.790283263593`. 
+
+Conclusion: our method is robust to noise. 

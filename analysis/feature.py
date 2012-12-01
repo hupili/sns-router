@@ -21,6 +21,7 @@ from snsapi.snslog import SNSLog as logger
 from snsapi.utils import json
 from wordseg import wordseg_clean
 import re
+import random
 
 class FeatureEcho(object):
     """docstring for FeatureEcho"""
@@ -82,6 +83,10 @@ class Feature(object):
         msg.feature['test'] = 1
 
     @staticmethod
+    def noise(msg):
+        msg.feature['noise'] = random.random()
+
+    @staticmethod
     def length(msg):
         msg.feature['text_len'] = len(msg.parsed.text)
 
@@ -128,6 +133,7 @@ class Feature(object):
         Feature.face(msg)
         Feature.topic(msg)
         Feature.echo(msg)
+        Feature.noise(msg)
 
         #msg.feature = feature
 
