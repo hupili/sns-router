@@ -6,7 +6,10 @@
 
 ./extract-text.sh
 ./extract-term.sh
-./extract-marked-term.sh
+
+# By category tag processing
+
+./extract-marked.sh
 
 # Other
 

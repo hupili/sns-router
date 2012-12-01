@@ -63,6 +63,9 @@ class Feature(object):
     # Topic dict
     tdict = Serialize.loads(open('kdb/tdict.pickle').read())
 
+    # User dict
+    udict = Serialize.loads(open('kdb/udict.pickle').read())
+
     featureecho = FeatureEcho()
     featurelength = FeatureLength()
 
@@ -93,6 +96,20 @@ class Feature(object):
         msg.feature['topic_nonsense'] /= 0.25152
         msg.feature['topic_tech'] /= 0.04399
         msg.feature['topic_news'] /= 0.37376
+
+    @staticmethod
+    def _user(dct, msg):
+        if msg.parsed.username in dct:
+            return dct[msg.parsed.username]
+        else:
+            return 0
+
+    @staticmethod
+    def user(msg):
+        msg.feature['user_tech'] = Feature._user(Feature.udict['tech'], msg)
+        msg.feature['user_news'] = Feature._user(Feature.udict['news'], msg)
+        msg.feature['user_interesting'] = Feature._user(Feature.udict['interesting'], msg)
+        msg.feature['user_nonsense'] = Feature._user(Feature.udict['nonsense'], msg)
 
     @staticmethod
     def face(msg):
@@ -174,6 +191,7 @@ class Feature(object):
         Feature.link(msg)
         Feature.face(msg)
         Feature.topic(msg)
+        Feature.user(msg)
         Feature.echo(msg)
         Feature.noise(msg)
 

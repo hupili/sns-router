@@ -8,7 +8,7 @@ sql="sqlite3 srfe.db"
 
 $sql 'select * from tag' > data/tag.schema
 
-for ((tag_id=1;tag_id<=9;tag_id++))
+for ((tag_id=1;tag_id<=13;tag_id++))
 do
 	$sql "select username from msg,msg_tag where msg_id=msg.id and tag_id=$tag_id" > data/tag.id$tag_id
 	cd data

@@ -1325,4 +1325,67 @@ However, this does not help too much in the final training result.
 It's also troublesome to interpret... 
 The longer the worse?.. It's contradictory to my intuition. 
 
+Although adding the clean length feature does not improve final score, 
+it converges to somewhere around the final point faster. 
+
+#### Test Results -- add user feature
+
+Extract category user frequency and the whole user frequency. 
+Use same way as TF * IDF. 
+
+At present, only last message owner is considered. 
+It should be beneficial to see who are those people in the forwarding sequence
+and who are the originator of the message thread. 
+
+Also train for 100W SGD. 
+
+```
+In [1]: aw.sgd(1000000)
+Round 100000
+Obj: 24470.1189331
+Round 200000
+Obj: 22830.6563732
+Round 300000
+Obj: 21553.3286561
+Round 400000
+Obj: 21597.7579022
+Round 500000
+Obj: 20434.2861231
+Round 600000
+Obj: 20561.4460389
+Round 700000
+Obj: 20395.4779086
+Round 800000
+Obj: 20290.9376082
+Round 900000
+Obj: 20593.4605599
+Terminate due to maximum number of rounds
+[INFO][20121201-210805][utils.py][report_time_wrapper][173]Function 'sgd' execution time: 213.36
+Out[1]: 
+{'contain_link': 0.085096563801526054,
+'echo': -0.21377214865975008,
+'noise': -0.021099168368006623,
+'test': 0.014265233613235857,
+'text_len': -0.16535167862943242,
+'text_len_clean': -0.30012415318050478,
+'text_orig_len': 0.21669382836483575,
+'topic_interesting': 1.2287928824723273,
+'topic_news': 8.6220201965506078,
+'topic_nonsense': -7.9789832438173187,
+'topic_tech': 5.9976735016759939,
+'user_interesting': -0.04414832592552214,
+'user_news': 1.4994420173117848,
+'user_nonsense': -4.4362825212633172,
+'user_tech': 1.2429788059520472}
+
+In [2]: aw.evaluate()
+total:224602; conc:204262; disc:20340
+Out[2]: 0.8188796181690279
+
+$python evaluation.py
+0.805178609449
+```
+
+There are about 0.02 improvement compared to that without user feature. 
+This should be significant enough. 
 

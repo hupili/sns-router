@@ -33,4 +33,6 @@ sort -nr msg.tab.username.freq > msg.tab.username.freq.sortnr
 
 cd -
 
+cp data/msg.tab.username.freq.sortnr kdb/user.all
+
 exit 0 
