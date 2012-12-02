@@ -16,15 +16,14 @@ import cPickle as Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
 
+from feature import Feature
+
 import networkx as nx
 
 import base64
 import hashlib
 import sqlite3
 import random
-
-# Number of 'null' labeled messages to extract
-#NULL_SAMPLES = 800
 
 def select_samples(message):
     candidates = {}
@@ -37,7 +36,6 @@ def select_samples(message):
         else:
             null_msg.append(m)
 
-    #prob = float(NULL_SAMPLES) / (len(message['seen_list']) - len(candidates))
     # Sample same number of null tag messages
     prob = float(len(candidates)) / (len(message['seen_list']) - len(candidates))
     if prob > 1.0:
@@ -134,6 +132,45 @@ def save_samples(samples, order, fn_out):
             "order": order,\
             }))
 
+def export_arff(message_list, ds_name, fn_arff):
+    '''
+    Export message_list to Weka's arff file
+
+    ds_name: the name of data set. Shown in first line 
+             of arff file.
+    '''
+
+    all_tags = json.loads(open('tag_mapping.json').read())
+    all_tags_r = {}
+    for (k, v) in all_tags.iteritems():
+        all_tags_r[v] = k
+    all_tags_r[0] = "null"
+
+    with open(fn_arff, 'w') as fp:
+        fp.write("@relation %s\n\n" % (ds_name))
+        fn = []
+
+        # Write schema
+        fp.write("@attribute id numeric\n")
+        for fe in Feature.feature_extractors:
+            for (f, t) in fe.schema.iteritems():
+                fp.write("@attribute %s %s\n" % (f, t))
+                fn.append(f)
+        fp.write("@attribute class {%s}\n" % (",".join(all_tags.keys())))
+
+        # Write data
+        fp.write("\n\n@data\n")
+        for m in message_list:
+            # Ignore multi tagged messages for simplicity
+            if len(m.tags) == 1:
+                i = str(m.msg_id)
+                t = all_tags_r[m.tags.keys()[0]]
+                Feature.extract(m)
+                fields = [str(m.feature[f]) for f in fn]
+                fields.insert(0, i)
+                fields.append(t)
+                fp.write(",".join(fields) + "\n")
+
 if __name__ == '__main__':
     import time
     begin = time.time()
@@ -143,6 +180,9 @@ if __name__ == '__main__':
 
     print "Start to extract samples"
     samples = select_samples(message)
+    print "Export to weka"
+    export_arff(samples.values(), 'snsrouter', 'weka/snsrouter.arff')
+    print "Export to weka, done"
 
     print "Divide into training and testing set"
     ret = divide_samples(samples, 0.5)
@@ -157,7 +197,9 @@ if __name__ == '__main__':
 
     print "Save to file"
     save_samples(training_samples, training_order, 'training_samples.pickle')
+    export_arff(training_samples.values(), 'snsrouter-training', 'weka/snsrouter-training.arff')
     save_samples(testing_samples, testing_order, 'testing_samples.pickle')
+    export_arff(testing_samples.values(), 'snsrouter-testing', 'weka/snsrouter-testing.arff')
     
     print "Training samples: %d" % len(training_samples)
     print "Training order: %d" % len(training_order)

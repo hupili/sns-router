@@ -65,7 +65,7 @@ class FeatureEcho(FeatureBase):
     def __init__(self, env):
         super(FeatureEcho, self).__init__(env)
 
-        fn_channel = 'conf/channel.json'
+        fn_channel = self.env['dir_conf'] + '/channel.json'
         self.schema = {"echo": "numeric"}
 
         self.username = []
@@ -95,8 +95,8 @@ class FeatureLength(FeatureBase):
                 }
 
         self.face = []
-        self.add_face_icons('kdb/face.SinaWeiboStatus')
-        self.add_face_icons('kdb/face.RenrenStatus')
+        self.add_face_icons(self.env['dir_kdb'] + '/face.SinaWeiboStatus')
+        self.add_face_icons(self.env['dir_kdb'] + '/face.RenrenStatus')
 
     def add_face_icons(self, fn_face):
         with open(fn_face, 'r') as fp:
@@ -158,7 +158,8 @@ class FeatureTopic(FeatureBase):
                 }
 
         # Topic dict
-        self.tdict = Serialize.loads(open('kdb/tdict.pickle').read())
+        fn_tdict = self.env['dir_kdb'] + "/tdict.pickle"
+        self.tdict = Serialize.loads(open(fn_tdict).read())
 
     def _topic(self, dct, msg):
         score = 0.0
@@ -191,7 +192,8 @@ class FeatureUser(FeatureBase):
                 }
 
         # User dict
-        self.udict = Serialize.loads(open('kdb/udict.pickle').read())
+        fn_udict = self.env['dir_kdb'] + "/udict.pickle"
+        self.udict = Serialize.loads(open(fn_udict).read())
 
     def _user(self, dct, msg):
         if msg.parsed.username in dct:
@@ -250,18 +252,6 @@ class Feature(object):
             "dir_kdb": "./kdb",
             }
 
-    #featureecho = FeatureEcho(env)
-    #featurelength = FeatureLength(env)
-    #ft = FeatureTopic(env)
-
-    ###Feature.length(msg)
-    ##Feature.link(msg)
-    ##Feature.face(msg)
-    ###Feature.topic(msg)
-    ##Feature.user(msg)
-    ###Feature.echo(msg)
-    ###Feature.noise(msg)
-
     feature_extractors = []
     feature_extractors.append(FeatureLength(env))
     feature_extractors.append(FeatureLink(env))
@@ -289,20 +279,9 @@ class Feature(object):
         
         # Add all kinds of features
         msg.feature = {}
-        ###Feature.length(msg)
-        ###Feature.featurelength.add_features(msg)
-        ##Feature.link(msg)
-        ##Feature.face(msg)
-        ###Feature.topic(msg)
-        ###Feature.ft.add_features(msg)
-        ##Feature.user(msg)
-        ###Feature.echo(msg)
-        ##Feature.noise(msg)
 
         for fe in Feature.feature_extractors:
             fe.add_features(msg)
-
-        #msg.feature = feature
 
 def extract_all():
     import time
