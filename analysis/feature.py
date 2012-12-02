@@ -26,10 +26,47 @@ import random
 from urlext import url_extract
 from userext import user_extract
 
-class FeatureEcho(object):
-    """docstring for FeatureEcho"""
-    def __init__(self, fn_channel = 'conf/channel.json'):
-        super(FeatureEcho, self).__init__()
+class FeatureBase(object):
+    """
+    Base class for features
+    
+    """
+    def __init__(self, env):
+        '''
+        env: Environment variables
+
+        '''
+        super(FeatureBase, self).__init__()
+        self.env = env
+        # If one want the feature able to export into Weka's arff format, 
+        # the schema field is essential. It is a valid arff attribute 
+        # definition string, e.g.: (only inside quotes)
+        #    * "numeric"
+        #    * "{no, yes}"
+        # To enable auto training by 'autoweight.py' script, features are 
+        # required to be "numeric". However, there may be some use cases 
+        # for nominal values which is represented in numeric form. e.g. the
+        # 'contain_link' feature takes either 0 or 1. As long as the appearance
+        # is "0" or "1", our script can process it. If you want to incorporate
+        # more information into arff exports, you can use "{0, 1}", insead of
+        # "numeric". We'll set the default to be "numeric".
+        self.schema = {"feature": "numeric"}
+
+    def add_features(self, msg):
+        '''
+        Add features to msg object. 
+
+        msg: snsapi.snstype.Message object
+
+        '''
+        msg.feature['feature'] = 1.0
+
+class FeatureEcho(FeatureBase):
+    def __init__(self, env):
+        super(FeatureEcho, self).__init__(env)
+
+        fn_channel = 'conf/channel.json'
+        self.schema = {"echo": "numeric"}
 
         self.username = []
         fields = ["user_name", "username", "address"]    
@@ -39,15 +76,24 @@ class FeatureEcho(object):
                     if f in ch:
                         self.username.append(ch[f])
 
-    def get_echo_factor(self, msg):
+    def add_features(self, msg):
         for un in self.username:
             if msg.parsed['username'].count(un):
-                return 1
-        return 0
+                msg.feature['echo'] = 1.0
+                return
+        msg.feature['echo'] = 0.0
+        return
 
-class FeatureLength(object):
-    def __init__(self):
-        super(FeatureLength, self).__init__()
+class FeatureLength(FeatureBase):
+    def __init__(self, env):
+        super(FeatureLength, self).__init__(env)
+
+        self.schema = {
+                "text_len": "numeric",
+                "text_orig_len": "numeric",
+                "text_len_clean": "numeric",
+                }
+
         self.face = []
         self.add_face_icons('kdb/face.SinaWeiboStatus')
         self.add_face_icons('kdb/face.RenrenStatus')
@@ -57,77 +103,14 @@ class FeatureLength(object):
             for f in fp.read().split('\n'):
                 self.face.append(f.decode('utf-8'))
 
-class Feature(object):
-    """docstring for Feature"""
-
-    # Topic dict
-    tdict = Serialize.loads(open('kdb/tdict.pickle').read())
-
-    # User dict
-    udict = Serialize.loads(open('kdb/udict.pickle').read())
-
-    featureecho = FeatureEcho()
-    featurelength = FeatureLength()
-
-    def __init__(self):
-        super(Feature, self).__init__()
-
-    @staticmethod
-    def echo(msg):
-        msg.feature['echo'] = Feature.featureecho.get_echo_factor(msg)
-
-    @staticmethod
-    def _topic(dct, msg):
-        score = 0.0
-        terms = wordseg_clean(msg.parsed.text)
-        for t in terms:
-            if t.text in dct:
-                score += dct[t.text]
-        return score
-
-    @staticmethod
-    def topic(msg):
-        msg.feature['topic_tech'] = Feature._topic(Feature.tdict['tech'], msg)
-        msg.feature['topic_news'] = Feature._topic(Feature.tdict['news'], msg)
-        msg.feature['topic_interesting'] = Feature._topic(Feature.tdict['interesting'], msg)
-        msg.feature['topic_nonsense'] = Feature._topic(Feature.tdict['nonsense'], msg)
-        
-        msg.feature['topic_interesting'] /= 0.08772
-        msg.feature['topic_nonsense'] /= 0.25152
-        msg.feature['topic_tech'] /= 0.04399
-        msg.feature['topic_news'] /= 0.37376
-
-    @staticmethod
-    def _user(dct, msg):
-        if msg.parsed.username in dct:
-            return dct[msg.parsed.username]
-        else:
-            return 0
-
-    @staticmethod
-    def user(msg):
-        msg.feature['user_tech'] = Feature._user(Feature.udict['tech'], msg)
-        msg.feature['user_news'] = Feature._user(Feature.udict['news'], msg)
-        msg.feature['user_interesting'] = Feature._user(Feature.udict['interesting'], msg)
-        msg.feature['user_nonsense'] = Feature._user(Feature.udict['nonsense'], msg)
-
-    @staticmethod
-    def face(msg):
-        msg.feature['test'] = 1
-
-    @staticmethod
-    def noise(msg):
-        msg.feature['noise'] = random.random()
-
-    @staticmethod
-    def _clean(text):
+    def _clean(self, text):
         ct = text.encode('utf-8')
         ct = url_extract(ct)['text']
         #print ct
         ct = user_extract(ct)['text']
         #print ct
         ct = ct.decode('utf-8')
-        for f in Feature.featurelength.face:
+        for f in self.face:
             ct = ct.replace(f, '')
         #print ct
         #_STOPWORD = u"的了是在有而以但一我你他它个啊这…、，！。：【】；（）“”《》\";,./1234567890"
@@ -137,8 +120,7 @@ class Feature(object):
         #print ct
         return ct
 
-    @staticmethod
-    def length(msg):
+    def add_features(self, msg):
         # Literal length
         msg.feature['text_len'] = len(msg.parsed.text)
         if 'text_orig' in msg.parsed:
@@ -158,19 +140,139 @@ class Feature(object):
 
         # Clean length
         max_text_len_clean = 400.0
-        text_clean = Feature._clean(msg.parsed.text)
+        text_clean = self._clean(msg.parsed.text)
         msg.feature['text_len_clean'] = len(text_clean)
         if msg.feature['text_len_clean'] > max_text_len_clean:
             msg.feature['text_len_clean'] = max_text_len_clean
         msg.feature['text_len_clean'] /= max_text_len_clean
 
-    @staticmethod
-    def link(msg):
+class FeatureTopic(FeatureBase):
+    """docstring for FeatureTopic"""
+    def __init__(self, env):
+        super(FeatureTopic, self).__init__(env)
+        self.schema = {
+                "topic_tech": "numeric",
+                "topic_news": "numeric",
+                "topic_interesting": "numeric",
+                "topic_nonsense": "numeric",
+                }
+
+        # Topic dict
+        self.tdict = Serialize.loads(open('kdb/tdict.pickle').read())
+
+    def _topic(self, dct, msg):
+        score = 0.0
+        terms = wordseg_clean(msg.parsed.text)
+        for t in terms:
+            if t.text in dct:
+                score += dct[t.text]
+        return score
+
+    def add_features(self, msg):
+        msg.feature['topic_tech'] = self._topic(self.tdict['tech'], msg)
+        msg.feature['topic_news'] = self._topic(self.tdict['news'], msg)
+        msg.feature['topic_interesting'] = self._topic(self.tdict['interesting'], msg)
+        msg.feature['topic_nonsense'] = self._topic(self.tdict['nonsense'], msg)
+        
+        msg.feature['topic_interesting'] /= 0.08772
+        msg.feature['topic_nonsense'] /= 0.25152
+        msg.feature['topic_tech'] /= 0.04399
+        msg.feature['topic_news'] /= 0.37376
+
+class FeatureUser(FeatureBase):
+    """docstring for FeatureTopic"""
+    def __init__(self, env):
+        super(FeatureUser, self).__init__(env)
+        self.schema = {
+                "user_tech": "numeric",
+                "user_news": "numeric",
+                "user_interesting": "numeric",
+                "user_nonsense": "numeric",
+                }
+
+        # User dict
+        self.udict = Serialize.loads(open('kdb/udict.pickle').read())
+
+    def _user(self, dct, msg):
+        if msg.parsed.username in dct:
+            return dct[msg.parsed.username]
+        else:
+            return 0
+
+    def add_features(self, msg):
+        msg.feature['user_tech'] = self._user(self.udict['tech'], msg)
+        msg.feature['user_news'] = self._user(self.udict['news'], msg)
+        msg.feature['user_interesting'] = self._user(self.udict['interesting'], msg)
+        msg.feature['user_nonsense'] = self._user(self.udict['nonsense'], msg)
+
+class FeatureFace(FeatureBase):
+    """docstring for FeatureBase"""
+    def __init__(self, env):
+        super(FeatureFace, self).__init__(env)
+        self.schema = {
+                "test": "numeric",
+                }
+
+    def add_features(self, msg):
+        msg.feature['test'] = 1
+
+class FeatureNoise(FeatureBase):
+    """docstring for FeatureNoise"""
+    def __init__(self, env):
+        super(FeatureNoise, self).__init__(env)
+        self.schema = {
+                "noise": "numeric"
+                }
+
+    def add_features(self, msg):
+        msg.feature['noise'] = random.random()
+
+class FeatureLink(FeatureBase):
+    """docstring for FeatureLink"""
+    def __init__(self, env):
+        super(FeatureLink, self).__init__(env)
+        self.schema = {
+                "contain_link": "{0,1}"
+                }
+        
+    def add_features(self, msg):
         r = re.compile(r'https?://')
         if r.search(msg.parsed.text):
             msg.feature['contain_link'] = 1
         else:
             msg.feature['contain_link'] = 0 
+
+class Feature(object):
+    """docstring for Feature"""
+
+    env = {
+            "dir_conf": "./conf",
+            "dir_kdb": "./kdb",
+            }
+
+    #featureecho = FeatureEcho(env)
+    #featurelength = FeatureLength(env)
+    #ft = FeatureTopic(env)
+
+    ###Feature.length(msg)
+    ##Feature.link(msg)
+    ##Feature.face(msg)
+    ###Feature.topic(msg)
+    ##Feature.user(msg)
+    ###Feature.echo(msg)
+    ###Feature.noise(msg)
+
+    feature_extractors = []
+    feature_extractors.append(FeatureLength(env))
+    feature_extractors.append(FeatureLink(env))
+    feature_extractors.append(FeatureFace(env))
+    feature_extractors.append(FeatureTopic(env))
+    feature_extractors.append(FeatureUser(env))
+    feature_extractors.append(FeatureEcho(env))
+    feature_extractors.append(FeatureNoise(env))
+
+    def __init__(self):
+        super(Feature, self).__init__()
         
     @staticmethod
     def extract(msg):
@@ -187,13 +289,18 @@ class Feature(object):
         
         # Add all kinds of features
         msg.feature = {}
-        Feature.length(msg)
-        Feature.link(msg)
-        Feature.face(msg)
-        Feature.topic(msg)
-        Feature.user(msg)
-        Feature.echo(msg)
-        Feature.noise(msg)
+        ###Feature.length(msg)
+        ###Feature.featurelength.add_features(msg)
+        ##Feature.link(msg)
+        ##Feature.face(msg)
+        ###Feature.topic(msg)
+        ###Feature.ft.add_features(msg)
+        ##Feature.user(msg)
+        ###Feature.echo(msg)
+        ##Feature.noise(msg)
+
+        for fe in Feature.feature_extractors:
+            fe.add_features(msg)
 
         #msg.feature = feature
 
