@@ -1389,3 +1389,106 @@ $python evaluation.py
 There are about 0.02 improvement compared to that without user feature. 
 This should be significant enough. 
 
+
+## Report
+
+### Line count
+
+20121203.
+
+SNSRouter 
+
+```
+find . -name "*.py" | grep -v snsapi | grep -v bottle | grep -v "pymmseg" | grep -v "back" | grep -v "test" | xargs wc -l
+555 ./queue.py
+348 ./analysis/feature.py
+39 ./analysis/urlext.py
+39 ./analysis/score.py
+67 ./analysis/wordseg.py
+1 ./analysis/__init__.py
+50 ./analysis/userext.py
+77 ./analysis/sqlite2pickle.py
+484 ./analysis/autoweight.py
+120 ./analysis/evaluation.py
+67 ./analysis/genudict.py
+64 ./analysis/gentdict.py
+43 ./analysis/other/get-sina-face.py
+69 ./analysis/pre.py
+28 ./analysis/exp.py
+207 ./analysis/select_samples.py
+294 ./srfe.py
+1 ./authproxy.py
+2553 total
+
+$find . -name "*.sh" | grep -v snsapi | grep -v bottle | grep -v "pymmseg" | grep -v "back" | grep -v "test" | xargs wc -l
+3 ./start.sh
+3 ./status.sh
+30 ./analysis/extract-face.sh
+19 ./analysis/extract-tag.sh
+17 ./analysis/extract-text.sh
+13 ./analysis/plot-all.sh
+38 ./analysis/extract-msg.sh
+20 ./analysis/kdb/merge.sh
+12 ./analysis/kdb/prepare_sogo.sh
+11 ./analysis/extract-term.sh
+22 ./analysis/plot-hist.sh
+24 ./analysis/extract-log.sh
+48 ./analysis/extract-marked.sh
+27 ./analysis/basic.sh
+37 ./analysis/run-all.sh
+8 ./run.sh
+6 ./kill.sh
+338 total
+```
+
+SNSAPI
+
+```
+$find -name "*.py" | grep -v "third" | grep -v "oauth" | grep -v "back" | xargs  wc -l
+242 ./doc/conf.py
+139 ./app/forwarder/forwarder.py
+26 ./app/hellosns/test-read-write-all.py
+14 ./app/hellosns/test-read-all.py
+36 ./app/hellosns/test-read-reply.py
+71 ./app/mysofa/mysofa.py
+344 ./snscli.py
+45 ./test/test_sina.py
+56 ./test/test_snsapi.py
+37 ./test/test_rss.py
+44 ./test/test_renren.py
+39 ./test/mainTest.py
+43 ./test/test_qq.py
+4 ./test/testNewLine.py
+54 ./test/testUtils.py
+32 ./test.py
+330 ./snsapi/snspocket.py
+442 ./snsapi/plugin/renren.py
+197 ./snsapi/plugin/sina.py
+188 ./snsapi/plugin/tencent.py
+8 ./snsapi/plugin/__init__.py
+202 ./snsapi/plugin/rss.py
+129 ./snsapi/snslog.py
+318 ./snsapi/snstype.py
+483 ./snsapi/plugin_trial/emails.py
+96 ./snsapi/plugin_trial/twitter.py
+9 ./snsapi/plugin_trial/__init__.py
+185 ./snsapi/plugin_trial/sqlite.py
+13 ./snsapi/__init__.py
+187 ./snsapi/utils.py
+112 ./snsapi/snsconf.py
+529 ./snsapi/snsbase.py
+175 ./snsapi/errors.py
+26 ./snsapi/platform.py
+86 ./snsapi/snscrypt.py
+4941 total
+
+$find -name "*.sh" | grep -v "third" | grep -v "oauth" | grep -v "back" | xargs  wc -l
+4 ./doc/stat.sh
+28 ./doc/make.sh
+9 ./app/mysofa/deploy.sh
+14 ./auxiliary/auto/auto.sh
+45 ./auxiliary/auth/request_url_wget.sh
+40 ./auxiliary/auth/fetch_code_local.sh
+140 total
+```
+
