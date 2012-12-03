@@ -1389,6 +1389,27 @@ $python evaluation.py
 There are about 0.02 improvement compared to that without user feature. 
 This should be significant enough. 
 
+#### Classification Result -- 20121202 
+
+Use logit classifier, the accuracy is not competitive. 
+Use J48, the accuracy is very high (even on test data set). 
+However, the rules are hard to interpret. 
+
+Weka training. 
+
+```
+topic_news <= 0.00603
+topic_tech <= 0.041455
+topic_interesting <= 0.042225
+topic_nonsense <= 0.010593
+text_len > 0.12
+id <= 30634
+user_tech <= 0.010894
+text_len_clean <= 0.0575
+user_tech > 0.001621
+: mark (3.0/1.0)
+```
+
 
 ## Report
 
