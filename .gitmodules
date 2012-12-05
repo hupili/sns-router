@@ -4,9 +4,6 @@
 [submodule "bottle"]
 	path = bottle
 	url = git://github.com/defnull/bottle.git
-[submodule "ansj_seg"]
-	path = ansj_seg
-	url = git://github.com/ansjsun/ansj_seg.git
 [submodule "pymmseg-cpp"]
 	path = pymmseg-cpp
 	url = git://github.com/pluskid/pymmseg-cpp.git
