@@ -1,0 +1,53 @@
+[
+  {
+    "channel_name": "feed_hpl_renren_zhan", 
+    "methods": "home_timeline",
+    "open": "yes",
+    "platform": "RSS", 
+    "url": "http://zhan.renren.com/snsinsight/rss",
+    "home_timeline":{
+      "count": 5
+    }
+  },
+  {
+    "channel_name": "feed_hpl_wordpress", 
+    "methods": "home_timeline",
+    "open": "yes",
+    "platform": "RSS", 
+    "url": "http://personal.ie.cuhk.edu.hk/~hpl011/wordpress/?feed=rss2",
+    "home_timeline":{
+      "count": 5
+    }
+  },
+  {
+    "channel_name": "feed_github_snsapi", 
+    "methods": "home_timeline",
+    "open": "yes",
+    "platform": "RSS", 
+    "url": "https://github.com/hupili/snsapi/commits/master.atom",
+    "home_timeline":{
+      "count": 5
+    }
+  },
+  {
+    "channel_name": "feed_github_sns-router", 
+    "methods": "home_timeline",
+    "open": "yes",
+    "platform": "RSS", 
+    "url": "https://github.com/hupili/sns-router/commits/master.atom",
+    "home_timeline":{
+      "count": 5
+    }
+  },
+  {
+    "url": "test.db", 
+    "user_name": "snsapi_sqlite_username", 
+    "methods": "update,forward",
+    "channel_name": "test_sqlite", 
+    "open": "yes", 
+    "platform": "SQLite",
+    "home_timeline":{
+      "count": 10
+    }
+  }
+]

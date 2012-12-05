@@ -12,8 +12,8 @@ from snsapi import snstype
 from snsapi.utils import Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
-from analysis.feature import Feature
-from analysis.score import Score
+#from analysis.feature import Feature
+#from analysis.score import Score
 
 import base64
 import hashlib
@@ -42,7 +42,21 @@ class SRFEQueue(SNSBase):
         #self.__mount_default_home_timeline_count()
         #self.queue_conf = json.load(open('conf/queue.json', 'r'))
         #self.feature_weight = self.queue_conf['feature_weight']
-        self.score = Score()
+
+        try:
+            self.queue_conf = json.loads(open('conf/queue.json', 'r').read())
+        except IOError, e:
+            logger.warning("No conf/queue.json, use defaults")
+            self.queue_conf = {}
+
+        if 'ranking' in self.queue_conf and self.queue_conf['ranking'] == "yes":
+            from analysis import score
+            from analysis import feature
+            self.score = score.Score()
+            self.Feature = feature.Feature
+        else:
+            self.score = None
+            self._weight_feature = lambda m: 0
 
     #def __mount_default_home_timeline_count(self):
     #    for ch in self.sp.values():
@@ -335,7 +349,7 @@ class SRFEQueue(SNSBase):
         ''', (msg_id,))
 
         m = self._str2pyobj(list(r)[0][0])
-        Feature.extract(m)
+        self.Feature.extract(m)
         
         ret = {
                 "feature": m.feature, 

@@ -9,6 +9,10 @@
 	<p>
 	<a href="/">Back to Home</a>
 	</p>
+	<p>
+	Note, default username and password are all "test". 
+	Please configure "conf/srfe.json" accordingly. 
+	</p>
 %elif state == "succ":
 	Login successful!
 	<p>

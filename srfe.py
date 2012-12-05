@@ -51,7 +51,12 @@ q.refresh_tags()
 try:
     jsonconf = json.load(open('conf/srfe.json', 'r'))
 except IOError:
-    jsonconf = {}
+    logger.warning("Do not find conf/srfe.json, use defaults")
+    jsonconf = {
+            "cookie_sign_key": "You had better set your own key in the config!!!!", 
+            "username": "test", 
+            "password": "test"
+            }
 
 class InputThread(threading.Thread):
     def __init__(self, queue):
