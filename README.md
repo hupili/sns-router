@@ -25,7 +25,7 @@ It's very easy for one to spread information within one subnet.
 Say, update a status on Twitter, 
 post a blog on Facebook, etc. 
 What about the information flow across multiple platforms? 
-Yes, we need some analogous to Internet router. 
+Yes, we need something analogous to Internet router. 
 I will term this facility as SNSRouter. 
 
 Long before this project, we already see many manual "routers":
@@ -70,3 +70,12 @@ cd sns-router
 git submodule init
 git submodule update
 ```
+
+If you suffer from error messages, please check whether it is due to missing modules. 
+Most of the dependencies are standard Python modules. 
+Some other 3rd party modules can be installed via pip. 
+Also, please read `README.md` under each directory. 
+They may provide more information for setup. 
+
+For further problem, please don't hesitate to post an issue. 
+Many thanks!
