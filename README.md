@@ -64,12 +64,28 @@ and access it with your browser.
 Deploy
 ----
 
+1. Clone the repo and all submodules
+
 ```
 git clone git://github.com/hupili/sns-router.git
 cd sns-router
 git submodule init
 git submodule update
 ```
+
+2. Copy `conf/*.json.example` to `conf/*.json` and configure accordingly. 
+
+The default configuration should be able to work. 
+
+3. Use one of the following ways to run the frontend:
+
+```
+python srfe.py
+bash ./run.sh
+```
+
+Troubleshooting
+----
 
 If you suffer from error messages, please check whether it is due to missing modules. 
 Most of the dependencies are standard Python modules. 
