@@ -126,6 +126,7 @@ def config():
         info[ch] = sp[ch].jsonconf
         info[ch]['expire_after'] = int(sp[ch].expire_after())
         info[ch]['is_authed'] = sp[ch].is_authed()
+        info[ch]['need_auth'] = sp[ch].need_auth()
     return {"info": info, "sp": sp, "ap": ap, "q": q}
 
 @srfe.route('/config/tag/toggle/:tag_id')

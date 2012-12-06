@@ -54,10 +54,14 @@
 		%if True:
 			<td>{{conf['channel_name']}}</td>
 			<td> 
+			%if conf['need_auth']:
 				<a href="/auth/first/{{conf['channel_name']}}" target="_new">
 					Go Authorization -->
 				</a>
 			</td>
+			%else:
+			    This platform does not need two stage auth. 
+			%end
 		%end
 	</tr>
 %end
@@ -66,18 +70,24 @@
 
 <h2> Feature Weight </h2>
 
-<table border=1>
-	<tr>
-		<th> Feature </th>
-		<th> Weight </th>
-	</tr>
-%for (f, w) in q.score.feature_weight.iteritems():
-	<tr>
-		<td> {{f}} </td>
-		<td> {{w}} </td>
-	</tr>
+%if q.score:
+	<table border=1>
+		<tr>
+			<th> Feature </th>
+			<th> Weight </th>
+		</tr>
+	%for (f, w) in q.score.feature_weight.iteritems():
+		<tr>
+			<td> {{f}} </td>
+			<td> {{w}} </td>
+		</tr>
+	%end
+	</table>
+%else:
+	<p>
+	Ranking function is disabled and there is not weighting information to show. 
+	</p>
 %end
-</table>
 
 <h2> Tags </h2>
 
