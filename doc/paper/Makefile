@@ -7,10 +7,10 @@ tutorial:
 	rm -f $(PDF) 
 	cd ../reference/ ; make
 	#first run, get .aux
-	latex $(NAME)
+	pdflatex $(NAME)
 	#second run, get final output
 	#latex $(TEX)
-	dvipdf $(NAME).dvi $(NAME).pdf
+	#dvipdf $(NAME).dvi $(NAME).pdf
 
 TMP_LIST= \
 		  *.aux \

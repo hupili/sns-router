@@ -166,17 +166,138 @@ To make things tractable, we'll start with the recommender algorithm using all t
 \section{Philosophy}
 \label{sec:Philosophy}
 
+\begin{itemize}
+	\item Focus on solving 80\% problems. 
+	\item Keep It Simple and Stupid (KISS). 
+\end{itemize}
+
 \section{System Framework}
 \label{sec:System Framework}
 
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/snscli.png}
+	\caption{Command Line Interface of SNSAPI}
+\end{figure}
+
+%\begin{figure}[t!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/srfe_login.png}
+%	\caption{Command Line Interface of SNSAPI}
+%\end{figure}
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/srfe_home_timeline.png}
+	\caption{Command Line Interface of SNSAPI}
+\end{figure}
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/srfe_ranked_timeline.png}
+	\caption{Command Line Interface of SNSAPI}
+\end{figure}
+
+
+\section{Formulation}
+\label{sec:Formulation}
+
+\subsection{Impossibility of Complete Auto Forwarding}
+\label{sec:Impossibility of Complete Auto Forwarding}
+
+\subsection{The Problem of Classification Formulation}
+\label{sec:The Problem of Classification}
+
+\begin{equation}
+	\tran{X} = [x_1, x_2, \ldots, x_N]
+\end{equation}
+
+Analyze the result of Logit Classifier and J48. 
+
+\begin{itemize}
+	\item 
+	Hard cut. Do not output a likelihood.
+	\item 
+	Human can only process sequentially. 
+	Accurate classification is not needed.
+\end{itemize}
+
+\subsection{Regression Formulation}
+\label{sec:Regression Formulation}
+
+\begin{eqnarray}
+	\minimize_{y,w} && ||y - Xw||_2^2 \\
+	\text{s.t.} && y_i > y_j, \; \forall (i,j) \in E
+\end{eqnarray}
+
 \section{Algorithm Design}
 \label{sec:Algorithm Design}
+
+\subsection{Induce Preference Relations on Graph}
+\label{sec:Induce Preference Relations on Graph}
+
+
+\subsection{Straight Optimization Solver}
+\label{sec:Straight Optimization Solver}
+
+Existing solvers?
+Ordinal regression?
+Isotonic regression?
+
+\subsection{Problem Transformation}
+\label{sec:Problem Transformation}
+
+Constraint as objective: (indicator function)
+
+\begin{eqnarray}
+	\minimize_{y,w} && \sum_{(i,j) \in E} 1 - I[y_i > y_j] \\
+	\text{s.t.} && y = Xw
+\end{eqnarray}
+
+Approximation by Sigmoid:
+
+\begin{eqnarray}
+	\minimize_{y,w} && f(w) \equiv \sum_{(i,j) \in E} 1 - \text{Sigmoid}[y_i > y_j] \\
+	\text{s.t.} && y = Xw
+\end{eqnarray}
+
+
+\subsection{Gradient Descent}
+\label{sec:Gradient Descent}
+
+\begin{equation}
+	\nabla f(w) = \sum_{(i,j) \in E} \nabla f_{ij}(w) 
+\end{equation}
+
+Observation: full gradient is the summation of
+per pair partial gradient. 
+
+\begin{equation}
+	\nabla f_{ij}(w) = \beta (1-S[y_i - y_j])S[y_i-y_j](x_j-x_i)
+\end{equation}
+
+\subsection{Stochastic Gradient Descent}
+\label{sec:Stochastic Gradient Descent}
+
 
 \section{Evaluation}
 \label{sec:Evaluation}
 
 \subsection{HU's Data Set}
 \label{sec:HU's Data Set}
+
+\subsection{Criterion}
+\label{sec:Criterion}
+
+Kendall's tau correlation coefficient. 
+
+\begin{equation}
+	K = \frac{\sum_{(i,j)}{I[y_i>y_j]} - \sum_{(i,j)}{I[y_j>y_i]}}{|E|}
+\end{equation}
+
+\subsection{Efficiency and Complexity}
+\label{sec:Efficiency and Complexity}
 
 \begin{table}[t!]
 	\caption{Features}
@@ -201,17 +322,170 @@ To make things tractable, we'll start with the recommender algorithm using all t
 		text\_orig\_len & Length of original message\\
 		\hline
 	\end{tabular}
-	
 \end{table}
 
+\begin{table}
+	\centering
+	\caption{Training with SGD}
+	\begin{tabular}{|c|c|c|c|}
+	\hline
+	Item & 1. & 2. & 3. \\
+	\hline
+	\# of rounds of SGD & 200,000 & 400,000 & 1,000,000\\
+	Wall clock time & 32.63s & 60.81s & 159.57s\\
+	Kendall's score (training) & 0.8178 & 0.8349 & 0.8414\\
+	Kendall's score (testing) & 0.7598 & 0.7758 & 0.7865\\
+	\hline
+	\end{tabular}
+\end{table}
+
+Straight SGD implemented in SNSRouter project. Code has not been optimized.
+
+\begin{itemize}
+	\item Scale linearly
+	\item Online learning is possible
+	\item Easy configuration
+	\item Easy to add new features
+\end{itemize}
+
+\subsection{Robustness}
+\label{sec:Robustness}
+
+Start with already trained weights for
+other features. Largest magnitude is <10.
+
+Inject 1 noise feature, picking U[0,1]. Init
+it’s weights by 10.
+
+\begin{table}
+	\begin{tabular}{|c|c|c|c|}
+		\hline 
+		& Init & Round=200K & Round=400K \\
+		\hline 
+Kendall & 0.0772 & 0.5435 & 0.8060 \\
+ w(noise) & 10.0 & 1.3407 & -0.0132 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{Case Study -- Add ``echo'' Feature}
+\label{sec:Case Study -- Add ``echo'' Feature}
+
+Most platforms will echo the
+message you post there, but they
+do not give you more information.
+We want to SOFTLY cancel them.
+
+Cancel echo:
+
+1. Add tag ``echo''
+
+2. Specify preference
+
+3. Add feature
+
+4. AUTO train weights
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/echo_add_tag.png}
+	\caption{Add New Tag on Config Panel}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/echo_feature.png}
+	\caption{Add New Tag on Config Panel}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i.png}
+	\caption{Add New Tag on Config Panel}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i1.png}
+	\caption{Add New Tag on Config Panel}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i2.png}
+	\caption{Add New Tag on Config Panel}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/echo_preference.png}
+	\caption{Add New Tag on Config Panel}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/echo_ranked_timeline_before.png}
+	\caption{Add New Tag on Config Panel}
+\end{figure}
 
 
+The weight of ``echo'' feature goes down iteration by iteration. Messages with ``echo=1''
+will be ranked lower. This is auto learned by our RPR-SGD framework.
 
 \section{Conclusion}
 \label{sec:Conclusion}
 
+\begin{itemize}
+	\item A middleware for different SNS
+	\item A portable web frontend
+	\item Real data collection (1+ month)
+	\item A flexible algorithm framework (RPR-SGD)
+	\item Sample feature extraction modules
+\end{itemize}
+
+
+
 \section{Future Work}
 \label{sec:Future Work}
+
+\subsection{System}
+\label{sec:fu_System}
+
+\begin{itemize}
+	\item RESTful interface for all components.
+		e.g. one can outsource computationally
+		intensive training to other servers
+	\item SNSRouter as a platform (of SNSAPI).
+		e.g. can be used to aggregate multiple
+		channels. 
+	\item ``FeatureStore'' and ``LearnerStore''. 
+		Boost community developing and sharing of 
+		personalization technique. 
+\end{itemize}
+
+\subsection{Algorithm}
+\label{sec:fu_Algorithm}
+
+\begin{itemize}
+	\item Add regularization to alleviate overfiting. 
+	\item Advanced feature extraction.
+	\item SGD can do online training.
+	e.g. one sample in, derive some pairs, do
+	SGD on those pairs.
+	Naturally time sliding.
+	\item Code optimization of SGD. 
+\end{itemize}
+
+\subsection{Evaluation}
+\label{sec:fu_Evaluation}
+
+More subjective tests are to be done:
+
+\begin{itemize}
+	\item We argue the algorithm framework is easy to personalize. 
+		In the future work, we'll invite more developers 
+		who are not machine learning experts to test our system. 
+\end{itemize}
 
 \section*{Acknowledgements}
 \label{sec:Acknowledgements}
@@ -224,10 +498,38 @@ which is the base of SNSRouter project.
 \bibliographystyle{abbrv}
 \input{../reference/gen_bib.bbl}
 
-%\appendix 
+\appendix 
 
 \section{Data}
 \label{sec:Data}
+
+\section{Classification}
+\label{sec:Classification}
+
+\subsection{Logit Classifier}
+\label{sec:Logit Classifier}
+
+\subsection{J48 Decision Tree}
+\label{sec:J48 Decision Tree}
+
+A sample branch for mark (3.0/1.0):
+
+\begin{Verbatim}
+   topic_news <= 0.00603 
+&& topic_tech <= 0.041455
+&& topic_interesting <= 0.042225 
+&& topic_nonsense <= 0.010593 
+&& text_len > 0.12 
+&& id <= 30634 
+&& user_tech <= 0.010894 
+&& text_len_clean <= 0.0575
+&& user_tech > 0.001621
+\end{Verbatim}
+
+\section{Executive Summary of SNSRouter Usage}
+\label{sec:Executive Summary of SNSRouter Usage}
+
+
 
 
 %============== Following are sample lines from the template =================
