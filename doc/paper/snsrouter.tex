@@ -163,8 +163,48 @@ To make things tractable, we'll start with the recommender algorithm using all t
 \section{Related Work}
 \label{sec:Related Work}
 
+\section{Philosophy}
+\label{sec:Philosophy}
+
 \section{System Framework}
 \label{sec:System Framework}
+
+\section{Algorithm Design}
+\label{sec:Algorithm Design}
+
+\section{Evaluation}
+\label{sec:Evaluation}
+
+\subsection{HU's Data Set}
+\label{sec:HU's Data Set}
+
+\begin{table}[t!]
+	\caption{Features}
+	\centering
+	\begin{tabular}{|l|p{0.6\linewidth}|}
+		\hline
+		Name & Description \\
+		\hline
+		noise & Random variable [0,1]\\
+		echo & Whether the message is from myself\\
+		contain\_link & Whether the message contain text link\\
+		topic\_interesting & TF*IDF for {interesting}\\
+		topic\_tech & TF*IDF for {mark}{gold}{silver}{bronze}\\
+		topic\_news & TF*IDF for {news}\\
+		topic\_nonsense & TF*IDF for {nonsense}{shit}\\
+		user\_interesting & As above; regard ``user'' as ``term''\\
+		user\_tech & As above\\
+		user\_news & As above\\
+		user\_nonsense & As above\\
+		text\_len & Length of all message (original + retweet)\\
+		text\_len\_clean & Length without face icon, link, @xxx, and puctuation\\
+		text\_orig\_len & Length of original message\\
+		\hline
+	\end{tabular}
+	
+\end{table}
+
+
 
 
 \section{Conclusion}
