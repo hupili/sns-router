@@ -174,30 +174,54 @@ To make things tractable, we'll start with the recommender algorithm using all t
 \section{System Framework}
 \label{sec:System Framework}
 
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/snsapi-arch.pdf}
+	\caption{SNSAPI Architecture}
+\end{figure}
+
 
 \begin{figure}[t!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/snscli.png}
+	\includegraphics[width=0.7\linewidth]{../pic/snsapi-screen-1.pdf}
 	\caption{Command Line Interface of SNSAPI}
+\end{figure}
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/srfe-screen-1.pdf}
+	\caption{Original Home Timeline on SRFE}
+\end{figure}
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/srfe-screen-2.pdf}
+	\caption{Ranked Home Timeline on SRFE}
 \end{figure}
 
 %\begin{figure}[t!]
 %	\centering
-%	\includegraphics[width=0.7\linewidth]{../pic/srfe_login.png}
+%	\includegraphics[width=0.7\linewidth]{../pic/snscli.png}
 %	\caption{Command Line Interface of SNSAPI}
 %\end{figure}
-
-\begin{figure}[t!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/srfe_home_timeline.png}
-	\caption{Command Line Interface of SNSAPI}
-\end{figure}
-
-\begin{figure}[t!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/srfe_ranked_timeline.png}
-	\caption{Command Line Interface of SNSAPI}
-\end{figure}
+%
+%%\begin{figure}[t!]
+%%	\centering
+%%	\includegraphics[width=0.7\linewidth]{../pic/srfe_login.png}
+%%	\caption{Command Line Interface of SNSAPI}
+%%\end{figure}
+%
+%\begin{figure}[t!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/srfe_home_timeline.png}
+%	\caption{Command Line Interface of SNSAPI}
+%\end{figure}
+%
+%\begin{figure}[t!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/srfe_ranked_timeline.png}
+%	\caption{Command Line Interface of SNSAPI}
+%\end{figure}
 
 
 \section{Formulation}
@@ -237,6 +261,11 @@ Analyze the result of Logit Classifier and J48.
 \subsection{Induce Preference Relations on Graph}
 \label{sec:Induce Preference Relations on Graph}
 
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../pic/graph-induction.pdf}
+	\caption{Graph Induction Illustration}
+\end{figure}
 
 \subsection{Straight Optimization Solver}
 \label{sec:Straight Optimization Solver}
