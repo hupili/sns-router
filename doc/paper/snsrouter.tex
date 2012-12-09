@@ -51,9 +51,9 @@
 		\url{https://github.com/hupili/sns-router}
 	}
 }
-\subtitle{
-	Middleware for SNS's and Flexible Personsalized Ranking Framework
-}
+%\subtitle{
+%	Middleware for SNS's and Flexible Personsalized Ranking Framework
+%}
 %\subtitle{[Extended Abstract]
 %}}
 
@@ -319,6 +319,45 @@ and share our visions on future works in
 \section{Related Work}
 \label{sec:Related Work}
 
+\subsection{Aggregation Services}
+\label{sec:Aggregation Services}
+
+There are many aggregation services on the Internet. 
+Some of them focus on dealing with a certain type of sources, 
+e.g. Google Reader for RSS feeds. 
+Some of them can aggregate heterogeneous sources, 
+like ifttt \cite{ifttt} and Yahoo Pipes \cite{yahoo_pipes}. 
+
+ifttt abstracts services on the Internet by ``channel'' 
+(we borrow this term in SNSAPI), 
+e.g. Facebook, Twitter, RSS, SMS, etc. 
+Users can define forwarding rules (called ``recipe'' on ifttt)
+in this manner:
+IF This happens, Then do That (IFTTT). 
+This service is very handy for normal users who simply want to bridge several services, 
+e.g. publish status on Facebook and the message is automatically forwarded to Twitter. 
+ifttt supports a wide spectrum of platforms, 
+but there is little flexibility for user to build advanced rules. 
+
+Yahoo Pipes (YP), on the contrary, supports less platforms but allows somewhat advanced rules. 
+YP focus on the traditional web, so operations like 
+fetching webpage, RSS feeds and CVS table are supported. 
+In the pipe construction UI, users can drag sources 
+and logic modules (e.g. condition, loop, etc) to the design board
+and connect them using ``pipe''.
+In the Web1.0 world, YP could be a good aggregator. 
+However in the web2.0 world, 
+User Generated Content (UGC) is dominating 
+and it is full of noise. 
+Simple constructions provided by YP is far from enough. 
+e.g. forward a certain topic RSS entries to somewhere else. 
+
+\subsection{Personalization with Machine Intelligence}
+\label{sec:Personalization with Machine Intelligence}
+
+
+
+
 \section{Philosophy}
 \label{sec:Philosophy}
 
@@ -326,6 +365,18 @@ and share our visions on future works in
 	\item Focus on solving 80\% problems. 
 	\item Keep It Simple and Stupid (KISS). 
 	\item Combine human and machine intelligence. 
+	\item Stay open with existing services. 
+		We never want to solve a full stack of problem. 
+		Many problems are already solved (probably in a degraded way). 
+		We encourage users to take advantage of existing services
+		rather than reinventing wheels. 
+		Example: I want to forward important messages from \gls{osn} to 
+		my cellphone through SMS. 
+		I won't try hard to enable ``SMS platform'' on SNSAPI. 
+		Instead, I will build the intelligence which filers out ``important'' messages using SNSAPI
+		and then output those messages to an RSS file. 
+		Later on ifttt, I just add a straight forwarding recipe from the RSS file 
+		to my cellphone through SMS. 
 \end{itemize}
 
 \section{System Framework}
