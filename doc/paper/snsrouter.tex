@@ -424,17 +424,50 @@ In a word, we pursue simple but effective approaches
 which leverage human and machine intelligence simultaneously. 
 
 \begin{itemize}
-	\item Focus on solving 80\% problems. 
-	\item Keep It Simple and Stupid (KISS). 
-	\item Combine human and machine intelligence. 
-	\item Stay open with existing services. 
+	\item \textbf{Focus on solving 80\% problems}. 
+		The Pareto Principle \cite{wiki_pareto} tells us that 
+		(qualitively) one only needs 20\% effort to solve 80\% problems; 
+		In order to solve the rest 20\% problems, he/she needs to 
+		spend the other 80\% time. 
+		Example: conecptually, we only abstract three methods for \gls{osn}, 
+		namely \textbf{read}, \textbf{write} and \textbf{auth}. 
+		The three methods can cover more than 80\% functions one need on an \gls{osn}. 
+		They are also universal across many other \gls{sns}. 
+		However, in order to abstract many platform specific functions, 
+		we need much more time, but those functions may be seldom used 
+		in our cross-platform settings. 
+	\item \textbf{Keep It Simple and Stupid (KISS)} \cite{wiki_kiss}. 
+		Whenever possible, we prefer simpler solutions. 
+		Common and hard cut rules will be implemented directly with configurable interface. 
+		e.g. one can configure some channels to be read-only and others to be write-only directly. 
+		We do not need to ``learn'' such preference through user interaction. 
+		%2) When simpler features are effective enough, we do not consider advanced features. 
+		%3) When simpler 
+		This principle also applies to our algorithm framework design, 
+		i.e. When simpler features are effective enough, we do not consider advanced features;
+		When linear combination is good enough, we do not bother to look at non-linear combinations. 
+	\item \textbf{Combine human and machine intelligence}. 
+		In \rsec{\ref{sec:Related Work}} we discussed the current approaches adopted by 
+		both industry and research communities. 
+		Machine learning algorithms are asked to do much harder tasks than necessary. 
+		For one extreme example, one can put all bits of a message 
+		(sender, text, time, etc) into one very long vector as feature. 
+		If we have a very powerful machine learning algorithm, it may be able to 
+		learn what factor is important to personalize one's messages and rank them reasonably. 
+		Such algorithm, even exists, will be very costly. 
+		However, the user speaks louder than any statistical clues.  
+		If one user always prefer longer messages than shorter message, 
+		he/she just put the length of message into the feature vector and that is enough. 
+		We will discuss more in the formulation section. 
+		%A simple algorithm can learn such preference. 
+	\item \textbf{Stay open with existing services}. 
 		We never want to solve a full stack of problem. 
 		Many problems are already solved (probably in a degraded way). 
 		We encourage users to take advantage of existing services
 		rather than reinventing wheels. 
 		Example: I want to forward important messages from \gls{osn} to 
 		my cellphone through SMS. 
-		I won't try hard to enable ``SMS platform'' on SNSAPI. 
+		I will not try hard to enable ``SMS platform'' on SNSAPI. 
 		Instead, I will build the intelligence which filers out ``important'' messages using SNSAPI
 		and then output those messages to an RSS file. 
 		Later on ifttt, I just add a straight forwarding recipe from the RSS file 
