@@ -89,7 +89,37 @@
 
 \maketitle
 \begin{abstract}
-	SNSAPI and SNSRouter
+	Online Social Networks (OSN) has become an essential part of human life today. 
+	They also share a very large portion of Internet traffic in terms of Page Visits. 
+	Successful OSN's are like Facebook, Twitter, Renren, SinaWeibo, etc. 
+	Two of the basic functions are: 1) maintain connections with people; 
+	2) read/write updated information in a networked fashion. 
+
+	In this paper, we focus on the function of \textbf{information acquisition and spreading}.
+	We build a middleware for heterogeneous Social Network Services (SNS), 
+	thus enabling very easy cross-platform message manipulation. 
+	Besides those traditional OSN's, we can also abstract RSS, Email, SQLite 
+	and more other platforms in the same way. 
+	With this middleware, SNSAPI \cite{github_snsapi}, 
+	many novel applications can be built and they are ready 
+	to be extended to other platforms. 
+
+	We observe that message forwarding is a popular operation on SNS
+	and there are many manual cross-platform forwarding behaviours. 
+	SNSRouter \cite{github_snsrouter} project aims at developing 
+	an easier way to perform cross-platform message forwarding (routing). 
+	We propose to leverage combined human and machine intelligence. 
+	More specificly, we propose a Rank Preserving Regression (RPR) formulation 
+	to personalize incoming messages' ordering. 
+	Users with certain programming knowledge can easily add other personalization features. 
+	An appropriate ordering saves user's time in reviewing those messages. 
+	He/she can then make final forwarding decisions. 
+
+	Evaluation on real traces collected by SNSRouter shows that 
+	RPR outputs very good weighting even with preliminary feature extractions. 
+	The author of the report, who is not an expert in NLP, can construct those 
+	features in one day. 
+	This shows the flexibility of our system and algorithm framework. 
 \end{abstract}
 
 \category{H.3}{INFORMATION STORAGE AND RETRIEVAL}{Systems and Software}
