@@ -370,8 +370,50 @@ e.g. forward a certain topic RSS entries to somewhere else.
 \subsection{Personalization with Machine Intelligence}
 \label{sec:Personalization with Machine Intelligence}
 
+One major problem of those \gls{sns}'s is that there are too 
+many messages flowing throughout the network. 
+Even the data rate within one's personal view is too large for human to process efficiently. 
+%The noise level is too high to prevent people from 
+%acquiring information efficiently. 
+%is significantly lowered. 
+%efficiency of 
+Besides filtering out noise, one also want to prioritize the display of messages 
+so that messages can be processed by human in descending order of their importance. 
+Different users have different preference so personalization is needed. 
+Towards this end, many service providers also develop their own 
+machine learning algorithms to help users personalize the incoming messages. 
 
+Personalized incoming message ranking is of its own research interest 
+even in the case of single platform. 
+For example, SinaWeibo by default presents incoming messages 
+in reverse chronological order. 
+Users can enable ranked view and obtain a probably more informative timeline. 
+For another example, GMail classifies incoming messages 
+into ``important'' and ``ordinary'' types 
+so that users can process ``important'' messages first. 
 
+Existing approches focus more on developing better algorithms. 
+Training data is obtained mostly by implicit feedback, 
+e.g. how long a user stay on one message. 
+User engagement in the training cycle is very low. 
+Thus the degree of personalization is also low. 
+Besides, those service providers target mass audience
+and provide no flexibility for people who understands how to program. 
+For example, one may suffer spontaneously from someone's overwhelming messages. 
+The common practice is to block his/her mesages (not unlink the user). 
+However, service providers ususally set an upperbound on the number users blocked, 
+e.g. 5 for Renren and 15 for SinaWeibo. 
+One needs to upgrade his/her account to paid member in order to grow the upperbound. 
+Anyone who know programming agrees that blocking specified users
+is a very simple task given proper programming interface. 
+To avoid blocking spontaneous noise sources permanently, 
+one can also set some timeout logic or probabilistic blocking logic. 
+However, all of those simple operations are not possible in current services. 
+
+On one hand, existing personalization approaches try to 
+solve harder than necessary problems with little user side knowledge. 
+On the other hand, some simple personalization demand 
+can not be implemented by the users. 
 
 \section{Philosophy}
 \label{sec:Philosophy}
