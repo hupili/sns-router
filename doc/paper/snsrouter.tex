@@ -932,13 +932,24 @@ The RPR model is in essence a Quadratic Programming (QP).
 There are many existing solvers and 
 we can find some Python implementations 
 (e.g. cvxpy which solves a superset of problems). 
-However, this introduces more dependencies in our project, 
-making it more difficult to port to other platforms. 
-Besides, solving QP is costly 
-if one want to run the algorithm on mobile devices. 
-This is true for both deploying dependent libraries and executing the algorithm.
-In order to tackle with this problem efficiently, 
-we have to do some transformation. 
+However, the QP approach has the following problems:
+\begin{itemize}
+	\item QP solver introduces more dependencies in our project, 
+		making it more difficult to port to other platforms. 
+	\item Solving QP is costly, 
+		if one want to run the algorithm on mobile devices. 
+		This is true for both deploying dependent libraries and executing the algorithm.
+	\item Plain QP implementation only supports batch optimization. 
+		In our problem, $m_i$ comes continously and $E$ is also evolving. 
+		If we want to capture time variant user interest, we must 
+		solve QP in an incremental fashion. 
+\end{itemize}
+
+%In order to tackle with this problem efficiently, 
+%we have to do some transformation. 
+
+With those practical considerations, we seek for 
+better training approaches by proper problem transformation. 
 
 \subsection{Problem Transformation}
 \label{sec:Problem Transformation}
