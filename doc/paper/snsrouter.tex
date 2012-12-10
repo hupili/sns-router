@@ -1159,6 +1159,7 @@ The denominator is the total number of relations in our concern.
 Given this definition, we know that $K \in [-1, 1]$ and the larger the better. 
 This is in accordance with the notion of correlation. 
 When $\hat{y}_i$'s are assigned randomly, we can expect $K = 0$. 
+In the following discussions, we also call this measure Kendall's score for short. 
 
 \subsection{Sample Features}
 \label{sec:Sample Features}
@@ -1229,10 +1230,24 @@ Many new terms, especially cyber phrases, can not be correctly segmented.
 \subsection{Performance and Complexity}
 \label{sec:Performance and Complexity}
 
+We implemented SGD in SNSRouter project using Python straightforwardly. 
+The code has not been optimized.
+\rtbl{\ref{tbl:sgd_train}} shows the performance v.s. complexity. 
+Step size is chosen as $\alpha = 10^{-2}$. 
+When more rounds of SGD is performed, the Kendall's score becomes higher. 
+In this setting, testing K becomes larger than $0.7$ after 
+several dozons of thousand iterations. 
+This is substantial improvement compared to unranked version, 
+meaning $85\%$ pairs are in correct order 
+(i.e. $K = (0.85 |E| - 0.15 |E|) / |E|$). 
+From the data, we can see that SGD scales well. 
+The author is confident that the algorithm can be 
+an order of mangnitude faster by only code level optimization. 
 
-\begin{table}
+\begin{table}[htb]
 	\centering
 	\caption{Training with SGD}
+	\label{tbl:sgd_train}
 	\begin{tabular}{c|c|c|c}
 	\hline
 	Item & 1. & 2. & 3. \\
@@ -1245,31 +1260,54 @@ Many new terms, especially cyber phrases, can not be correctly segmented.
 	\end{tabular}
 \end{table}
 
-Straight SGD implemented in SNSRouter project. Code has not been optimized.
-
+We also remark that:
 \begin{itemize}
-	\item Scale linearly
-	\item Online learning is possible
-	\item Easy configuration
-	\item Easy to add new features
+	\item Larger $\alpha$ make SGD go faster but the oscillation around 
+		optimal point is larger. 
+		Small $\alpha$ is convervative so that it goes slower but is more stable. 
+		Users can configure different step size 
+		according to his/her demand and ability of device. 
+	\item Exactly optimizing the weights is not needed, 
+		as we argued in the formulation section. 
+		A set of coarsely tuned weights is already good enough
+		to boost the user's efficiency. 
+		Users who are conscious of their domain knowledge 
+		can set the weights manually (or use it as initial point $w^0$). 
+		The first user (Pili) tried to manual craft a set of weights
+		before any learner algorithm (e.g. SGD) is available. 
+		He spent 1 minute and came up with a weighting scheme 
+		which reaches a Kendall's score of $0.68$. 
+		As the data set varies, this score may not be comparative to the above socres. 
+		Nevertheless, he can tell that the ranked timeline is 
+		already significantly better than raw timeline. 
 \end{itemize}
+
+
+%\begin{itemize}
+%	\item Scale linearly
+%	\item Online learning is possible
+%	\item Easy configuration
+%	\item Easy to add new features
+%\end{itemize}
 
 \subsection{Robustness}
 \label{sec:Robustness}
 
 Start with already trained weights for
-other features. Largest magnitude is <10.
+other features. Largest magnitude is < 10.
 
 Inject 1 noise feature, picking U[0,1]. Init
-it’s weights by 10.
+it's weights by 10.
 
-\begin{table}
+\begin{table}[htb]
+	\centering
+	\caption{Robustness Test}
 	\begin{tabular}{c|c|c|c}
 		\hline 
 		& Init & Round=200K & Round=400K \\
 		\hline 
-Kendall & 0.0772 & 0.5435 & 0.8060 \\
- w(noise) & 10.0 & 1.3407 & -0.0132 \\
+		Kendall & 0.0772 & 0.5435 & 0.8060 \\
+		 w(noise) & 10.0 & 1.3407 & -0.0132 \\
 		\hline
 	\end{tabular}
 \end{table}
