@@ -924,9 +924,21 @@ If his interest shifts one day, he simply change this line to:
 \subsection{Straight Optimization Solver}
 \label{sec:Straight Optimization Solver}
 
-Existing solvers?
-Ordinal regression?
-Isotonic regression?
+%Existing solvers?
+%Ordinal regression?
+%Isotonic regression?
+
+The RPR model is in essence a Quadratic Programming (QP). 
+There are many existing solvers and 
+we can find some Python implementations 
+(e.g. cvxpy which solves a superset of problems). 
+However, this introduces more dependencies in our project, 
+making it more difficult to port to other platforms. 
+Besides, solving QP is costly 
+if one want to run the algorithm on mobile devices. 
+This is true for both deploying dependent libraries and executing the algorithm.
+In order to tackle with this problem efficiently, 
+we have to do some transformation. 
 
 \subsection{Problem Transformation}
 \label{sec:Problem Transformation}
