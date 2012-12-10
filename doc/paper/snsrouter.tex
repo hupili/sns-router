@@ -791,10 +791,70 @@ Based on these observations, we proceed to propose a regression formulation.
 \subsection{Regression Formulation}
 \label{sec:Regression Formulation}
 
+Now we have extracted features for messages, $X$. 
+Our goal is to rank them properly. 
+Bear in mind that this is not a pure offline research experiment. 
+New messages are coming in continously and 
+users can request timeline from Web UI at any time at any frequency
+(subject to human's Actions Per Minute). 
+We don't want to rerank all the messages 
+everytime when new ones come in and
+return the top messages to the user. 
+We want to make the query stage efficient. 
+One simple solution is to assign a score to a message when it comes in, 
+and store the score as a column in database. 
+In the query stage, one only need to add an ``ORDER BY'' clause to enable ranking. 
+This is standard in database practice and can be done very efficiently. 
+
+How to map features to a single score? 
+Our first thought is of course linear combination, i.e. $Xw$. 
+For one thing, non linear combination can be casted 
+to linear combination by extending the dimension of feautres. 
+For another thing, output of linear combination is highly interpretable, 
+e.g. ``+10 if the message comes from Pili'', 
+``+5 if the message is about social computing'', etc. 
+When talking about ``enough'' features, 
+we do not mean the more the better. 
+We indeed mean to incorporate more domain knowledge, 
+which is possessed by the user
+(not the most clever machine learning researcher). 
+Then we get the following regression formulation:
+\begin{eqnarray}
+	\minimize_{w} && ||y - Xw||_2^2 
+\end{eqnarray}
+where $y_i$ is the score for message $i$. 
+If we can find a set of weights $w$ that combines to $y$
+very well on training data, 
+it is reasonable to expect they perform similarly well 
+on future incoming messages. 
+Then our ranking flow is:
+1) New message comes in; 
+2) Extract features;
+3) Use learned $w$ to generate a score, $\hat{y}_i = \tran{x_i} w$;
+4) Store $\hat{y}_i$ in DB; 
+5) In query stage, sort messages by $\hat{y}_i$.
+
+One direct difficulty is that $y$ is unknown and 
+it is very hard for users to generate training $y$'s consistently. 
+Another problem is that when user's interest shifts, 
+he/she has to regrade the messages and train the weights again. 
+This regrading process can be tedious for a user. 
+Step back a little, we think it is reasonable to ask users to
+tell their preference between two messages. 
+This leads to the following formulation:
 \begin{eqnarray}
 	\minimize_{y,w} && ||y - Xw||_2^2 \\
 	\text{s.t.} && y_i > y_j, \; \forall (i,j) \in E
 \end{eqnarray}
+where $E$ is a set of tuples $(i,j)$ meaning message $i$ is preferred than $j$. 
+Note that $y$ in this formulation is unknown variable. 
+This makes it different from ordinary regression. 
+Besides, $E$ is only a partial ordering, so this is not ordinal regression problem. 
+After some literature survey, we did not find similar standard problems. 
+Towards this end, we will temporarily term this formulation as 
+{\bf Rank Preserving Regression (RPR)}.  
+Details on how to obtain $E$ is described in 
+\rsec{\ref{sec:Induce Preference Relations on Graph}}. 
 
 \section{Algorithm Design}
 \label{sec:Algorithm Design}
