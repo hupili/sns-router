@@ -8,6 +8,13 @@
 \usepackage{url}
 \input{common.tex}
 
+%algorithm
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\floatname{algorithm}{Algorithm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
 \usepackage{glossaries}
 \newacronym{sns}{SNS}{Social Networking Services}
 \newacronym{osn}{OSN}{Online Social Networks}
@@ -1069,8 +1076,36 @@ Probabilistically, SGD has similar effect to GD.
 This method is quite popular in the recent years' development of recommender systems. 
 From our experience, it is much easier to set step size in SGD than GD. 
 
+In one extreme, we can implement SGD with $|E_s| = 1$. 
+Our implementation of SGD can be summarized in \ralg{\ref{alg:rpr_sgd}}. 
+
+\begin{algorithm}[htb]
+	\caption{RPR Training Using SGD}
+	\label{alg:rpr_sgd}
+	\begin{algorithmic}[1]
+		\REQUIRE features $X$, initial weights $w^0$, 
+		\\ step size $\alpha$, number of rounds $R$
+		\ENSURE final weights: $w^{R}$ 
+		\STATE $k=1$
+		\WHILE{$k \le R$}
+		\STATE Sample a pair of preference relation $(i,j)$ 
+		\STATE $g_{ij} \leftarrow \nabla f_{ij}(w^{k-1})$
+		\STATE $w^{k} \leftarrow w^{k-1} - \alpha g_{ij}$
+		\STATE $k \leftarrow k + 1$
+		\ENDWHILE
+	\end{algorithmic}
+\end{algorithm}
+
 \section{Evaluation}
 \label{sec:Evaluation}
+
+In this section, we evaluate our RPR-SGD proposal. 
+We first introduce the data set collected in a time span slightly more than one month. 
+Then we propose to use Kendall's tau correlation coefficient as a metric. 
+Performance v.s. complexity of the algorithm is evaluted.  
+Next, we inject noise feature to show the robustness of RPR-SGD. 
+Last, we use a case study to demonstrate how easy it is to 
+incorporate a new feature and show the adaptive learning behaviour of RPR-SGD. 
 
 \subsection{HU's Data Set}
 \label{sec:HU's Data Set}
