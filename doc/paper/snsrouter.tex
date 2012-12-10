@@ -1102,17 +1102,30 @@ Our implementation of SGD can be summarized in \ralg{\ref{alg:rpr_sgd}}.
 In this section, we evaluate our RPR-SGD proposal. 
 We first introduce the data set collected in a time span slightly more than one month. 
 Then we propose to use Kendall's tau correlation coefficient as a metric. 
-Performance v.s. complexity of the algorithm is evaluted.  
+Performance v.s. complexity of the algorithm is evaluted
+with a set of preliminary features.  
 Next, we inject noise feature to show the robustness of RPR-SGD. 
 Last, we use a case study to demonstrate how easy it is to 
 incorporate a new feature and show the adaptive learning behaviour of RPR-SGD. 
 
-\subsection{HU's Data Set}
-\label{sec:HU's Data Set}
+\subsection{Pili's Data Set}
+\label{sec:Pili's Data Set}
+
+Pili has been running \gls{srfe} for over one month to collect real traces. 
+\rtbl{\ref{tbl:dataset}} summarizes some basic statistics. 
+We derive training and testing preference relations in the following way:
+1) Select out all tagged messages (about 900); 
+2) Sample same number of untagged messages (about 900) and assign them ``null'' tag;
+3) Divide the candidate messages (about 1.8K) into training and testing sets randomly;
+4) Use graph induction to form $G_{M_{\text{train}}}$ and $G_{M_{\text{test}}}$, 
+where ${M_{\text{train}}}$ is training set and ${M_{\text{test}}}$ is testing set. 
+Altogether, there are more than 200K relations in both training and testing sets. 
 
 \begin{table}[htb]
 	\centering
-	\begin{tabular}{c|c}
+	\caption{Basic Statistics of Pili's Data Set}
+	\label{tbl:dataset}
+	\begin{tabular}{l|c}
 		\hline
 		Item & Value \\
 		\hline
