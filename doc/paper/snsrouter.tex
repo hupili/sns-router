@@ -473,6 +473,11 @@ which leverage human and machine intelligence simultaneously.
 		and then output those messages to an RSS file. 
 		Later on ifttt, I just add a straight forwarding recipe from the RSS file 
 		to my cellphone through SMS. 
+	\item \textbf{Trade execution efficiency for developing efficiency}. 
+		Many of the codes in this project are not optimized. 
+		There is no incentive to optimize them unless the execution 
+		time is out of human tolerable range. 
+		We prefer to make the codes extensible rather than running fast. 
 \end{itemize}
 
 \section{System Framework}
@@ -504,12 +509,52 @@ The system is divited into two parts:
 \end{figure}
 
 \rfig{\ref{fig:snsapi-arch}} illustrates the system framework of SNSAPI. 
+There are conceptually three layers:
+\begin{itemize}
+	\item Interface Layer. 
+		SNSBase is the base class for all kinds of \gls{sns}. 
+		One can derive the base class to implement real logic that interfaces with those platforms. 
+		In SNSAPI terminology, the modules containing derived classes are called ``plugin'';
+		the derived classes are called ``platform''; 
+		the instance of the classes are called ``channel''. 
+		Message and message list types are also defined in this layer. 
+		We make all the interfacing types json-serializable and pickle-able, 
+		so the communications inside and outside SNSAPI are very easy. 
+	\item Physical Layer. 
+		There are many common operations when one interfaces with different \gls{sns}'s. 
+		We implement them in the Physical layer so that plugin authors do not need to 
+		build all the logics from scratch. 
+		Examples are like, HTTP request/response, OAuth, Error definition, etc. 
+		Many third party modules are used in this layer. 
+		To keep flexibilty, we provide wrapper class for most third party modules, 
+		so that one can subsitute (part of) them with better ones easily. 
+	\item Application Layer. 
+		Application authors can directly use classes in the interface layer. 
+		e.g. write an auto-reply script by using RenrenStatus (derived from SNSBase);
+		only a dozon of lines are needed. 
+		However, when one want to operate a large collection of channels, this is not efficient. 
+		To avoid frequently repeated work, we develop a container class called ``SNSPocket''. 
+		Pocket can hold a collection of channels and perform batch operation 
+		with some simple configurable rules. 
+		For most applications, Pocket should be the Service Access Point (SAP) to SNSAPI. 
+		When there are new channels, users can enable them by configuration
+		and no active involvement from the App developer is needed. 
+\end{itemize}
 
+In the Application Layer, we also include one Command Line Interface (CLI) -- ``SNSCLI''. 
+The reason comes in three folds. 
+First, SNSCLI is more appropriate for initial trials. 
+It is run in a Python interactive shell and usage is also natural to non-Python users. 
+Second, for App developer, SNSCLI can be used for debugging purpose. 
+Third, if non-Python developers want to use SNSAPI, SNSCLI can serve as the SAP. 
+Commands are piped in SNSCLI using STDIN and results are obtained from STDOUT. 
+\rfig{\ref{fig:snscli}} is the screenshot of a running SNSCLI. 
 
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{../pic/snsapi-screen-1.pdf}
 	\caption{Command Line Interface of SNSAPI}
+	\label{fig:snscli}
 \end{figure}
 
 \begin{figure}[t!]
