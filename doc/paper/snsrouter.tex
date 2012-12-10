@@ -727,6 +727,7 @@ We can extract some features of the messages somehow:
 \begin{equation}
 	\tran{X} = [x_1, x_2, \ldots, x_N]
 \end{equation}
+where $x_i \in \mathbb{R}^K$. 
 Besides, from the Web UI, users can assign tags to each message. 
 The relation between messages and tags is multiple-to-multiple. 
 For simplicity of discussion, 
@@ -954,12 +955,74 @@ better training approaches by proper problem transformation.
 \subsection{Problem Transformation}
 \label{sec:Problem Transformation}
 
-Constraint as objective: (indicator function)
-
+We first convert the inequality preference constraints 
+into equality constraints using indicator function:
+%write down the Lagrangian dual 
 \begin{eqnarray}
-	\minimize_{y,w} && \sum_{(i,j) \in E} 1 - I[y_i > y_j] \\
+	\minimize_{y,w} && ||y - Xw||_2^2 \\
+		\text{s.t.} && I[y_i > y_j] = 1, \; \forall (m_i,m_j) \in E
+\end{eqnarray}
+where $I[.]$ is the indicator fucntion:
+\begin{equation}
+	I[x] = \left\lbrace 
+	\begin{matrix}
+		1 & \text{x is True} \\
+		0 & \text{x is False}
+	\end{matrix}
+	\right.
+\end{equation}
+Since $I[.]$ only takes 0 or 1, 
+the previous optimization is equivalent to the following form:
+\begin{eqnarray}
+	\minimize_{y,w} && ||y - Xw||_2^2 \\
+	\text{s.t.} && 1 - I[y_i > y_j] \le 0, \; \forall (m_i,m_j) \in E
+\end{eqnarray}
+The Lagrangian of this problem is:
+\begin{equation}
+	L(y,w,\mu) = ||y - Xw||_2^2 + \sum_{k=1}^{|E|}\mu_k (1 - I[y_i > y_j])
+\end{equation}
+We can lowerbound the optimal value of the 
+original problem by solving the 
+Lagrangian dual problem:
+\begin{equation}
+	v_d^* = \sup_{\mu \ge 0} \inf_{y,w} L(y,w,\mu)
+	\label{eq:lag_supinf}
+\end{equation}
+The point $(\bar{y}, \bar{w}, \bar{\mu})$ which attains the $v_d^*$ 
+MAY be approximately an optimizer for the original problem. 
+Note that this point does not necessarily be primal optimizer 
+because primal feasibility may be violated 
+and Lagrangian duality gap is not zero in general. 
+
+To solve the Lagrangian dual problem is still hard. 
+Instead of exploring the whole space of $(y, w, \mu)$, 
+we restrict ourselves to a family of $(y, w, \mu)$, which is easier to optimize. 
+We impose the following additional constraints:
+\begin{eqnarray}
+	y &=& Xw \\
+\mu_i &=& \lambda, \forall i = 1,2, \ldots, |E| \\
+ \lambda &\ge& 0
+\end{eqnarray}
+Then we have:
+\begin{equation}
+	\tilde{L}(y,w,\mu) = \lambda \sum_{k=1}^{|E|}(1 - I[y_i > y_j])
+\end{equation}
+The supinf problem of \req{\ref{eq:lag_supinf}} becomes the following optimization:
+\begin{eqnarray}
+	\minimize_{y,w} && \sum_{(m_i,m_j) \in E} 1 - I[y_i > y_j] \\
 	\text{s.t.} && y = Xw
 \end{eqnarray}
+Note that the constraint can be plugged back to objective, 
+so the objective is essentially a function in $w$ 
+and the whole problem is an unconstraint programming. 
+To make the notation less cluttered, we keep the current form. 
+To this point, we reduce variables from $(N +K)$ to $K$, 
+which is significant in practice. 
+Then it is possible to leverage first-order optimization methods, 
+which are usually easy to implement. 
+
+\subsection{Gradient Descent}
+\label{sec:Gradient Descent}
 
 Approximation by Sigmoid:
 
@@ -967,10 +1030,6 @@ Approximation by Sigmoid:
 	\minimize_{y,w} && f(w) \equiv \sum_{(i,j) \in E} 1 - \text{Sigmoid}[y_i > y_j] \\
 	\text{s.t.} && y = Xw
 \end{eqnarray}
-
-
-\subsection{Gradient Descent}
-\label{sec:Gradient Descent}
 
 \begin{equation}
 	\nabla f(w) = \sum_{(i,j) \in E} \nabla f_{ij}(w) 
