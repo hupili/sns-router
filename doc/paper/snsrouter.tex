@@ -721,19 +721,72 @@ help human make decision more efficiently.
 \subsection{The Problem of Classification Formulation}
 \label{sec:The Problem of Classification}
 
+Suppose we have $N$ messages $m_1, m_2, \ldots, m_N$. 
+We can extract some features of the messages somehow:
+(sample features are discussed in evaluation section)
 \begin{equation}
 	\tran{X} = [x_1, x_2, \ldots, x_N]
 \end{equation}
+Besides, from the Web UI, users can assign tags to each message. 
+The relation between messages and tags is multiple-to-multiple. 
+For simplicity of discussion, 
+let's assume each message has at most one tag
+(technically, we can make this true by creating auxiliary tags no 
+matter what is the user's interpretation of the main tags). 
+For those messages seen by the user by not tagged, 
+we assign a ``null'' tag for it. 
+Then every seen message has exactly one tag. 
+We denote the tag of message $i$ by $t_i$. 
+Our first formulation is a classification problem. 
+That is, given $X$, try to predict $t_i$ using certain classifiers. 
+If this can be done reasonably, users can make decisions based 
+on predicted tags and the efficiency is improved. 
 
-Analyze the result of Logit Classifier and J48. 
+We dumped data into arff format and tried two 
+commonly used classifiers using Weka \cite{weka}: 
+Logit Classifier and J48 decision tree. 
+In the experiments, we use Weka's default parameters and avoid any tuning. 
+This is because we don't want our ranking algorithm to be the game of machine learning researchers. 
+The user's knowledge in machine learning only affects what features he can extract 
+but not the quality a learner is trained. 
+
+The result of Logit classifier is not competitive.
+Its oeverall accuracy is only xxx. 
+The training and testing accuracy of J48 are xxx and xxx, respectively. 
+Although the accuracy is high, 
+the rules generate by J48 is very complex, 
+and the user can assert they are ``incorrect'' by a glance. 
+We present more data in \textbf{Appendix \ref{sec:app_Classification}}, 
+e.g. the confusion matrix, sample branch of the tree, etc. 
+
+Besides the above algorithmic concerns,
+classification formulation has other problems:
 
 \begin{itemize}
-	\item 
-	Hard cut. Do not output a likelihood.
-	\item 
-	Human can only process sequentially. 
-	Accurate classification is not needed.
+	\item Hard cut rule. 
+		Classifiers set hard cut rule for each class. 
+		They usually do not output a likelihood or any equivalence.
+		This cause problem when there is one message lie close to 
+		``news'' and ``interesting'' in the the feature space, 
+		but not close enough to any one of them. 
+		This message will be treated as ``null'' by nature. 
+		However it could be both new and interesting. 
+		Although itermidiate stage of those classifiers may calculate 
+		such values (e.g. posterior in Naive Bayes, ``likelihood'' in Logit, etc), 
+		tapping into the already packaged algorithm is needed. 
+	\item Human can only process sequentially. 
+		In the last subsection, we argued that human has to be the 
+		last judge no matter what algorithm is used. 
+		If human can only process sequentially, 
+		the combined machine+human decision process is also sequential. 
+		There is no need to perform very accurate classification.
+		According to our philosophy, 
+		we should avoid solving this more than necessary problem. 
+		On the contrary, if we can order the messages reasonably, 
+		this is already good enogh for human decision stage. 
 \end{itemize}
+
+Based on these observations, we proceed to propose a regression formulation. 
 
 \subsection{Regression Formulation}
 \label{sec:Regression Formulation}
@@ -1022,7 +1075,7 @@ technical questions on StackOverflow.
 \label{sec:Data}
 
 \section{Classification}
-\label{sec:Classification}
+\label{sec:app_Classification}
 
 \subsection{Logit Classifier}
 \label{sec:Logit Classifier}
