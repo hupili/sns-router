@@ -26,6 +26,7 @@
 \newacronym{fpr}{FPR}{False Positive Rate}
 \newacronym{ev}{EV}{Escape Vector}
 \newacronym{rw}{RW}{Random Walker}
+\newacronym{srfe}{SRFE}{SNSRouter Front End}
 
 \begin{document}
 \conferenceinfo{
@@ -477,11 +478,32 @@ which leverage human and machine intelligence simultaneously.
 \section{System Framework}
 \label{sec:System Framework}
 
+The system is divited into two parts:
+\begin{itemize}
+	\item SNSAPI is the middleware to interface with 
+		heterogeneous \gls{sns}'s. 
+		Other developers can write ``plugin'' to enable new platform. 
+		Applications built on SNSAPI is readily available for future new platforms. 
+	\item \gls{srfe} is the web-based UI for SNSRouter. 
+		Users can accomplish authorization, view incoming messages, post messages, 
+		and forward messages using \gls{srfe}. 
+		If ranking algorithm is enabled in the configuration, 
+		ranked timeline is also presented in \gls{srfe}. 
+		\gls{srfe} can be run wherever Python is supported. 
+\end{itemize}
+
+\subsection{SNSAPI Architecture}
+\label{sec:SNSAPI Architecture}
+
+
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{../pic/snsapi-arch.pdf}
 	\caption{SNSAPI Architecture}
+	\label{fig:snsapi-arch}
 \end{figure}
+
+\rfig{\ref{fig:snsapi-arch}} illustrates the system framework of SNSAPI. 
 
 
 \begin{figure}[t!]
