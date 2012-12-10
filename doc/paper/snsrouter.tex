@@ -993,6 +993,25 @@ per pair partial gradient.
 \subsection{HU's Data Set}
 \label{sec:HU's Data Set}
 
+\begin{table}[htb]
+	\centering
+	\begin{tabular}{c|c}
+		\hline
+		Item & Value \\
+		\hline
+		\# of total messages & 32533\\
+		\# of seen messages & 7553\\
+		\# of tagged messages & 924\\
+		\# of forwarded messages & 167\\
+		\# of derived pairs (training) & 231540\\
+		\# of derived pairs (testing) & 229009\\
+		\# of features (+1 noise) & 15\\
+		\hline
+	\end{tabular}
+\end{table}
+
+
+
 \subsection{Criterion}
 \label{sec:Criterion}
 
@@ -1008,7 +1027,7 @@ Kendall's tau correlation coefficient.
 \begin{table}[t!]
 	\caption{Features}
 	\centering
-	\begin{tabular}{|l|p{0.6\linewidth}|}
+	\begin{tabular}{l|p{0.6\linewidth}}
 		\hline
 		Name & Description \\
 		\hline
@@ -1033,7 +1052,7 @@ Kendall's tau correlation coefficient.
 \begin{table}
 	\centering
 	\caption{Training with SGD}
-	\begin{tabular}{|c|c|c|c|}
+	\begin{tabular}{c|c|c|c}
 	\hline
 	Item & 1. & 2. & 3. \\
 	\hline
@@ -1064,7 +1083,7 @@ Inject 1 noise feature, picking U[0,1]. Init
 it’s weights by 10.
 
 \begin{table}
-	\begin{tabular}{|c|c|c|c|}
+	\begin{tabular}{c|c|c|c}
 		\hline 
 		& Init & Round=200K & Round=400K \\
 		\hline 
