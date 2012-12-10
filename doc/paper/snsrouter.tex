@@ -4,6 +4,7 @@
 
 \documentclass{sig-alternate}
 
+\usepackage[tight,footnotesize]{subfigure}
 \usepackage{url}
 \input{common.tex}
 
@@ -564,20 +565,67 @@ and consult the developer's wiki.
 \subsection{SNSRouter Architecture}
 \label{sec:SNSRouter Architecture}
 
+In SNSAPI terminology, SNSRouter is an Application bulit upon it. 
+As we are Python developers, we choose to use Pocket class as the SAP to SNSAPI. 
+The system part, i.e. \gls{srfe}, can be divided into three parts:
+\begin{itemize}
+	\item Web UI. 
+		At the start time of \gls{srfe}, we face different choices of UI:
+		desktop software or web services. 
+		We choose web UI because we want \gls{srfe} able to be accessed from any platforms. 
+		Another consideration is that the web UI is easy to be extended 
+		so that it provides RESTful API to downflow applications. 
+		To build \gls{srfe}, we need HTTP request handler, 
+		URL routing, and simple template engine. 
+		There are many micro frameworks available in Python like cherrypy, flask, and bottle. 
+		We choose bottle mainly because of its single file property. 
+		This makes it easy to distribute along with SNSRouter so that minimum dependencies are required. 
+	\item Message Queue. 
+		If Web UI interface with SNSAPI directly, the response cycle will be very long. 
+		This is because SNSAPI's application programming model is synchronous, 
+		e.g. pocket invokes certain method of all channels and wait for response one by one. 
+		We believe this it's the App developers job to choose 
+		multi-threading or multi-processing solutions. 
+		In \gls{srfe}, we implement an asynchronous message queue, which is running in the backend. 
+		It polls each channel periodically and store messages in a local SQLite database. 
+		Request from Web UI is routed to the Message Queue so that response cycle is shortened. 
+	\item Ranking. 
+		Ranking can be enabled or disabled by configuration. 
+		Ranking module has interface with Queue. 
+		When enabled, incoming messages get their scores. 
+		From the Web UI, users can reach ranked timeline by asking 
+		the Message Queue to sort messages in descending order of score. 
+		Feature extraction and auto weighting (learner) logic is implemented in Ranking module. 
+\end{itemize}
 
+\rfig{\ref{fig:srfe_hometimeline}} shows a screen shot of 
+ordinary timeline (reverse chronological order). 
+Users can mark a message as "seen" so that it won't appear later in the timeline. 
+"seen" flag will be an important part in the training data later. 
+Below each message is a set of user defined tags. 
+Different user can have different criterion and interpretation of those tags. 
+Below tags is the forwarding panel. 
+Users can add his/her own comments and forward the new message to all other platforms. 
+This is further configurable (e.g. which tag to forward to which platform). 
+\rfig{\ref{fig:srfe_rankedtimeline}} shows the screen shot 
+of ranked timeline at the same time. 
+The author's opinion on those messages are depicted in thsoe screenshots. 
+From this pair of screenshots, we can see that ranked version is much cleaner
+so that user can make forwarding decisions more efficiently 
+(Quantitative measures are presented in the evaluation section). 
 
-
-\begin{figure}[t!]
+\begin{figure*}[t!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/srfe-screen-1.pdf}
-	\caption{Original Home Timeline on SRFE}
-\end{figure}
-
-\begin{figure}[t!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/srfe-screen-2.pdf}
-	\caption{Ranked Home Timeline on SRFE}
-\end{figure}
+	\subfigure[Original Home Timeline on SRFE]{%
+	\label{fig:srfe_hometimeline}
+	\includegraphics[width=0.4\linewidth]{../pic/srfe-screen-1.pdf}
+	}%   
+	\subfigure[Ranked Home Timeline on SRFE]{%
+	\label{fig:srfe_rankedtimeline}
+	\includegraphics[width=0.4\linewidth]{../pic/srfe-screen-2.pdf}
+	}%   
+	\caption{Original v.s. Ranked Timeline. Screen shot taken at around Dec 3, 11:30am}
+\end{figure*}
 
 %\begin{figure}[t!]
 %	\centering
@@ -606,6 +654,8 @@ and consult the developer's wiki.
 
 \section{Formulation}
 \label{sec:Formulation}
+
+
 
 \subsection{Impossibility of Complete Auto Forwarding}
 \label{sec:Impossibility of Complete Auto Forwarding}
@@ -899,10 +949,11 @@ More subjective tests are to be done:
 \section*{Acknowledgements}
 \label{sec:Acknowledgements}
 
-The author would like to thank Junbo Li from BUPT, 
+We would like to thank Junbo Li from BUPT, 
 the cofounder of SNSAPI, 
 which is the base of SNSRouter project. 
-
+We also highly appreciate people who answered our 
+technical questions on StackOverflow. 
 
 \bibliographystyle{abbrv}
 \input{../reference/gen_bib.bbl}
