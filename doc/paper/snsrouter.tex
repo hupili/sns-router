@@ -655,7 +655,15 @@ so that user can make forwarding decisions more efficiently
 \section{Formulation}
 \label{sec:Formulation}
 
-
+In this section, we discuss how we formulate a personalized ranking problem. 
+Bear in mind that our ultimate goal is to make 
+cross-platform message routing efficient. 
+Now the engineering problem has been solved by SNSAPI and \gls{srfe}. 
+Next is to design proper machine learning algorithms to make this done automatically. 
+In this section, we first discuss the impossibility of 
+complete auto forwarding algorithms. 
+Then we discuss the problems arise from classification formulation. 
+Last, we propose a regression model with user preference constraints. 
 
 \subsection{Impossibility of Complete Auto Forwarding}
 \label{sec:Impossibility of Complete Auto Forwarding}
