@@ -1024,26 +1024,38 @@ which are usually easy to implement.
 \subsection{Gradient Descent}
 \label{sec:Gradient Descent}
 
-Approximation by Sigmoid:
+%We denote the objective by $f(w)$, which is defined by:
+%\begin{equation}
+%	f(w) \equiv \sum_{(i,j) \in E} 1 - I[y_i > y_j] \\
+%\end{equation}
+The standard practice to deal with indicator function is approximation by Sigmoid function:
+\begin{equation}
+	S(x) = \frac{1}{1+e^{- \beta x}}
+\end{equation}
+where we add a scaling factor $\beta$ to control the approximation rate. 
+As $\alpha$ goes larger and larger, $S(x)$ approximates $I(x)$ better. 
+Now we define
+\begin{equation}
+	f(w) \equiv \sum_{(i,j) \in E} 1 - S(y_i - y_j) \\
+\end{equation}
+where $y_i = (Xw)_i$ and $(i,j) \in E$ is a shorthand notation for $(m_i, m_j) \in E$. 
 
-\begin{eqnarray}
-	\minimize_{y,w} && f(w) \equiv \sum_{(i,j) \in E} 1 - \text{Sigmoid}[y_i > y_j] \\
-	\text{s.t.} && y = Xw
-\end{eqnarray}
-
+The gradient of $f(w)$ is: 
 \begin{equation}
 	\nabla f(w) = \sum_{(i,j) \in E} \nabla f_{ij}(w) 
 \end{equation}
+where
+\begin{equation}
+	\nabla f_{ij}(w) = \beta (1-S(y_i - y_j))S(y_i-y_j)(x_j-x_i)
+\end{equation}
+Then we can use standard gradient descent to minimize $f(w)$. 
+
+\subsection{Stochastic Gradient Descent}
+\label{sec:Stochastic Gradient Descent}
 
 Observation: full gradient is the summation of
 per pair partial gradient. 
 
-\begin{equation}
-	\nabla f_{ij}(w) = \beta (1-S[y_i - y_j])S[y_i-y_j](x_j-x_i)
-\end{equation}
-
-\subsection{Stochastic Gradient Descent}
-\label{sec:Stochastic Gradient Descent}
 
 
 \section{Evaluation}
