@@ -665,8 +665,58 @@ complete auto forwarding algorithms.
 Then we discuss the problems arise from classification formulation. 
 Last, we propose a regression model with user preference constraints. 
 
-\subsection{Impossibility of Complete Auto Forwarding}
-\label{sec:Impossibility of Complete Auto Forwarding}
+\subsection{Impossibility of Auto Forwarding}
+\label{sec:Impossibility of Auto Forwarding}
+
+The most aggressive goal of SNSRouter is to make forwarding decisions automatically. 
+However, after one month trial, we argue that this is impossible \textbf{in general}. 
+By analyzing the real traces (167 forwarded messages out of 7.5K ``seen'' messsages), 
+we can qualitively conclude that the forward decision is made by 
+considering the following factors:
+\begin{itemize}
+	\item Quality. 
+		This usually applies to knowledge sharing and discussion. 
+	\item Novelity (freshness). 
+		This usually applies to news. 
+	\item Authority. 
+		This usually applies to news. 
+	\item Degree of wisdom. 
+		This usually applies to twisdom 
+		(tweet-wisdom: refer to those short but philosophy enlightening pieces)
+\end{itemize}
+
+Although people have different tastes, the former three factors
+may be captured by the machine. 
+However, when one looks into the traces, there are more messages 
+of the same (even higher) quality, novelity, and authority. 
+Why doesn't the user forward them? 
+The user's consideration is beyond those factors, like
+``I have already forwarded 5 messages today; 
+I don't want to flood my friend;
+This message is good but I'm not going to forward it''. 
+Other examples are like temporary shift of interest. 
+Those factors are hard to capture for machines.
+
+Another issue is that forward operation is sparse among all other operations. 
+The author is devoted to this project and mark training data every day, 
+so 167 out of 7.5K forwarded messages are collected after one month. 
+This rate is much higher than ordinary usage of \gls{sns}'s. 
+Towards this end, it is very easy for one algorithm to overfit the training samples. 
+For example, one algorithm will find the following piece of knowledge 
+statistically significant:
+``Only messages originated during daytime is valuable enough for Pili to forward''.
+Obviously, this is not the case. 
+I will miss many good messages posted on Twitter by someone 
+at the other side of the earth!
+The reason why this rule is statistically significant is that 
+I do not have a ranking engine to bring night messages to the front 
+in the initial several weeks. 
+
+We argue that complete automatic forwarding decision is impossible in general. 
+Human users must review the messages and decide whether to forward. 
+Nevertheless, we can develop some assistant tools to 
+help human make decision more efficiently. 
+
 
 \subsection{The Problem of Classification Formulation}
 \label{sec:The Problem of Classification}
