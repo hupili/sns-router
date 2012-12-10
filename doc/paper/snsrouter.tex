@@ -1140,44 +1140,95 @@ Altogether, there are more than 200K relations in both training and testing sets
 	\end{tabular}
 \end{table}
 
-
-
 \subsection{Criterion}
 \label{sec:Criterion}
 
-Kendall's tau correlation coefficient. 
-
+Kendall's tau correlation coefficient \cite{wiki_kendall} is a good measure of rank. 
+The modified version for our problem is defined as:
 \begin{equation}
-	K = \frac{\sum_{(i,j)}{I[y_i>y_j]} - \sum_{(i,j)}{I[y_j>y_i]}}{|E|}
+	K = \frac{
+	\sum_{(i,j) \in {E_{\text{test}}} }{I[\hat{y}_i>\hat{y}_j]} 
+	- \sum_{(i,j)\in {E_{\text{test}}} }{I[\hat{y}_j>\hat{y}_i]}  }
+	{|E_{\text{test}}|}
 \end{equation}
+where $\hat{y}_i$ is the predicted score of message $i$ using the learned weights $w$
+and $E_{\text{test}}$ is the set of edges in $G_{M_{\text{test}}}$. 
+The first summation in numerator counts the number pairs whose relation is preserved. 
+The second summation in numerator counts the number pairs whose relation is violated. 
+The denominator is the total number of relations in our concern. 
+Given this definition, we know that $K \in [-1, 1]$ and the larger the better. 
+This is in accordance with the notion of correlation. 
+When $\hat{y}_i$'s are assigned randomly, we can expect $K = 0$. 
 
-\subsection{Efficiency and Complexity}
-\label{sec:Efficiency and Complexity}
+\subsection{Sample Features}
+\label{sec:Sample Features}
 
-\begin{table}[t!]
+We argue that our RPR-SGD framework is easy to use, 
+so we do not try very hard to extract advanced features
+(although they are apparently future work). 
+\rtbl{\ref{tbl:feature}} summarizes our sample features extracted by our first user (Pili). 
+He is not an expert in text analysis like topic mining, sentiment analysis, etc. 
+Writing the logic to extract those features adds up to 
+approximately (maybe slightly more than) one day's work. 
+
+\begin{table}[htb]
 	\caption{Features}
+	\label{tbl:feature}
 	\centering
-	\begin{tabular}{l|p{0.6\linewidth}}
+	\begin{tabular}{l|p{0.5\linewidth}}
 		\hline
 		Name & Description \\
 		\hline
-		noise & Random variable [0,1]\\
-		echo & Whether the message is from myself\\
-		contain\_link & Whether the message contain text link\\
-		topic\_interesting & TF*IDF for {interesting}\\
-		topic\_tech & TF*IDF for {mark}{gold}{silver}{bronze}\\
-		topic\_news & TF*IDF for {news}\\
-		topic\_nonsense & TF*IDF for {nonsense}{shit}\\
-		user\_interesting & As above; regard ``user'' as ``term''\\
+		noise & Random variable in [0,1]\\
+		 echo & \{0, 1\}: Whether the message is from myself\\
+		contain\_link & Whether the message contains text link\\
+		topic\_interesting & TF*IDF for ``interesting'' \\
+		topic\_tech & TF*IDF for ``mark'' ``gold'' ``silver'' ``bronze''\\
+		topic\_news & TF*IDF for ``news''\\
+		topic\_nonsense & TF*IDF for ``nonsense'' ``shit''\\
+		user\_interesting & As above; Treat ``user'' as ``term''\\
 		user\_tech & As above\\
 		user\_news & As above\\
 		user\_nonsense & As above\\
 		text\_len & Length of all message (original + retweet)\\
-		text\_len\_clean & Length without face icon, link, @xxx, and puctuation\\
+		text\_len\_clean & Length without emoji, ``@xxx'' and puctuation\\
 		text\_orig\_len & Length of original message\\
 		\hline
 	\end{tabular}
 \end{table}
+
+Most of the features should be self-explanary. 
+We only ellaborate the ``topic\_X'' and ``user\_X'' features a bit. 
+We first discuss how we extract ``topic\_news'' from messages. 
+TF stands for Term Frequency and IDF stands for Inverse Document Frequency. 
+Those two terms are borrowed from Information Retrieval field. 
+We perform word segmentation (a vital step for Chinese messages) 
+on all incoming messages and get the 
+frequency that each term appears in those messages (DF).
+Similarly, we can first select all messages tagged as ``news'' by the Pili
+and count the term frequency (TF). 
+The intuition is that the more frequent a term appears in ``news'' category, 
+the more representative it is for this category; 
+Also, the more frequent a term appears in all messages, 
+the less representative it is for this category. 
+The simplest way to implement this notion is TF times IDF. 
+We can extract other topics in the same way. 
+With a strong domain knowledge, the users can group several tags and extract topic together. 
+When one new message comes in, we sum up all the TF*IDF values of its terms. 
+Likewise, if we treat the sender of each message as a ``term'',
+we can compute a TF*IDF value for users,
+namely how likely a user will post certain topic. 
+
+We remark that the topic mining part is very elementary. 
+One can use more advanced tools like WordNet, Ontology, etc. 
+As an additional note, the word segmentation we used is 
+Maximum Matching Segmentation (MMSeg), and our dictionary is 
+simply a merge of pymmseg-cpp and SogoW (Sogo dict dating back to 2006). 
+Many new terms, especially cyber phrases, can not be correctly segmented. 
+
+\subsection{Performance and Complexity}
+\label{sec:Performance and Complexity}
+
 
 \begin{table}
 	\centering
