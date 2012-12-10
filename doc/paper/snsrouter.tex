@@ -844,7 +844,7 @@ tell their preference between two messages.
 This leads to the following formulation:
 \begin{eqnarray}
 	\minimize_{y,w} && ||y - Xw||_2^2 \\
-	\text{s.t.} && y_i > y_j, \; \forall (i,j) \in E
+	\text{s.t.} && y_i > y_j, \; \forall (m_i,m_j) \in E
 \end{eqnarray}
 where $E$ is a set of tuples $(i,j)$ meaning message $i$ is preferred than $j$. 
 Note that $y$ in this formulation is unknown variable. 
@@ -872,8 +872,54 @@ These observations lead to the final choice -- Stochastic Gradient Descent.
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{../pic/graph-induction.pdf}
-	\caption{Graph Induction Illustration}
+	\caption{Graph Induction of Preference Constraint}
+	\label{fig:graph_induction}
 \end{figure}
+
+\rfig{\ref{fig:graph_induction}} illustrates how preference constraints $E$ are derived. 
+Ovals stand for user defined tags. 
+Solid arrows are user specified preference (through a json configuration file).
+Note that no matter what is the meaning of the tags for a user, 
+he/she should be able to tell which tag is preferred. 
+One can just ask himself/herself some questions. 
+If I only have 1 minute today, what type of messages do I want to view?
+If I have 1 more minute, what other types do I want to view next? 
+In this way, users can specify some partial ordering of the tags.
+
+We denote $T_u \succeq T_v$ if tag $T_u$ is preferred than $T_v$. 
+We construct the tag graph $G_T = <T, P>$, 
+where $T$ is the set of tags and 
+$P = \{(T_u,T_v)| T_u \succeq T_v\}$. 
+On this directed graph, we can induce more partial orderings. 
+More concretely, if there exists a path from $T_x$ to $T_y$, 
+we know $T_x \succeq T_y$. 
+Since the tag graph is so small, 
+we simply invoke Floyd algorithm \cite{wiki_floyd}
+to induce those path preferences without customizing on our own. 
+
+Now we collect all path preferences in one set $P_I$
+(meaning Induced Preference). 
+Note that edge can be treated as length-1 path, so $P \subset P_I$. 
+Then we can define message graph $G_M = <M, E>$, 
+where $M = \{m_1, m_2, \ldots, m_N\}$ is the set of all messages
+and $E = \{(m_i,m_j)| (t_i, t_j) \in P_I\}$ 
+encode a partial ordering of the messages. 
+
+We remark that this tag based preference induction is flexible. 
+It provides different level of granularities. 
+If one only needs coarse-grained ordering, 
+he only needs to add two tags like ``good'' and ``bad''. 
+One can also provide a set of fine-grained tags in a nested manner. 
+e.g. for those tagged as ``good'', he can further tag 
+``machine learning'', ``social computing'', etc. 
+At first, when there is only a little training samples, 
+he can configure only one user-specified preference, 
+i.e. ``good'' $\succeq$ ``bad''.
+Later when more training samples are available, 
+he can add another line of configuration:
+``machine learning'' $\succeq$ ``social computing''. 
+If his interest shifts one day, he simply change this line to:
+``social computing'' $\succeq$ ``machine learning''. 
 
 \subsection{Straight Optimization Solver}
 \label{sec:Straight Optimization Solver}
