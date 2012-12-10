@@ -1048,15 +1048,26 @@ where
 \begin{equation}
 	\nabla f_{ij}(w) = \beta (1-S(y_i - y_j))S(y_i-y_j)(x_j-x_i)
 \end{equation}
-Then we can use standard gradient descent to minimize $f(w)$. 
+Then we can use standard Gradient Descent (GD) to minimize $f(w)$. 
 
 \subsection{Stochastic Gradient Descent}
 \label{sec:Stochastic Gradient Descent}
 
-Observation: full gradient is the summation of
-per pair partial gradient. 
-
-
+One key observation is that the full gradient $\nabla f(w)$ 
+is the summation of per pair partial gradients $\nabla f_{ij}(w)$. 
+To perform one step of GD, one needs to sum over $|E| = O(N^2)$ terms.
+This is very costly when $N$ goes large. 
+Luckily, this summation structure fits Stochastic Gradient Descent (SGD) \cite{wiki_sgd} very well. 
+Then we can sample a set of preference relations $E_s \subset E$ 
+with $ |E_s| \ll |E| $
+and compute a ``stochastic'' gradient:
+\begin{equation}
+	\nabla f_{E_s}(w) = \sum_{(i,j) \in E_s} \nabla f_{ij}(w) 
+\end{equation}
+We walk along $-\nabla f_{E_s}(w)$ for certain step size $\alpha$. 
+Probabilistically, SGD has similar effect to GD. 
+This method is quite popular in the recent years' development of recommender systems. 
+From our experience, it is much easier to set step size in SGD than GD. 
 
 \section{Evaluation}
 \label{sec:Evaluation}
