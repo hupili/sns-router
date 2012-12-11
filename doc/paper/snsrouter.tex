@@ -1423,69 +1423,167 @@ We have the following remarks:
 		Such self-validation effect can be alleviated by a noise feature. 
 \end{itemize}
 
-\subsection{Case Study -- Add ``echo'' Feature}
-\label{sec:Case Study -- Add ``echo'' Feature}
+\subsection{Case Study -- Echo Cancellation}
+\label{sec:Case Study -- Echo Cancellation}
 
-Most platforms will echo the
-message you post there, but they
-do not give you more information.
-We want to SOFTLY cancel them.
+In this section, we provide abundant screenshots with detailed steps 
+to show how to add a new feature. 
+We also present animation of training process to 
+give the reader an impression of how RPR-SGD is adapting to new changes.  
 
-Cancel echo:
+We choose Echo Cancellation as an example. 
+\gls{sns} users should have noticed that they see their own 
+messages on the timeline among others' posts. 
+This is true for most platforms. 
+We call those messages ``echo''. 
+\rfig{\ref{fig:echo_ranked_timeline_before}} shows the ranked timeline before echo cancellation. 
+Echo will be more significant when the timeline is ranked: 
+1) A rantional user is most likely to forward valuable (at least to him/her) messages;
+2) The ranking algorithm learns the user's preference and rank those messages higher;
+3) When forwarding the message, the user adds some comments, making it 
+more valuable (from the algorithms point of view);
+4) After fetching new messages, echos are more likely to rank higher. 
 
-1. Add tag ``echo''
-
-2. Specify preference
-
-3. Add feature
-
-4. AUTO train weights
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_add_tag.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_feature.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i1.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i2.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_preference.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
+\begin{figure}
 	\centering
 	\includegraphics[width=0.7\linewidth]{../pic/echo_ranked_timeline_before.png}
-	\caption{Add New Tag on Config Panel}
+	\caption{Ranked Timeline with Echo}
+	\label{fig:echo_ranked_timeline_before}
 \end{figure}
 
+We have many ways to cancel echos. 
+For example, a programmer will find it very easy 
+to use several lines of ``IF'' to achieve this goal. 
+This way fits original notion of SNSAPI. 
+We just enable the flexibility and let App developer to craft their own logic. 
+In SNSRouter project, we are more serious about ranking. 
+If one only needs to cancel echos, the straight coding is a good solution. 
+However, we can imagine that users have many similar demand, 
+e.g. ``rank messages from some people higher'', 
+``rank messages containing music links higher'', etc. 
+When the ``IF'' tree grows large, it will be hard to manage it efficiently. 
+RPR provides the framework so that users only need to tell 
+the machine what factor may be important. 
+The machine will automatically adjust between different factors. 
 
-The weight of ``echo'' feature goes down iteration by iteration. Messages with ``echo=1''
-will be ranked lower. This is auto learned by our RPR-SGD framework.
+%Most platforms will echo the
+%message you post there, but they
+%do not give you more information.
+%We want to SOFTLY cancel them.
+
+Here is the way to to {\bf softly} cancel echos:
+\begin{enumerate}
+	\item Add tag ``echo'' on the config panel of \gls{srfe}, 
+		as is shown in \rfig{\ref{fig:echo_add_tag}}. 
+	\item Users go to \gls{srfe} and tag some messages as ``echo''. 
+		The user can do this gradually for some time. 
+		Or, the user can go to our SQL frontend on \gls{srfe}
+		to intentionally select out some messages. 
+		In the latter way, users are leveraging their own domain knowledge. 
+	\item Specify preference through json config file, 
+		as is shown in \rfig{\ref{fig:echo_preference}}. 
+		Here we only add one preference relation: ``null'' $\succeq$ ``echo''. 
+	\item Add the feature extraction logic as is shown in \rfig{\ref{fig:echo_feature}}. 
+		The user simply derives a feature extractor from base class ``FeatureBase''.
+		Excpet for structural codes, this example feature extractor 
+		only costs about 10 lines of codes.
+		Many of the 15 feature extractors used in previous evaluation are also only several dozons of lines. 
+	\item After the above preparation, 
+		the weights can be trained automatically. 
+		\rfig{\ref{fig:echo_train}} gives an animation of how 
+		weights are adapted to the new scenario. 
+		To make it less cluttered, we selectively depicted some features for comparison. 
+		One can consult the notes in SNSRouter repository for detailed data. 
+		The figures show weight of ``echo'' (2nd column) goes negatively
+		with more iterations and the other features remain roughly the same. 
+\end{enumerate}
+
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=0.5\linewidth]{../pic/echo_add_tag.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
+%
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=0.6\linewidth]{../pic/echo_preference.png}
+%	\caption{Specify Preference for Echo}
+%\end{figure}
+%
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_feature.png}
+%	\caption{Add Feature Extraction Module}
+%\end{figure}
+
+\begin{figure*}
+	\centering
+	%\subfigure[Add New Tag on Config Panel]{%
+	\subfigure[Add New Tag]{%
+	\includegraphics[width=0.21\linewidth]{../pic/echo_add_tag.png}
+	\label{fig:echo_add_tag}
+	}
+	\centering
+	\subfigure[Specify Preference for Echo]{%
+	\includegraphics[width=0.29\linewidth]{../pic/echo_preference.png}
+	\label{fig:echo_preference}
+	}
+	\centering
+	\subfigure[Add Feature Extraction Module]{%
+	\includegraphics[width=0.36\linewidth]{../pic/echo_feature.png}
+	\label{fig:echo_feature}
+	}
+	\caption{Three Steps to Add New Features}
+\end{figure*}
+
+\begin{figure}
+	\centering
+	\subfigure[Iteration i]{%
+	\label{fig:srfe_rankedtimeline}
+	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i.png}
+	}\\%    
+	\subfigure[Iteration i+1]{%
+	\label{fig:srfe_rankedtimeline}
+	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i1.png}
+	}\\%   
+	\subfigure[Iteration i+2]{%
+	\label{fig:srfe_rankedtimeline}
+	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i2.png}
+	}\\%   
+	\caption{Training Echo Feature}
+	\label{fig:echo_train}
+\end{figure}
+
+%\begin{figure}[h!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
+%
+%\begin{figure}[h!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i1.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
+%
+%\begin{figure}[h!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i2.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
+
+
+%The weight of ``echo'' feature goes down iteration by iteration. Messages with ``echo=1''
+%will be ranked lower. This is auto learned by our RPR-SGD framework.
+
+We remark that the weights adapation shown in \rfig{\ref{fig:echo_train}}
+is highly intepretable for the user. 
+The ``echo'' feature is either 1 or 0 
+and it recognizes echos by comparing sender name with channel configurations. 
+Since its weight is negative, 
+messages with ``echo=1'' will be ranked lower. 
+This agrees with the ``IF'' logic in our first thought. 
+The nice property for RPR-SGD is that this weight is trained automatically.  
 
 \section{Conclusion}
 \label{sec:Conclusion}
