@@ -1904,7 +1904,44 @@ natural for anyone who is not machine learning researcher or practitioner.
 \section{Executive Summary of SNSRouter Usage}
 \label{sec:Executive Summary of SNSRouter Usage}
 
+This section summarizes what is done with SNSRouter. 
+It is not a file level or instruction level guide. 
+It is a higher level view so that users are clear about 
+what to do and what not to do. 
 
+\begin{itemize}
+	\item Download SNSRouter from project repository. 
+	\item Install dependencies according to our wiki. 
+	\item Launch initial test with our sample configuration files, 
+		where several RSS channels are configured by default. 
+	\item Go to Web UI and verify everything is functioning. 
+	\item Configure more RSS channels and SQLite channels 
+		and verify they work. 
+		RSS and SQLite do not need authorization or authentication, 
+		so that are easier. 
+	\item If the user is not clear about channel configuration, 
+		please go to SNSAPI project and use SNSCLI, 
+		in which we embedded an online tutorial. 
+	\item Apply app keys from \gls{osn}'s and configure them accordingly. 
+		As for app key application, we have dedicated wiki page for troubleshooting. 
+		As for channel configuration, one can also turn to SNSCLI. 
+	\item Go to Web UI and verify the rich configuration also works
+		(without ranking). 
+	\item Add tags from config panel, and tag incoming messages accordingly. 
+		Remember to ``mark as seen'' so that one message will not show up again (by default). 
+		We do not impose any constraints on tags. 
+		However, users should try their best to keep consistency 
+		and define them in mind clearly. 
+	\item Collect enough samples 
+		(several days; thousands of ``seen'' messages; hundreds of tagged messages).
+	\item Install dependencies of ranking module. 
+		Enable ranking with default configuration for testing. 
+	\item Enable more feature extractors based on the users' observation. 
+		Different extractors has different dependencies. 
+		Users only need to worry about them when one extractor is to be activated. 
+	\item Write personalized extractor to meet a specific demand. 
+	\item Share feature extractors with others. 
+\end{itemize}
 
 
 \end{document}
