@@ -1639,33 +1639,76 @@ Your imagination combined with our system infrastructure can result in many nove
 \section{Future Work}
 \label{sec:Future Work}
 
+In this section, we discuss promising future works. 
+Some are directly followed from the discussions in previous sections. 
+Some are our visions. 
+We discuss from three aspects: system, algorithm and evaluation. 
+
 \subsection{System}
 \label{sec:fu_System}
 
 \begin{itemize}
-	\item RESTful interface for all components.
-		e.g. one can outsource computationally
-		intensive training to other servers
-	\item SNSRouter as a platform (of SNSAPI).
-		e.g. can be used to aggregate multiple
-		channels. 
-	\item ``FeatureStore'' and ``LearnerStore''. 
-		Boost community developing and sharing of 
-		personalization technique. 
+	\item Develop RESTful interface for all components of SNS-Router.
+		Then one can outsource computationally intensive training to other servers. 
+	\item Add a new platform -- SNSRouter to SNSAPI.
+		One can then fetch SNSRouter timeline in the same way as others. 
+		In this way, users can use SNSRouter to aggregate multiple channels,
+		which is useful to deal with large amount of RSS feeds. 
+	\item Build user community.
+		We can provide online ``FeatureStore'' and ``LearnerStore''. 
+		In this way, users do not have to be constrained to our sample features
+		or try to extract anything themselves. 
+		They can upload their extractors and download others' extractors. 
+		Those components are pluggable by configuration 
+		so that better personalization level is reached. 
 \end{itemize}
 
 \subsection{Algorithm}
 \label{sec:fu_Algorithm}
 
 \begin{itemize}
-	\item Add regularization to alleviate overfiting. 
-	\item Advanced feature extraction.
+	\item Add regularization terms. 
+		First is to alleviate overfiting and standard L2 norm regularization suffices. 
+		Second, we can perform feature selection using L1 regularization first 
+		and only train selected features. 
+	\item Build advanced feature extractors. 
+		In the topic mining part, we used TF*IDF. 
+		There is large room to improve. 
+		For example, at the startup time,
+		the system do not collect enough terms to do TF*IDF.
+		If we plug a WordNet into SNSRouter, 
+		we can enlarge the term set by diffusion techniques. 
+		This also provides a way to smooth term importance and 
+		mine hidden (semantical not literal) topic. 
+	\item Code level optimization of SGD. 
+		As is mentioned in evaluation section, 
+		code level optimization for SGD can be done. 
+		We can change to ``numpy'' objects to avoid 
+		time consuming operations like list tranversal. 
+		We can also implement a dedicated SGD library in C with Python module encapsulation. 
+		To make the code easy to migrate, 
+		the current stupid implementation will be kept as default portability consideration. 
+		After the users verify everything is going well, 
+		they can configure to optimized modules. 
 	\item SGD can do online training.
-	e.g. one sample in, derive some pairs, do
-	SGD on those pairs.
-	Naturally time sliding.
-	\item Code optimization of SGD. 
+		e.g. one sample in, derive some pairs, do SGD on those pairs.
+		In this way, it provides natural time sliding.
+		Current SGD implementation in SNSRouter is batch training, 
+		which can be triggered by the user. 
+		One recent target is to make it online. 
+		The difficulty is not at algorithm side. 
+		Instead, sliding memeory caching is needed to make it possible. 
+		Original plain SQLite interface will cause very large overhead. 
 	\item Deduplication. 
+		As we discussed in evaluation section, 
+		deduplication is a major cause to make overall efficiency gain 
+		for the users less significant than we expect from Kendall's score. 
+		Algorithmic wise, this is a traditional problem in IR. 
+		As to our application scenario, 
+		we also want to improve the frontend at the same time, 
+		so that users can process duplicated messages quickly. 
+		For example, we can present similar messges in tree structure
+		so that users can``mark as seen'' in a batch. 
 \end{itemize}
 
 \subsection{Evaluation}
@@ -1675,8 +1718,11 @@ More subjective tests are to be done:
 
 \begin{itemize}
 	\item We argue the algorithm framework is easy to personalize. 
-		In the future work, we'll invite more developers 
+		In the future work, we will invite more developers 
 		who are not machine learning experts to test our system. 
+		In this way, we can see how efficient people are 
+		after they use our system. 
+		More sample extractors can be output in this process. 
 \end{itemize}
 
 \section*{Acknowledgements}
