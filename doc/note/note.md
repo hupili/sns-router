@@ -1513,3 +1513,63 @@ $find -name "*.sh" | grep -v "third" | grep -v "oauth" | grep -v "back" | xargs 
 140 total
 ```
 
+### Human Evaluation. 
+
+I do not know what happened during the recent three weeks. 
+Just check the following time sections. 
+
+```
+$sqlite3 srfe_queue.db.20121211-084244
+```
+
+```
+$date -d"Tue Dec 11 08:46:44 HKT 2012" +%s
+1355186804
+$date -d"Tue Dec 04 08:46:44 HKT 2012" +%s
+1354582004
+$date -d"Tue Nov 27 08:46:44 HKT 2012" +%s
+1353977204
+$date -d"Tue Nov 20 08:46:44 HKT 2012" +%s
+1353372404
+$date -d"Tue Nov 13 08:46:44 HKT 2012" +%s
+1352767604
+```
+
+```
+sqlite> select count(*) from msg,msg_tag where msg_id=msg.id and (tag_id=2 or tag_id=3 or tag_id=4 or tag_id=5 or tag_id=6 or tag_id=7) and time>=1352767604 and time < 1353372404;
+114
+sqlite> select count(*) from msg,msg_tag where msg_id=msg.id and (tag_id=2 or tag_id=3 or tag_id=4 or tag_id=5 or tag_id=6 or tag_id=7) and time>=1353372404 and time < 1353977204;
+138
+sqlite> select count(*) from msg,msg_tag where msg_id=msg.id and (tag_id=2 or tag_id=3 or tag_id=4 or tag_id=5 or tag_id=6 or tag_id=7) and time>=1353977204 and time < 1354582004;
+184
+sqlite> select count(*) from msg,msg_tag where msg_id=msg.id and (tag_id=2 or tag_id=3 or tag_id=4 or tag_id=5 or tag_id=6 or tag_id=7) and time>=1354582004 and time < 1355186804;
+56
+
+select count(*) from msg where flag="seen" and time>=1353372404 and time < 1353977204;
+select count(*) from msg where flag="seen" and time>=1353977204 and time < 1354582004;
+select count(*) from msg where flag="seen" and time>=1354582004 and time < 1355186804;
+
+sqlite> select count(*) from msg where flag="seen" and time>=1352767604 and time < 1353372404;
+1489
+sqlite> select count(*) from msg where flag="seen" and time>=1353372404 and time < 1353977204;
+1544
+sqlite> select count(*) from msg where flag="seen" and time>=1353977204 and time < 1354582004;
+846
+sqlite> select count(*) from msg where flag="seen" and time>=1354582004 and time < 1355186804;
+225
+
+select count(*) from msg where time>=1353372404 and time < 1353977204;
+select count(*) from msg where time>=1353977204 and time < 1354582004;
+select count(*) from msg where time>=1354582004 and time < 1355186804;
+
+sqlite> select count(*) from msg where time>=1352767604 and time < 1353372404;
+6578
+sqlite> select count(*) from msg where time>=1353372404 and time < 1353977204;
+9040
+sqlite> select count(*) from msg where time>=1353977204 and time < 1354582004;
+8472
+sqlite> select count(*) from msg where time>=1354582004 and time < 1355186804;
+8243
+```
+
+

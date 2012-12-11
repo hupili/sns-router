@@ -1370,15 +1370,24 @@ to improve user efficiency to a higher level.
 \subsection{Robustness}
 \label{sec:Robustness}
 
-Start with already trained weights for
-other features. Largest magnitude is < 10.
+In this experiment, we test how robust our algorithm is to noise. 
+This is important measurement because we expect user to extract features for themselves. 
+If their feature is not informative under PRP model or is nearly to noise, 
+our weighting should not deviate too much. 
+Being robust is the first step.
+In the future work, we can add automatic feature selection techniques.
 
-Inject 1 noise feature, picking U[0,1]. Init
-it's weights by 10.
+We start with features listed in \rtbl{\ref{tbl:feature}} without ``noise'', 
+and run enough steps of SGD to get a point with $K>0.8$. 
+The absolute values of trained weights for the rest features are all less than 10. 
+Then we inject 1 noise feature, which is a random variable $\sim U[0,1]$. 
+We initalize the weight of ``noise'' by 10.
+\rtbl{\ref{tbl:noise}} shows the training result. 
 
 \begin{table}[htb]
 	\centering
 	\caption{Robustness Test}
+	\label{tbl:noise}
 	\begin{tabular}{c|c|c|c}
 		\hline 
 		& Init & Round=200K & Round=400K \\
@@ -1388,6 +1397,31 @@ it's weights by 10.
 		\hline
 	\end{tabular}
 \end{table}
+
+One can see that the Kendall's score is close to 0 initially. 
+This is because we initialized ``noise'' with very large weight
+and it becomes the dominating factor. 
+Random ordering of the messages should result in $K \approx 0$. 
+With more steps of SGD, the absolute value of the weight of ``noise'' becomes smaller
+and corresponding Kendall's score also improves. 
+
+We have the following remarks:
+\begin{itemize}
+	\item We can add regularization terms to force non-informative features' 
+		weights approach zero. 
+		This is left to future work. 
+	\item Although the original purpose of ``noise'' feature is just for experimenting, 
+		we later find that ``noise'' is a very good feature. 
+		With small but not fully negnigible weight, 
+		it introduces reasonable disturbance into the system, 
+		thus providing less biased samples. 
+		For example, if the user make posting time a feature, 
+		the algorithm may conclude that ``larger timestamp is preferred''.
+		This is purely because messages are presented in reverse chronological order on the original timeline
+		(where the users mark for training samples). 
+		When two messages are similar, only the first one ``seen'' by the user are marked. 
+		Such self-validation effect can be alleviated by a noise feature. 
+\end{itemize}
 
 \subsection{Case Study -- Add ``echo'' Feature}
 \label{sec:Case Study -- Add ``echo'' Feature}
