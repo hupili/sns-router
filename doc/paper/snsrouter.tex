@@ -1104,6 +1104,7 @@ We first introduce the data set collected in a time span slightly more than one 
 Then we propose to use Kendall's tau correlation coefficient as a metric. 
 Performance v.s. complexity of the algorithm is evaluted
 with a set of preliminary features.  
+We also use real feedback to show that user efficiency is significantly improved. 
 Next, we inject noise feature to show the robustness of RPR-SGD. 
 Last, we use a case study to demonstrate how easy it is to 
 incorporate a new feature and show the adaptive learning behaviour of RPR-SGD. 
@@ -1243,6 +1244,7 @@ meaning $85\%$ pairs are in correct order
 From the data, we can see that SGD scales well. 
 The author is confident that the algorithm can be 
 an order of mangnitude faster by only code level optimization. 
+For the time being, for leave it to the future work. 
 
 \begin{table}[htb]
 	\centering
@@ -1289,6 +1291,77 @@ We also remark that:
 %	\item Easy configuration
 %	\item Easy to add new features
 %\end{itemize}
+
+\subsection{Improved User Efficiency}
+\label{sec:Improved User Efficiency}
+
+We present the user feedback in \rtbl{\ref{tbl:user_eff}} to show RPR-SGD 
+improves user efficiency significantly. 
+We divide time period by weeks to absorb natural variance
+such as workday v.s. weekend, day v.s. night, etc. 
+This deployment connects to Renren, SinaWeibo, TencentWeibo, SQLite, Gmail, and several other RSS feeds. 
+``All'' is the total number of messages fetched during the experiment time. 
+``Seen'' is the total number of messages seen by the user
+(flagged as ``seen'' from \gls{srfe}). 
+``Value'' means useful information to the user. 
+As a rough estimation, we regard the following tags as ``Value'':
+``gold'', ``silver'', ``bronze'', ``mark'', ``news'', ``interesting''
+(As is shown in \rfig{\ref{fig:graph_induction}}, they have ``$\succeq$'' relation to ``null''). 
+The last column ``V/S'' counts the ratio between ``Value'' and ``Seen''. 
+
+\begin{table}[htb]
+	\centering
+	\caption{User Efficiency Evaluation}
+	\label{tbl:user_eff}
+	\begin{tabular}{c|c|c|c|c|c}
+		\hline
+		No. & Period & All & Seen & Value & V/S \\
+		\hline
+		1 & Nov 13 - Nov 20 & 6578 & 1489 & 114 & 7.6561\% \\
+		2 & Nov 20 - Nov 27 & 9040 & 1544 & 138 & 8.9378\% \\
+		3 & Nov 27 - Dec 04 & 8472 & 846 & 184 & 21.749\% \\
+		4 & Dec 04 - Dec 11 & 8243 & 225 & 56 & 24.889\% \\
+		\hline
+	\end{tabular}
+\end{table}
+
+It is obvious that RPR-SGD improves user efficiency. 
+To help the readers truthfully interpret the presented result, 
+we should note the following facts:
+\begin{itemize}
+	\item Preliminary reranking test was brought online at Nov 26. 
+		One can see the V/S ratio is already slightly higher in week2. 
+	\item In week1, the \gls{srfe} is not running continously day and night, 
+		because it is in the intensive debug period. 
+		Number of total messages is significantly smaller. 
+		This is only the number of messages collected during Pili's working time. 
+	\item Compared to week2, week3 and week4 have fewer number of total messages. 
+		This is because connection from CUHK campus to TencentWeibo API server failed since about Dec 1. 
+		We observed the unstability issue of TecentWeibo API server several times 
+		prior to SNS-Router project. 
+		This is out of our debugging ability. 
+	\item In week3 and week4, the user was not fully exposed to ranked timeline. 
+		He went back to ordinary timeline from time to time. 
+		This is to serve more unbiased samples for the algorithm. 
+		It will lower ``V/S'' somehow, but bring positive effect in the long run. 
+	\item When viewing the ranked timeline, user's criterion will be subconciously higher. 
+		This is natural psychological effect. 
+		If the baseline is better, people tend to be more strict. 
+		Even with perfect ranking, people are unlikely to tag
+		most of the top entries as valuable. 
+	\item We observe that duplication is a major cause to make ``V/S'' 
+		value look poorer than Kendall's score. 
+		Many times, the same information was tweeted by different sources using different wording. 
+		If it is valuable (according to our trained weighting scheme), 
+		all those messages are ranked high. 
+		However, the user may only ``mark'' one of them for future retrieval. 
+		We will discuss more on this aspect in the future work section. 
+\end{itemize}
+
+In total, we find RPR-SGD can improve user efficiency substantially. 
+It performs good in screening off noisy messages. 
+As to duplicated high quality messages, more work has to be done 
+to improve user efficiency to a higher level. 
 
 \subsection{Robustness}
 \label{sec:Robustness}
@@ -1418,6 +1491,7 @@ will be ranked lower. This is auto learned by our RPR-SGD framework.
 	SGD on those pairs.
 	Naturally time sliding.
 	\item Code optimization of SGD. 
+	\item Deduplication. 
 \end{itemize}
 
 \subsection{Evaluation}
