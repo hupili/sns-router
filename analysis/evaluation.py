@@ -25,6 +25,7 @@ from snsapi.snslog import SNSLog as logger
 import base64
 import hashlib
 import sqlite3
+import random
 
 def load_pickle(fn):
     import time
@@ -109,6 +110,8 @@ if __name__ == '__main__':
     samples = data['samples']
     order = data['order']
     ranked = sorted(samples.values(), key = lambda m: sc.get_score(m), reverse = True)
+    #ranked = sorted(samples.values(), key = lambda m: random.random(), reverse = True)
+    #ranked = sorted(samples.values(), key = lambda m: m.parsed.time, reverse = True)
     ranking = [m.msg_id for m in ranked]
     ret = evaluate_kendall(ranking, order)
     print ret
