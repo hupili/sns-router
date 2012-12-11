@@ -1242,9 +1242,13 @@ This is substantial improvement compared to unranked version,
 meaning $85\%$ pairs are in correct order 
 (i.e. $K = (0.85 |E| - 0.15 |E|) / |E|$). 
 From the data, we can see that SGD scales well. 
-The author is confident that the algorithm can be 
+We also implemented GD.
+Under the same settings, 
+GD costs about 30s in one step and 
+needs about 15 steps to walk a point with $K \approx 0.75$. 
+The author is confident that the SGD algorithm can be 
 an order of mangnitude faster by only code level optimization. 
-For the time being, for leave it to the future work. 
+For the time being, we leave it to the future work. 
 
 \begin{table}[htb]
 	\centering
