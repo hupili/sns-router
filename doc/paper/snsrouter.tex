@@ -757,9 +757,10 @@ This is because we don't want our ranking algorithm to be the game of machine le
 The user's knowledge in machine learning only affects what features he can extract 
 but not the quality a learner is trained. 
 
-The result of Logit classifier is not competitive.
-Its oeverall accuracy is only xxx. 
-The training and testing accuracy of J48 are xxx and xxx, respectively. 
+The accuracy of Logit classifier is only 78.5526\%, 
+which is not competitive.
+The overall accuracy of J48 is 87.3684\%
+and is comparable to our later proposals. 
 Although the accuracy is high, 
 the rules generate by J48 is very complex, 
 and the user can assert they are ``incorrect'' by a glance. 
@@ -1789,14 +1790,90 @@ This is the freedom of developers and is in general hard to block.
 \section{Classification}
 \label{sec:app_Classification}
 
+As we mentioned in the formulation section, 
+classification is one candidate formulation initially. 
+We dumped data to arff format and ran some preliminary experiments. 
+
 \subsection{Logit Classifier}
 \label{sec:Logit Classifier}
+
+The accuracy that Logit Classifier can reach is 78.5526\%. 
+Comparing with the data we presented in evaluation section, 
+this performance is not competitive. 
+A 0.8 Kendall's score maps back to 90\% correctly ranked pairs. 
+Incorrectly classified instances will amplify to larger number of incorrect pairs. 
+The confusion matrix is presented in \rfig{\ref{fig:confmat_logit}}. 
+We can see that the most confused part is ``news''. 
+From the user's point, this is natural. 
+When I tagged messages as news, I already realized that 
+there were not enough features for ``news''. 
+First, they come from a wide spectrum of topics:
+politics, military, science, etc. 
+It is hard to use topic to judge the ``news''-ness, 
+leting alone judge it with our elementary topic miner.
+
+\begin{figure*}[t!]
+	\centering
+\begin{Verbatim}
+   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o   <-- classified as
+   5   0   0   0   0   0   0   0   0   0   0   2   0   0   0 |   a = echo
+   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0 |   b = case
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   c = gold
+   0   2   0  16   0   0   0   0   0   0   0   2   0   0   0 |   d = interesting
+   0   0   0   2  71   0   0   0   7   0   0  15   0   0   0 |   e = nonsense
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   f = __fake__
+   0   0   0   0   0   0  90   0   0   0   1  22   0   0   0 |   g = mark
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   h = tech
+   0   0   0   3   1   0   0   0  10   0   0   0   0   0   0 |   i = shit
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   j = text
+   0   0   0   0   0   0   1   0   0   0  40  76   0   0   0 |   k = news
+   2   1   0   4   4   0   4   0   0   0  14 363   0   0   0 |   l = null
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   m = data
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   n = silver
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   o = bronze
+\end{Verbatim}
+	\caption{Confusion Matrix, Logit Classifier}
+	\label{fig:confmat_logit}
+\end{figure*}
 
 \subsection{J48 Decision Tree}
 \label{sec:J48 Decision Tree}
 
-A sample branch for mark (3.0/1.0):
+J48 decision tree can reach an overall accuracy of 87.3684\% (testing). 
+This value is very good. 
+The confusion matrix is presented in \rfig{\ref{fig:confmat_j48}}. 
+One can see that it performs equally well for all classes. 
+This is because decision tree can generate arbitrary 
+(axis perpendicular) decision boundary. 
+We also remark that the training and testing speed for J48 very high. 
+All the process is completed in less than 5 seconds. 
 
+\begin{figure*}[t!]
+	\centering
+\begin{Verbatim}
+   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o   <-- classified as
+   6   0   0   0   0   0   1   0   0   0   0   0   0   0   0 |   a = echo
+   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0 |   b = case
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   c = gold
+   0   0   0  15   0   0   0   0   0   0   0   5   0   0   0 |   d = interesting
+   0   0   0   0  70   0   2   0   6   0   1  16   0   0   0 |   e = nonsense
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   f = __fake__
+   0   0   0   0   0   0  94   0   0   0   3  16   0   0   0 |   g = mark
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   h = tech
+   0   0   0   0   1   0   0   0  13   0   0   0   0   0   0 |   i = shit
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   j = text
+   0   0   0   0   0   0   1   0   0   0 104  12   0   0   0 |   k = news
+   2   0   0   0  10   0  14   0   0   0   6 360   0   0   0 |   l = null
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   m = data
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   n = silver
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   o = bronze
+\end{Verbatim}
+	\caption{Confusion Matrix, J48}
+	\label{fig:confmat_j48}
+\end{figure*}
+
+One drawback is that overfiting is obvious in J48. 
+We present a sample branch for ``mark''  as follows:
 \begin{Verbatim}
    topic_news <= 0.00603 
 && topic_tech <= 0.041455
@@ -1807,7 +1884,15 @@ A sample branch for mark (3.0/1.0):
 && user_tech <= 0.010894 
 && text_len_clean <= 0.0575
 && user_tech > 0.001621
+==> mark (3.0/1.0)
 \end{Verbatim}
+The ``3.0/1.0'' in bracket means that 3 instances are correctly classified 
+along this branch, and 1 instance is incorrectly classified. 
+This small number is one sign of overfiting. 
+Another sign is the ``id'' branch. 
+It is just the rowid in SQLite DB and should not play any role in classification. 
+Proper tuning may make it work better but the process will be less 
+natural for anyone who is not machine learning researcher or practitioner. 
 
 \section{Executive Summary of SNSRouter Usage}
 \label{sec:Executive Summary of SNSRouter Usage}
