@@ -1738,12 +1738,53 @@ We also highly appreciate people who answered our technical questions on StackOv
 
 \appendix 
 
-\section{Data}
-\label{sec:Data}
+%\section{Data}
+%\label{sec:Data}
 
 \section{Business}
 \label{sec:Business}
 
+We tried to upgrade one sample app key on SinaWeibo but failed.
+\footnote{See the issue tracker for more details, \url{https://github.com/hupili/snsapi/issues/11}}
+The reason is that they forbid cross-platform forwarding applications. 
+From a few survey, we summarize some of their business considerations:
+\begin{itemize}
+	\item Competition. 
+		They don't want users just to go to other \gls{osn} but possess 
+		the ability to synchronize content back to SinaWeibo.
+		They want to lock users in because advertisements are presented on user timeline
+		if they access it from web. 
+		This is very similar to the old days when you can not 
+		transfer cellphone number from one service provider to another. 
+		Considering the links established within one platform, 
+		users find it difficult to migrate to another platform. 
+	\item Censorship. 
+		SinaWeibo monitors user content and delete / block / hide messages 
+		if they are not appropriate. 
+		If multi-platform synchronization is allowed, those messages 
+		forwarded to another platform are out of control. 
+		In this case, they forbid any form of synchronization
+		(even with application and audition). 
+\end{itemize}
+
+The first one is out of our consideration. 
+The second one is just placing a thin film to slow down the information spreading process. 
+You can not stop users' copy and paste anyway. 
+
+The way they stop such applications is by killing their app keys. 
+This is effective if the App developer resort to a closed system 
+and hide all details from the user. 
+On another hand, we agree that this lowers the barrier for 
+ordinary users to use the App. 
+
+Given those observations, we position SNSAPI and 
+SNS-Router as developer applications. 
+If a user want to use SNSRouter,
+he/she may have to spend several minutes 
+to apply his/her own app key. 
+Then the use of SNSRouter from service provider's point of view is just 
+someone testing a new App.
+This is the freedom of developers and is in general hard to block. 
 
 \section{Classification}
 \label{sec:app_Classification}
