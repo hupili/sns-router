@@ -1587,15 +1587,54 @@ The nice property for RPR-SGD is that this weight is trained automatically.
 \section{Conclusion}
 \label{sec:Conclusion}
 
+We observe that message forwarding is a major operation on \gls{sns}. 
+Cross-platform forwarding behaviour is seldom discussed 
+in both industry and academia. 
+One main reason is that there is no full solution stack to 
+make it automatical or semi-automatical, 
+in order for researcher to collect enough data. 
+There are also some business considerations discussed in Appendix \ref{sec:Business}.
+In this paper, we take an intial step to takle with the problem 
+by leveraging system, algorithm and human in the following steps:
+
 \begin{itemize}
-	\item A middleware for different SNS
-	\item A portable web frontend
-	\item Real data collection (1+ month)
-	\item A flexible algorithm framework (RPR-SGD)
-	\item Sample feature extraction modules
+	\item Develop a middleware for heterogeneous SNS's. 
+	\item Develop a portable web frontend which supports 
+		easy cross-platform message forwarding and personal tagging. 
+	\item Collect real data in more than one month time span. 
+	\item Propose a flexible algorithm framework (RPR-SGD)
+		to personalize incoming message ordering, 
+		which boosts the user efficiency. 
+	\item Develop some sample feature extraction modules. 
 \end{itemize}
 
+Note that the usage of SNSRouter is not restricted to forwarding assistant. 
+It can be used as a personal information center 
+(with more forthcoming SNSAPI plugins). 
+For example, monitor your course webpage and send emails 
+to your friends when new slides are posted. 
+For another example, follow celebrities on SinaWeibo
+so that their messages (including later deleted ones) are all automatically archived. 
+This provides a distributed witness force, which help to improve 
+their awareness of social responsibility!
+\footnote{
+	Many celebrities on SinaWeibo act like media. 
+	They pursue the speed of spreading information and the exposure rate. 
+	Many of them do not spend a minute to validate the messages they forward. 
+	After people find out it is rumor, 
+	they just delete the original message quietly 
+	without one word of applogy. 
+	Late comers will only see a sentence in original position:
+	``This message is deleted, please consult the customer service for more information''
+	(in Chinese). 
+	However, the influence is already far spreading on the network. 
+	I believe, the \gls{osn}'s will be more reliable if many people are running SNSRouter. 
+	Under this scenario, those celebrities will think twice before they act. 
+	When mistakes are made, they will prefer to fix them rather than hide them. 
+}
 
+In total, SNSAPI and SNSRouter by design is open. 
+Your imagination combined with our system infrastructure can result in many novel applications. 
 
 \section{Future Work}
 \label{sec:Future Work}
@@ -1656,6 +1695,10 @@ technical questions on StackOverflow.
 
 \section{Data}
 \label{sec:Data}
+
+\section{Business}
+\label{sec:Business}
+
 
 \section{Classification}
 \label{sec:app_Classification}
