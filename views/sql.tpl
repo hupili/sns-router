@@ -3,7 +3,7 @@
 % setdefault('submit', False)
 
 <form method="POST" action="/sql">
-SELECT id,pyobj FROM msg WHERE <br />
+SELECT msg.id,msg.pyobj FROM msg,msg_tag WHERE <br />
 <textarea name="condition" cols=50 rows=5>
 %if submit:
 {{condition}}
