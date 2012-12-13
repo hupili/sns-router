@@ -142,12 +142,11 @@
 	to personalize incoming messages' ordering. 
 	Users with certain programming knowledge can easily add other personalization features. 
 	An appropriate ordering saves user's time in reviewing those messages. 
-	He/she can then make final forwarding decisions. 
+	He/she can then make final forwarding decisions efficiently. 
 
 	Evaluation on real traces collected by SNSRouter shows that 
-	RPR outputs very good weighting even with preliminary feature extractions. 
-	The author of the report, who is not an expert in NLP, can construct those 
-	features in one day. 
+	RPR outputs very good weighting even with elementary feature extractions. 
+	The author of the report, who is not an expert in NLP, can construct those features in one day. 
 	This shows the flexibility of our system and algorithm framework. 
 \end{abstract}
 
@@ -208,7 +207,7 @@ so we see people visting several \gls{sns}'s everyday.
 
 \begin{figure}[t!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/sns-het.pdf}
+	\includegraphics[width=0.9\linewidth]{../pic/sns-het.pdf}
 	\caption{Illustration of Heterogeneous SNS}
 	\label{fig:sns-het}
 \end{figure}
@@ -290,6 +289,13 @@ Last, we conclude this paper in
 and share our visions on future works in 
 \rsec{\ref{sec:Future Work}}
 .
+
+Users who want to get hands on quickly can skip the those 
+system and algorithm discussions and 
+consult the executive summary in Appendix \ref{sec:Executive Summary of SNSRouter Usage}. 
+When time is permitted, we encourage you to come back 
+and read those discussions to get a better picture 
+so that you can full utilize the power of SNSRouter. 
 
 %    sec:Related Work
 %    sec:Philosophy
@@ -510,7 +516,7 @@ The system is divited into two parts:
 
 \begin{figure}[t!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/snsapi-arch.pdf}
+	\includegraphics[width=0.9\linewidth]{../pic/snsapi-arch.pdf}
 	\caption{SNSAPI Architecture}
 	\label{fig:snsapi-arch}
 \end{figure}
@@ -559,7 +565,7 @@ Commands are piped in SNSCLI using STDIN and results are obtained from STDOUT.
 
 \begin{figure}[t!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/snsapi-screen-1.pdf}
+	\includegraphics[width=0.9\linewidth]{../pic/snsapi-screen-1.pdf}
 	\caption{Command Line Interface of SNSAPI}
 	\label{fig:snscli}
 \end{figure}
@@ -758,9 +764,10 @@ This is because we don't want our ranking algorithm to be the game of machine le
 The user's knowledge in machine learning only affects what features he can extract 
 but not the quality a learner is trained. 
 
-The result of Logit classifier is not competitive.
-Its oeverall accuracy is only xxx. 
-The training and testing accuracy of J48 are xxx and xxx, respectively. 
+The accuracy of Logit classifier is only 78.5526\%, 
+which is not competitive.
+The overall accuracy of J48 is 87.3684\%
+and is comparable to our later proposals. 
 Although the accuracy is high, 
 the rules generate by J48 is very complex, 
 and the user can assert they are ``incorrect'' by a glance. 
@@ -1104,6 +1111,7 @@ We first introduce the data set collected in a time span slightly more than one 
 Then we propose to use Kendall's tau correlation coefficient as a metric. 
 Performance v.s. complexity of the algorithm is evaluted
 with a set of preliminary features.  
+We also use real feedback to show that user efficiency is significantly improved. 
 Next, we inject noise feature to show the robustness of RPR-SGD. 
 Last, we use a case study to demonstrate how easy it is to 
 incorporate a new feature and show the adaptive learning behaviour of RPR-SGD. 
@@ -1241,8 +1249,13 @@ This is substantial improvement compared to unranked version,
 meaning $85\%$ pairs are in correct order 
 (i.e. $K = (0.85 |E| - 0.15 |E|) / |E|$). 
 From the data, we can see that SGD scales well. 
-The author is confident that the algorithm can be 
+We also implemented GD.
+Under the same settings, 
+GD costs about 30s in one step and 
+needs about 15 steps to walk a point with $K \approx 0.75$. 
+The author is confident that the SGD algorithm can be 
 an order of mangnitude faster by only code level optimization. 
+For the time being, we leave it to the future work. 
 
 \begin{table}[htb]
 	\centering
@@ -1290,18 +1303,98 @@ We also remark that:
 %	\item Easy to add new features
 %\end{itemize}
 
+\subsection{Improved User Efficiency}
+\label{sec:Improved User Efficiency}
+
+We present the user feedback in \rtbl{\ref{tbl:user_eff}} to show RPR-SGD 
+improves user efficiency significantly. 
+We divide time period by weeks to absorb natural variance
+such as workday v.s. weekend, day v.s. night, etc. 
+This deployment connects to Renren, SinaWeibo, TencentWeibo, SQLite, Gmail, and several other RSS feeds. 
+``All'' is the total number of messages fetched during the experiment time. 
+``Seen'' is the total number of messages seen by the user
+(flagged as ``seen'' from \gls{srfe}). 
+``Value'' means useful information to the user. 
+As a rough estimation, we regard the following tags as ``Value'':
+``gold'', ``silver'', ``bronze'', ``mark'', ``news'', ``interesting''
+(As is shown in \rfig{\ref{fig:graph_induction}}, they have ``$\succeq$'' relation to ``null''). 
+The last column ``V/S'' counts the ratio between ``Value'' and ``Seen''. 
+
+\begin{table}[htb]
+	\centering
+	\caption{User Efficiency Evaluation}
+	\label{tbl:user_eff}
+	\begin{tabular}{c|c|c|c|c|c}
+		\hline
+		No. & Period & All & Seen & Value & V/S \\
+		\hline
+		1 & Nov 13 - Nov 20 & 6578 & 1489 & 114 & 7.6561\% \\
+		2 & Nov 20 - Nov 27 & 9040 & 1544 & 138 & 8.9378\% \\
+		3 & Nov 27 - Dec 04 & 8472 & 846 & 184 & 21.749\% \\
+		4 & Dec 04 - Dec 11 & 8243 & 225 & 56 & 24.889\% \\
+		\hline
+	\end{tabular}
+\end{table}
+
+It is obvious that RPR-SGD improves user efficiency. 
+To help the readers truthfully interpret the presented result, 
+we should note the following facts:
+\begin{itemize}
+	\item Preliminary reranking test was brought online at Nov 26. 
+		One can see the V/S ratio is already slightly higher in week2. 
+	\item In week1, the \gls{srfe} is not running continously day and night, 
+		because it is in the intensive debug period. 
+		Number of total messages is significantly smaller. 
+		This is only the number of messages collected during Pili's working time. 
+	\item Compared to week2, week3 and week4 have fewer number of total messages. 
+		This is because connection from CUHK campus to TencentWeibo API server failed since about Dec 1. 
+		We observed the unstability issue of TecentWeibo API server several times 
+		prior to SNS-Router project. 
+		This is out of our debugging ability. 
+	\item In week3 and week4, the user was not fully exposed to ranked timeline. 
+		He went back to ordinary timeline from time to time. 
+		This is to serve more unbiased samples for the algorithm. 
+		It will lower ``V/S'' somehow, but bring positive effect in the long run. 
+	\item When viewing the ranked timeline, user's criterion will be subconciously higher. 
+		This is natural psychological effect. 
+		If the baseline is better, people tend to be more strict. 
+		Even with perfect ranking, people are unlikely to tag
+		most of the top entries as valuable. 
+	\item We observe that duplication is a major cause to make ``V/S'' 
+		value look poorer than Kendall's score. 
+		Many times, the same information was tweeted by different sources using different wording. 
+		If it is valuable (according to our trained weighting scheme), 
+		all those messages are ranked high. 
+		However, the user may only ``mark'' one of them for future retrieval. 
+		We will discuss more on this aspect in the future work section. 
+\end{itemize}
+
+In total, we find RPR-SGD can improve user efficiency substantially. 
+It performs good in screening off noisy messages. 
+As to duplicated high quality messages, more work has to be done 
+to improve user efficiency to a higher level. 
+
 \subsection{Robustness}
 \label{sec:Robustness}
 
-Start with already trained weights for
-other features. Largest magnitude is < 10.
+In this experiment, we test how robust our algorithm is to noise. 
+This is important measurement because we expect user to extract features for themselves. 
+If their feature is not informative under PRP model or is nearly to noise, 
+our weighting should not deviate too much. 
+Being robust is the first step.
+In the future work, we can add automatic feature selection techniques.
 
-Inject 1 noise feature, picking U[0,1]. Init
-it's weights by 10.
+We start with features listed in \rtbl{\ref{tbl:feature}} without ``noise'', 
+and run enough steps of SGD to get a point with $K>0.8$. 
+The absolute values of trained weights for the rest features are all less than 10. 
+Then we inject 1 noise feature, which is a random variable $\sim U[0,1]$. 
+We initalize the weight of ``noise'' by 10.
+\rtbl{\ref{tbl:noise}} shows the training result. 
 
 \begin{table}[htb]
 	\centering
 	\caption{Robustness Test}
+	\label{tbl:noise}
 	\begin{tabular}{c|c|c|c}
 		\hline 
 		& Init & Round=200K & Round=400K \\
@@ -1312,112 +1405,318 @@ it's weights by 10.
 	\end{tabular}
 \end{table}
 
-\subsection{Case Study -- Add ``echo'' Feature}
-\label{sec:Case Study -- Add ``echo'' Feature}
+One can see that the Kendall's score is close to 0 initially. 
+This is because we initialized ``noise'' with very large weight
+and it becomes the dominating factor. 
+Random ordering of the messages should result in $K \approx 0$. 
+With more steps of SGD, the absolute value of the weight of ``noise'' becomes smaller
+and corresponding Kendall's score also improves. 
 
-Most platforms will echo the
-message you post there, but they
-do not give you more information.
-We want to SOFTLY cancel them.
+We have the following remarks:
+\begin{itemize}
+	\item We can add regularization terms to force non-informative features' 
+		weights approach zero. 
+		This is left to future work. 
+	\item Although the original purpose of ``noise'' feature is just for experimenting, 
+		we later find that ``noise'' is a very good feature. 
+		With small but not fully negnigible weight, 
+		it introduces reasonable disturbance into the system, 
+		thus providing less biased samples. 
+		For example, if the user make posting time a feature, 
+		the algorithm may conclude that ``larger timestamp is preferred''.
+		This is purely because messages are presented in reverse chronological order on the original timeline
+		(where the users mark for training samples). 
+		When two messages are similar, only the first one ``seen'' by the user are marked. 
+		Such self-validation effect can be alleviated by a noise feature. 
+\end{itemize}
 
-Cancel echo:
+\subsection{Case Study -- Echo Cancellation}
+\label{sec:Case Study -- Echo Cancellation}
 
-1. Add tag ``echo''
+In this section, we provide abundant screenshots with detailed steps 
+to show how to add a new feature. 
+We also present animation of training process to 
+give the reader an impression of how RPR-SGD is adapting to new changes.  
 
-2. Specify preference
+We choose Echo Cancellation as an example. 
+\gls{sns} users should have noticed that they see their own 
+messages on the timeline among others' posts. 
+This is true for most platforms. 
+We call those messages ``echo''. 
+\rfig{\ref{fig:echo_ranked_timeline_before}} shows the ranked timeline before echo cancellation. 
+Echo will be more significant when the timeline is ranked: 
+1) A rantional user is most likely to forward valuable (at least to him/her) messages;
+2) The ranking algorithm learns the user's preference and rank those messages higher;
+3) When forwarding the message, the user adds some comments, making it 
+more valuable (from the algorithms point of view);
+4) After fetching new messages, echos are more likely to rank higher. 
 
-3. Add feature
-
-4. AUTO train weights
-
-\begin{figure}[h!]
+\begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_add_tag.png}
-	\caption{Add New Tag on Config Panel}
+	\includegraphics[width=0.9\linewidth]{../pic/echo_ranked_timeline_before.png}
+	\caption{Ranked Timeline with Echo}
+	\label{fig:echo_ranked_timeline_before}
 \end{figure}
 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_feature.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
+We have many ways to cancel echos. 
+For example, a programmer will find it very easy 
+to use several lines of ``IF'' to achieve this goal. 
+This way fits original notion of SNSAPI. 
+We just enable the flexibility and let App developer to craft their own logic. 
+In SNSRouter project, we are more serious about ranking. 
+If one only needs to cancel echos, the straight coding is a good solution. 
+However, we can imagine that users have many similar demand, 
+e.g. ``rank messages from some people higher'', 
+``rank messages containing music links higher'', etc. 
+When the ``IF'' tree grows large, it will be hard to manage it efficiently. 
+RPR provides the framework so that users only need to tell 
+the machine what factor may be important. 
+The machine will automatically adjust between different factors. 
 
-\begin{figure}[h!]
+%Most platforms will echo the
+%message you post there, but they
+%do not give you more information.
+%We want to SOFTLY cancel them.
+
+Here is the way to to {\bf softly} cancel echos:
+\begin{enumerate}
+	\item Add tag ``echo'' on the config panel of \gls{srfe}, 
+		as is shown in \rfig{\ref{fig:echo_add_tag}}. 
+	\item Users go to \gls{srfe} and tag some messages as ``echo''. 
+		The user can do this gradually for some time. 
+		Or, the user can go to our SQL frontend on \gls{srfe}
+		to intentionally select out some messages. 
+		In the latter way, users are leveraging their own domain knowledge. 
+	\item Specify preference through json config file, 
+		as is shown in \rfig{\ref{fig:echo_preference}}. 
+		Here we only add one preference relation: ``null'' $\succeq$ ``echo''. 
+	\item Add the feature extraction logic as is shown in \rfig{\ref{fig:echo_feature}}. 
+		The user simply derives a feature extractor from base class ``FeatureBase''.
+		Excpet for structural codes, this example feature extractor 
+		only costs about 10 lines of codes.
+		Many of the 15 feature extractors used in previous evaluation are also only several dozons of lines. 
+	\item After the above preparation, 
+		the weights can be trained automatically. 
+		\rfig{\ref{fig:echo_train}} gives an animation of how 
+		weights are adapted to the new scenario. 
+		To make it less cluttered, we selectively depicted some features for comparison. 
+		One can consult the notes in SNSRouter repository for detailed data. 
+		The figures show weight of ``echo'' (2nd column) goes negatively
+		with more iterations and the other features remain roughly the same. 
+\end{enumerate}
+
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=0.5\linewidth]{../pic/echo_add_tag.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
+%
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=0.6\linewidth]{../pic/echo_preference.png}
+%	\caption{Specify Preference for Echo}
+%\end{figure}
+%
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_feature.png}
+%	\caption{Add Feature Extraction Module}
+%\end{figure}
+
+\begin{figure*}
 	\centering
+	%\subfigure[Add New Tag on Config Panel]{%
+	\subfigure[Add New Tag]{%
+	\includegraphics[width=0.21\linewidth]{../pic/echo_add_tag.png}
+	\label{fig:echo_add_tag}
+	}
+	\centering
+	\subfigure[Specify Preference for Echo]{%
+	\includegraphics[width=0.29\linewidth]{../pic/echo_preference.png}
+	\label{fig:echo_preference}
+	}
+	\centering
+	\subfigure[Add Feature Extraction Module]{%
+	\includegraphics[width=0.36\linewidth]{../pic/echo_feature.png}
+	\label{fig:echo_feature}
+	}
+	\caption{Three Steps to Add New Features}
+\end{figure*}
+
+\begin{figure}
+	\centering
+	\subfigure[Iteration i]{%
+	\label{fig:srfe_rankedtimeline}
 	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
+	}\\%    
+	\subfigure[Iteration i+1]{%
+	\label{fig:srfe_rankedtimeline}
 	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i1.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
+	}\\%   
+	\subfigure[Iteration i+2]{%
+	\label{fig:srfe_rankedtimeline}
 	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i2.png}
-	\caption{Add New Tag on Config Panel}
+	}\\%   
+	\caption{Training Echo Feature}
+	\label{fig:echo_train}
 \end{figure}
 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_preference.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
+%\begin{figure}[h!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
+%
+%\begin{figure}[h!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i1.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
+%
+%\begin{figure}[h!]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../pic/echo_gd_i2.png}
+%	\caption{Add New Tag on Config Panel}
+%\end{figure}
 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../pic/echo_ranked_timeline_before.png}
-	\caption{Add New Tag on Config Panel}
-\end{figure}
 
+%The weight of ``echo'' feature goes down iteration by iteration. Messages with ``echo=1''
+%will be ranked lower. This is auto learned by our RPR-SGD framework.
 
-The weight of ``echo'' feature goes down iteration by iteration. Messages with ``echo=1''
-will be ranked lower. This is auto learned by our RPR-SGD framework.
+We remark that the weights adapation shown in \rfig{\ref{fig:echo_train}}
+is highly intepretable for the user. 
+The ``echo'' feature is either 1 or 0 
+and it recognizes echos by comparing sender name with channel configurations. 
+Since its weight is negative, 
+messages with ``echo=1'' will be ranked lower. 
+This agrees with the ``IF'' logic in our first thought. 
+The nice property for RPR-SGD is that this weight is trained automatically.  
 
 \section{Conclusion}
 \label{sec:Conclusion}
 
+We observe that message forwarding is a major operation on \gls{sns}. 
+Cross-platform forwarding behaviour is seldom discussed 
+in both industry and academia. 
+One main reason is that there is no full solution stack to 
+make it automatical or semi-automatical, 
+in order for researcher to collect enough data. 
+There are also some business considerations discussed in Appendix \ref{sec:Business}.
+In this paper, we take an intial step to takle with the problem 
+by leveraging system, algorithm and human in the following steps:
+
 \begin{itemize}
-	\item A middleware for different SNS
-	\item A portable web frontend
-	\item Real data collection (1+ month)
-	\item A flexible algorithm framework (RPR-SGD)
-	\item Sample feature extraction modules
+	\item Develop a middleware for heterogeneous SNS's. 
+	\item Develop a portable web frontend which supports 
+		easy cross-platform message forwarding and personal tagging. 
+	\item Collect real data in more than one month time span. 
+	\item Propose a flexible algorithm framework (RPR-SGD)
+		to personalize incoming message ordering, 
+		which boosts the user efficiency. 
+	\item Develop some sample feature extraction modules. 
 \end{itemize}
 
+Note that the usage of SNSRouter is not restricted to forwarding assistant. 
+It can be used as a personal information center 
+(with more forthcoming SNSAPI plugins). 
+For example, monitor your course webpage and send emails 
+to your friends when new slides are posted. 
+For another example, follow celebrities on SinaWeibo
+so that their messages (including later deleted ones) are all automatically archived. 
+This provides a distributed witness force, which help to improve 
+their awareness of social responsibility!
+\footnote{
+	Many celebrities on SinaWeibo act like media. 
+	They pursue the speed of spreading information and the exposure rate. 
+	Many of them do not spend a minute to validate the messages they forward. 
+	After people find out it is rumor, 
+	they just delete the original message quietly 
+	without one word of applogy. 
+	Late comers will only see a sentence in original position:
+	``This message is deleted, please consult the customer service for more information''
+	(in Chinese). 
+	However, the influence is already far spreading on the network. 
+	I believe, the \gls{osn}'s will be more reliable if many people are running SNSRouter. 
+	Under this scenario, those celebrities will think twice before they act. 
+	When mistakes are made, they will prefer to fix them rather than hide them. 
+}
 
+In total, SNSAPI and SNSRouter are open by design. 
+Your imagination combined with our system infrastructure can result in many novel applications. 
 
 \section{Future Work}
 \label{sec:Future Work}
+
+In this section, we discuss promising future works. 
+Some are directly followed from the discussions in previous sections. 
+Some are our visions. 
+We discuss from three aspects: system, algorithm and evaluation. 
 
 \subsection{System}
 \label{sec:fu_System}
 
 \begin{itemize}
-	\item RESTful interface for all components.
-		e.g. one can outsource computationally
-		intensive training to other servers
-	\item SNSRouter as a platform (of SNSAPI).
-		e.g. can be used to aggregate multiple
-		channels. 
-	\item ``FeatureStore'' and ``LearnerStore''. 
-		Boost community developing and sharing of 
-		personalization technique. 
+	\item Develop RESTful interface for all components of SNS-Router.
+		Then one can outsource computationally intensive training to other servers. 
+	\item Add a new platform -- SNSRouter to SNSAPI.
+		One can then fetch SNSRouter timeline in the same way as others. 
+		In this way, users can use SNSRouter to aggregate multiple channels,
+		which is useful to deal with large amount of RSS feeds. 
+	\item Build user community.
+		We can provide online ``FeatureStore'' and ``LearnerStore''. 
+		In this way, users do not have to be constrained to our sample features
+		or try to extract anything themselves. 
+		They can upload their extractors and download others' extractors. 
+		Those components are pluggable by configuration 
+		so that better personalization level is reached. 
 \end{itemize}
 
 \subsection{Algorithm}
 \label{sec:fu_Algorithm}
 
 \begin{itemize}
-	\item Add regularization to alleviate overfiting. 
-	\item Advanced feature extraction.
+	\item Add regularization terms. 
+		First is to alleviate overfiting and standard L2 norm regularization suffices. 
+		Second, we can perform feature selection using L1 regularization first 
+		and only train selected features. 
+	\item Build advanced feature extractors. 
+		In the topic mining part, we used TF*IDF. 
+		There is large room to improve. 
+		For example, at the startup time,
+		the system do not collect enough terms to do TF*IDF.
+		If we plug a WordNet into SNSRouter, 
+		we can enlarge the term set by diffusion techniques. 
+		This also provides a way to smooth term importance and 
+		mine hidden (semantical not literal) topic. 
+	\item Code level optimization of SGD. 
+		As is mentioned in evaluation section, 
+		code level optimization for SGD can be done. 
+		We can change to ``numpy'' objects to avoid 
+		time consuming operations like list tranversal. 
+		We can also implement a dedicated SGD library in C with Python module encapsulation. 
+		To make the code easy to migrate, 
+		the current stupid implementation will be kept as default portability consideration. 
+		After the users verify everything is going well, 
+		they can configure to optimized modules. 
 	\item SGD can do online training.
-	e.g. one sample in, derive some pairs, do
-	SGD on those pairs.
-	Naturally time sliding.
-	\item Code optimization of SGD. 
+		e.g. one sample in, derive some pairs, do SGD on those pairs.
+		In this way, it provides natural time sliding.
+		Current SGD implementation in SNSRouter is batch training, 
+		which can be triggered by the user. 
+		One recent target is to make it online. 
+		The difficulty is not at algorithm side. 
+		Instead, sliding memeory caching is needed to make it possible. 
+		Original plain SQLite interface will cause very large overhead. 
+	\item Deduplication. 
+		As we discussed in evaluation section, 
+		deduplication is a major cause to make overall efficiency gain 
+		for the users less significant than we expect from Kendall's score. 
+		Algorithmic wise, this is a traditional problem in IR. 
+		As to our application scenario, 
+		we also want to improve the frontend at the same time, 
+		so that users can process duplicated messages quickly. 
+		For example, we can present similar messges in tree structure
+		so that users can``mark as seen'' in a batch. 
 \end{itemize}
 
 \subsection{Evaluation}
@@ -1427,38 +1726,161 @@ More subjective tests are to be done:
 
 \begin{itemize}
 	\item We argue the algorithm framework is easy to personalize. 
-		In the future work, we'll invite more developers 
+		In the future work, we will invite more developers 
 		who are not machine learning experts to test our system. 
+		In this way, we can see how efficient people are 
+		after they use our system. 
+		More sample extractors can be output in this process. 
 \end{itemize}
 
 \section*{Acknowledgements}
 \label{sec:Acknowledgements}
 
-We would like to thank Junbo Li from BUPT, 
-the cofounder of SNSAPI, 
-which is the base of SNSRouter project. 
-We also highly appreciate people who answered our 
-technical questions on StackOverflow. 
+SNSAPI is the base of SNSRouter project. 
+We would like to thank Junbo Li from BUPT, who is the cofounder of SNSAPI.  
+We thank other contributors from Github: Chunliang Lu. 
+We also highly appreciate people who answered our technical questions on StackOverflow. 
 
 \bibliographystyle{abbrv}
 \input{../reference/gen_bib.bbl}
 
 \appendix 
 
-\section{Data}
-\label{sec:Data}
+%\section{Data}
+%\label{sec:Data}
+
+\section{Business}
+\label{sec:Business}
+
+We tried to upgrade one sample app key on SinaWeibo but failed.
+\footnote{See the issue tracker for more details, \url{https://github.com/hupili/snsapi/issues/11}}
+The reason is that they forbid cross-platform forwarding applications. 
+From a few survey, we summarize some of their business considerations:
+\begin{itemize}
+	\item Competition. 
+		They don't want users just to go to other \gls{osn} but possess 
+		the ability to synchronize content back to SinaWeibo.
+		They want to lock users in because advertisements are presented on user timeline
+		if they access it from web. 
+		This is very similar to the old days when you can not 
+		transfer cellphone number from one service provider to another. 
+		Considering the links established within one platform, 
+		users find it difficult to migrate to another platform. 
+	\item Censorship. 
+		SinaWeibo monitors user content and delete / block / hide messages 
+		if they are not appropriate. 
+		If multi-platform synchronization is allowed, those messages 
+		forwarded to another platform are out of control. 
+		In this case, they forbid any form of synchronization
+		(even with application and audition). 
+\end{itemize}
+
+The first one is out of our consideration. 
+The second one is just placing a thin film to slow down the information spreading process. 
+You can not stop users' copy and paste anyway. 
+
+The way they stop such applications is by killing their app keys. 
+This is effective if the App developer resort to a closed system 
+and hide all details from the user. 
+On another hand, we agree that this lowers the barrier for 
+ordinary users to use the App. 
+
+Given those observations, we position SNSAPI and 
+SNS-Router as developer applications. 
+If a user want to use SNSRouter,
+he/she may have to spend several minutes 
+to apply his/her own app key. 
+Then the use of SNSRouter from service provider's point of view is just 
+someone testing a new App.
+This is the freedom of developers and is in general hard to block. 
 
 \section{Classification}
 \label{sec:app_Classification}
 
+As we mentioned in the formulation section, 
+classification is one candidate formulation initially. 
+We dumped data to arff format and ran some preliminary experiments. 
+
 \subsection{Logit Classifier}
 \label{sec:Logit Classifier}
+
+The accuracy that Logit Classifier can reach is 78.5526\%. 
+Comparing with the data we presented in evaluation section, 
+this performance is not competitive. 
+A 0.8 Kendall's score maps back to 90\% correctly ranked pairs. 
+Incorrectly classified instances will amplify to larger number of incorrect pairs. 
+The confusion matrix is presented in \rfig{\ref{fig:confmat_logit}}. 
+We can see that the most confused part is ``news''. 
+From the user's point, this is natural. 
+When I tagged messages as news, I already realized that 
+there were not enough features for ``news''. 
+First, they come from a wide spectrum of topics:
+politics, military, science, etc. 
+It is hard to use topic to judge the ``news''-ness, 
+leting alone judge it with our elementary topic miner.
+
+\begin{figure*}[t!]
+	\centering
+\begin{Verbatim}
+   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o   <-- classified as
+   5   0   0   0   0   0   0   0   0   0   0   2   0   0   0 |   a = echo
+   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0 |   b = case
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   c = gold
+   0   2   0  16   0   0   0   0   0   0   0   2   0   0   0 |   d = interesting
+   0   0   0   2  71   0   0   0   7   0   0  15   0   0   0 |   e = nonsense
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   f = __fake__
+   0   0   0   0   0   0  90   0   0   0   1  22   0   0   0 |   g = mark
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   h = tech
+   0   0   0   3   1   0   0   0  10   0   0   0   0   0   0 |   i = shit
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   j = text
+   0   0   0   0   0   0   1   0   0   0  40  76   0   0   0 |   k = news
+   2   1   0   4   4   0   4   0   0   0  14 363   0   0   0 |   l = null
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   m = data
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   n = silver
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   o = bronze
+\end{Verbatim}
+	\caption{Confusion Matrix, Logit Classifier}
+	\label{fig:confmat_logit}
+\end{figure*}
 
 \subsection{J48 Decision Tree}
 \label{sec:J48 Decision Tree}
 
-A sample branch for mark (3.0/1.0):
+J48 decision tree can reach an overall accuracy of 87.3684\% (testing). 
+This value is very good. 
+The confusion matrix is presented in \rfig{\ref{fig:confmat_j48}}. 
+One can see that it performs equally well for all classes. 
+This is because decision tree can generate arbitrary 
+(axis perpendicular) decision boundary. 
+We also remark that the training and testing speed for J48 very high. 
+All the process is completed in less than 5 seconds. 
 
+\begin{figure*}[t!]
+	\centering
+\begin{Verbatim}
+   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o   <-- classified as
+   6   0   0   0   0   0   1   0   0   0   0   0   0   0   0 |   a = echo
+   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0 |   b = case
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   c = gold
+   0   0   0  15   0   0   0   0   0   0   0   5   0   0   0 |   d = interesting
+   0   0   0   0  70   0   2   0   6   0   1  16   0   0   0 |   e = nonsense
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   f = __fake__
+   0   0   0   0   0   0  94   0   0   0   3  16   0   0   0 |   g = mark
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   h = tech
+   0   0   0   0   1   0   0   0  13   0   0   0   0   0   0 |   i = shit
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   j = text
+   0   0   0   0   0   0   1   0   0   0 104  12   0   0   0 |   k = news
+   2   0   0   0  10   0  14   0   0   0   6 360   0   0   0 |   l = null
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   m = data
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   n = silver
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |   o = bronze
+\end{Verbatim}
+	\caption{Confusion Matrix, J48}
+	\label{fig:confmat_j48}
+\end{figure*}
+
+One drawback is that overfiting is obvious in J48. 
+We present a sample branch for ``mark''  as follows:
 \begin{Verbatim}
    topic_news <= 0.00603 
 && topic_tech <= 0.041455
@@ -1469,471 +1891,142 @@ A sample branch for mark (3.0/1.0):
 && user_tech <= 0.010894 
 && text_len_clean <= 0.0575
 && user_tech > 0.001621
+==> mark (3.0/1.0)
 \end{Verbatim}
+The ``3.0/1.0'' in bracket means that 3 instances are correctly classified 
+along this branch, and 1 instance is incorrectly classified. 
+This small number is one sign of overfiting. 
+Another sign is the ``id'' branch. 
+It is just the rowid in SQLite DB and should not play any role in classification. 
+Proper tuning may make it work better but the process will be less 
+natural for anyone who is not machine learning researcher or practitioner. 
 
 \section{Executive Summary of SNSRouter Usage}
 \label{sec:Executive Summary of SNSRouter Usage}
 
+This section summarizes what is done with SNSRouter. 
+It is not a file level or instruction level guide. 
+It is a higher level view so that users are clear about 
+what to do and what not to do. 
 
+\begin{itemize}
+	\item Download SNSRouter from project repository. 
+	\item Install dependencies according to our wiki. 
+	\item Launch initial test with our sample configuration files, 
+		where several RSS channels are configured by default. 
+	\item Go to Web UI and verify everything is functioning. 
+	\item Configure more RSS channels and SQLite channels 
+		and verify they work. 
+		RSS and SQLite do not need authorization or authentication, 
+		so that are easier. 
+	\item If the user is not clear about channel configuration, 
+		please go to SNSAPI project and use SNSCLI, 
+		in which we embedded an online tutorial. 
+	\item Apply app keys from \gls{osn}'s and configure them accordingly. 
+		As for app key application, we have dedicated wiki page for troubleshooting. 
+		As for channel configuration, one can also turn to SNSCLI. 
+	\item Go to Web UI and verify the rich configuration also works
+		(without ranking). 
+	\item Add tags from config panel, and tag incoming messages accordingly. 
+		Remember to ``mark as seen'' so that one message will not show up again (by default). 
+		We do not impose any constraints on tags. 
+		However, users should try their best to keep consistency 
+		and define them in mind clearly. 
+	\item Collect enough samples 
+		(several days; thousands of ``seen'' messages; hundreds of tagged messages).
+	\item Install dependencies of ranking module. 
+		Enable ranking with default configuration for testing. 
+	\item Enable more feature extractors based on the users' observation. 
+		Different extractors has different dependencies. 
+		Users only need to worry about them when one extractor is to be activated. 
+	\item Write personalized extractor to meet a specific demand. 
+	\item Share feature extractors with others. 
+\end{itemize}
 
+\section{Free Chatting About Horses}
+\label{sec:Free Chatting}
 
-%============== Following are sample lines from the template =================
+\textbf{A:}
+I think the algorithm can not work well 
+when there is not enough data. 
+Have you considered using advanced machine learning tools 
+to deal with this problem? 
 
-% This is "sig-alternate.tex" V2.0 May 2012
-% This file should be compiled with V2.5 of "sig-alternate.cls" May 2012
-%
-% This example file demonstrates the use of the 'sig-alternate.cls'
-% V2.5 LaTeX2e document class file. It is for those submitting
-% articles to ACM Conference Proceedings WHO DO NOT WISH TO
-% STRICTLY ADHERE TO THE SIGS (PUBS-BOARD-ENDORSED) STYLE.
-% The 'sig-alternate.cls' file will produce a similar-looking,
-% albeit, 'tighter' paper resulting in, invariably, fewer pages.
-%
-% ----------------------------------------------------------------------------------------------------------------
-% This .tex file (and associated .cls V2.5) produces:
-%       1) The Permission Statement
-%       2) The Conference (location) Info information
-%       3) The Copyright Line with ACM data
-%       4) NO page numbers
-%
-% as against the acm_proc_article-sp.cls file which
-% DOES NOT produce 1) thru' 3) above.
-%
-% Using 'sig-alternate.cls' you have control, however, from within
-% the source .tex file, over both the CopyrightYear
-% (defaulted to 200X) and the ACM Copyright Data
-% (defaulted to X-XXXXX-XX-X/XX/XX).
-% e.g.
-% \CopyrightYear{2007} will cause 2007 to appear in the copyright line.
-% \crdata{0-12345-67-8/90/12} will cause 0-12345-67-8/90/12 to appear in the copyright line.
-%
-% ---------------------------------------------------------------------------------------------------------------
-% This .tex source is an example which *does* use
-% the .bib file (from which the .bbl file % is produced).
-% REMEMBER HOWEVER: After having produced the .bbl file,
-% and prior to final submission, you *NEED* to 'insert'
-% your .bbl file into your source .tex file so as to provide
-% ONE 'self-contained' source file.
-%
-% ================= IF YOU HAVE QUESTIONS =======================
-% Questions regarding the SIGS styles, SIGS policies and
-% procedures, Conferences etc. should be sent to
-% Adrienne Griscti (griscti@acm.org)
-%
-% Technical questions _only_ to
-% Gerald Murray (murray@hq.acm.org)
-% ===============================================================
-%
-% For tracking purposes - this is V2.0 - May 2012
+\textbf{B:} 
+If you have a gifted horse but you give him little food, 
+do you expect him to run very fast?
+Yu Han\footnote{\url{http://baike.baidu.com/view/86583.htm}}
+says no. 
+The right horse eats the right amount of food. 
+That is the bottom line. 
+In the first month, I spent much time marking training data. 
+I mark data after lunch; I mark data during tea break; 
+I mark data in the bed using my iPad... 
+You see, food is eventually enough and it runs reasonably well. 
 
+\textbf{A:}
+The system at my side does not work so well as you reported. 
+How to improve?
 
-%\section{Introduction}
-%The \textit{proceedings} are the records of a conference.
-%ACM seeks to give these conference by-products a uniform,
-%high-quality appearance.  To do this, ACM has some rigid
-%requirements for the format of the proceedings documents: there
-%is a specified format (balanced  double columns), a specified
-%set of fonts (Arial or Helvetica and Times Roman) in
-%certain specified sizes (for instance, 9 point for body copy),
-%a specified live area (18 $\times$ 23.5 cm [7" $\times$ 9.25"]) centered on
-%the page, specified size of margins (1.9 cm [0.75"]) top, (2.54 cm [1"]) bottom
-%and (1.9 cm [.75"]) left and right; specified column width
-%(8.45 cm [3.33"]) and gutter size (.83 cm [.33"]).
-%
-%The good news is, with only a handful of manual
-%settings\footnote{Two of these, the {\texttt{\char'134 numberofauthors}}
-%and {\texttt{\char'134 alignauthor}} commands, you have
-%already used; another, {\texttt{\char'134 balancecolumns}}, will
-%be used in your very last run of \LaTeX\ to ensure
-%balanced column heights on the last page.}, the \LaTeX\ document
-%class file handles all of this for you.
-%
-%The remainder of this document is concerned with showing, in
-%the context of an ``actual'' document, the \LaTeX\ commands
-%specifically available for denoting the structure of a
-%proceedings paper, rather than with giving rigorous descriptions
-%or explanations of such commands.
-%
-%\section{The {\secit Body} of The Paper}
-%Typically, the body of a paper is organized
-%into a hierarchical structure, with numbered or unnumbered
-%headings for sections, subsections, sub-subsections, and even
-%smaller sections.  The command \texttt{{\char'134}section} that
-%precedes this paragraph is part of such a
-%hierarchy.\footnote{This is the second footnote.  It
-%starts a series of three footnotes that add nothing
-%informational, but just give an idea of how footnotes work
-%and look. It is a wordy one, just so you see
-%how a longish one plays out.} \LaTeX\ handles the numbering
-%and placement of these headings for you, when you use
-%the appropriate heading commands around the titles
-%of the headings.  If you want a sub-subsection or
-%smaller part to be unnumbered in your output, simply append an
-%asterisk to the command name.  Examples of both
-%numbered and unnumbered headings will appear throughout the
-%balance of this sample document.
-%
-%Because the entire article is contained in
-%the \textbf{document} environment, you can indicate the
-%start of a new paragraph with a blank line in your
-%input file; that is why this sentence forms a separate paragraph.
-%
-%\subsection{Type Changes and {\subsecit Special} Characters}
-%We have already seen several typeface changes in this sample.  You
-%can indicate italicized words or phrases in your text with
-%the command \texttt{{\char'134}textit}; emboldening with the
-%command \texttt{{\char'134}textbf}
-%and typewriter-style (for instance, for computer code) with
-%\texttt{{\char'134}texttt}.  But remember, you do not
-%have to indicate typestyle changes when such changes are
-%part of the \textit{structural} elements of your
-%article; for instance, the heading of this subsection will
-%be in a sans serif\footnote{A third footnote, here.
-%Let's make this a rather short one to
-%see how it looks.} typeface, but that is handled by the
-%document class file. Take care with the use
-%of\footnote{A fourth, and last, footnote.}
-%the curly braces in typeface changes; they mark
-%the beginning and end of
-%the text that is to be in the different typeface.
-%
-%You can use whatever symbols, accented characters, or
-%non-English characters you need anywhere in your document;
-%you can find a complete list of what is
-%available in the \textit{\LaTeX\
-%User's Guide}\cite{Lamport:LaTeX}.
-%
-%\subsection{Math Equations}
-%You may want to display math equations in three distinct styles:
-%inline, numbered or non-numbered display.  Each of
-%the three are discussed in the next sections.
-%
-%\subsubsection{Inline (In-text) Equations}
-%A formula that appears in the running text is called an
-%inline or in-text formula.  It is produced by the
-%\textbf{math} environment, which can be
-%invoked with the usual \texttt{{\char'134}begin. . .{\char'134}end}
-%construction or with the short form \texttt{\$. . .\$}. You
-%can use any of the symbols and structures,
-%from $\alpha$ to $\omega$, available in
-%\LaTeX\cite{Lamport:LaTeX}; this section will simply show a
-%few examples of in-text equations in context. Notice how
-%this equation: \begin{math}\lim_{n\rightarrow \infty}x=0\end{math},
-%set here in in-line math style, looks slightly different when
-%set in display style.  (See next section).
-%
-%\subsubsection{Display Equations}
-%A numbered display equation -- one set off by vertical space
-%from the text and centered horizontally -- is produced
-%by the \textbf{equation} environment. An unnumbered display
-%equation is produced by the \textbf{displaymath} environment.
-%
-%Again, in either environment, you can use any of the symbols
-%and structures available in \LaTeX; this section will just
-%give a couple of examples of display equations in context.
-%First, consider the equation, shown as an inline equation above:
-%\begin{equation}\lim_{n\rightarrow \infty}x=0\end{equation}
-%Notice how it is formatted somewhat differently in
-%the \textbf{displaymath}
-%environment.  Now, we'll enter an unnumbered equation:
-%\begin{displaymath}\sum_{i=0}^{\infty} x + 1\end{displaymath}
-%and follow it with another numbered equation:
-%\begin{equation}\sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f\end{equation}
-%just to demonstrate \LaTeX's able handling of numbering.
-%
-%\subsection{Citations}
-%Citations to articles \cite{bowman:reasoning,
-%clark:pct, braams:babel, herlihy:methodology},
-%conference proceedings \cite{clark:pct} or
-%books \cite{salas:calculus, Lamport:LaTeX} listed
-%in the Bibliography section of your
-%article will occur throughout the text of your article.
-%You should use BibTeX to automatically produce this bibliography;
-%you simply need to insert one of several citation commands with
-%a key of the item cited in the proper location in
-%the \texttt{.tex} file \cite{Lamport:LaTeX}.
-%The key is a short reference you invent to uniquely
-%identify each work; in this sample document, the key is
-%the first author's surname and a
-%word from the title.  This identifying key is included
-%with each item in the \texttt{.bib} file for your article.
-%
-%The details of the construction of the \texttt{.bib} file
-%are beyond the scope of this sample document, but more
-%information can be found in the \textit{Author's Guide},
-%and exhaustive details in the \textit{\LaTeX\ User's
-%Guide}\cite{Lamport:LaTeX}.
-%
-%This article shows only the plainest form
-%of the citation command, using \texttt{{\char'134}cite}.
-%This is what is stipulated in the SIGS style specifications.
-%No other citation format is endorsed or supported.
-%
-%\subsection{Tables}
-%Because tables cannot be split across pages, the best
-%placement for them is typically the top of the page
-%nearest their initial cite.  To
-%ensure this proper ``floating'' placement of tables, use the
-%environment \textbf{table} to enclose the table's contents and
-%the table caption.  The contents of the table itself must go
-%in the \textbf{tabular} environment, to
-%be aligned properly in rows and columns, with the desired
-%horizontal and vertical rules.  Again, detailed instructions
-%on \textbf{tabular} material
-%is found in the \textit{\LaTeX\ User's Guide}.
-%
-%Immediately following this sentence is the point at which
-%Table 1 is included in the input file; compare the
-%placement of the table here with the table in the printed
-%dvi output of this document.
-%
-%\begin{table}
-%\centering
-%\caption{Frequency of Special Characters}
-%\begin{tabular}{|c|c|l|} \hline
-%Non-English or Math&Frequency&Comments\\ \hline
-%\O & 1 in 1,000& For Swedish names\\ \hline
-%$\pi$ & 1 in 5& Common in math\\ \hline
-%\$ & 4 in 5 & Used in business\\ \hline
-%$\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-%\hline\end{tabular}
-%\end{table}
-%
-%To set a wider table, which takes up the whole width of
-%the page's live area, use the environment
-%\textbf{table*} to enclose the table's contents and
-%the table caption.  As with a single-column table, this wide
-%table will ``float" to a location deemed more desirable.
-%Immediately following this sentence is the point at which
-%Table 2 is included in the input file; again, it is
-%instructive to compare the placement of the
-%table here with the table in the printed dvi
-%output of this document.
-%
-%
-%\begin{table*}
-%\centering
-%\caption{Some Typical Commands}
-%\begin{tabular}{|c|c|l|} \hline
-%Command&A Number&Comments\\ \hline
-%\texttt{{\char'134}alignauthor} & 100& Author alignment\\ \hline
-%\texttt{{\char'134}numberofauthors}& 200& Author enumeration\\ \hline
-%\texttt{{\char'134}table}& 300 & For tables\\ \hline
-%\texttt{{\char'134}table*}& 400& For wider tables\\ \hline\end{tabular}
-%\end{table*}
-%% end the environment with {table*}, NOTE not {table}!
-%
-%\subsection{Figures}
-%Like tables, figures cannot be split across pages; the
-%best placement for them
-%is typically the top or the bottom of the page nearest
-%their initial cite.  To ensure this proper ``floating'' placement
-%of figures, use the environment
-%\textbf{figure} to enclose the figure and its caption.
-%
-%This sample document contains examples of \textbf{.eps}
-%and \textbf{.ps} files to be displayable with \LaTeX.  More
-%details on each of these is found in the \textit{Author's Guide}.
-%
-%\begin{figure}
-%\centering
-%\epsfig{file=fly.eps}
-%\caption{A sample black and white graphic (.eps format).}
-%\end{figure}
-%
-%\begin{figure}
-%\centering
-%\epsfig{file=fly.eps, height=1in, width=1in}
-%\caption{A sample black and white graphic (.eps format)
-%that has been resized with the \texttt{epsfig} command.}
-%\end{figure}
-%
-%
-%As was the case with tables, you may want a figure
-%that spans two columns.  To do this, and still to
-%ensure proper ``floating'' placement of tables, use the environment
-%\textbf{figure*} to enclose the figure and its caption.
-%and don't forget to end the environment with
-%{figure*}, not {figure}!
-%
-%\begin{figure*}
-%\centering
-%\epsfig{file=flies.eps}
-%\caption{A sample black and white graphic (.eps format)
-%that needs to span two columns of text.}
-%\end{figure*}
-%
-%Note that either {\textbf{.ps}} or {\textbf{.eps}} formats are
-%used; use
-%the \texttt{{\char'134}epsfig} or \texttt{{\char'134}psfig}
-%commands as appropriate for the different file types.
-%
-%\begin{figure}
-%\centering
-%\psfig{file=rosette.ps, height=1in, width=1in,}
-%\caption{A sample black and white graphic (.ps format) that has
-%been resized with the \texttt{psfig} command.}
-%\vskip -6pt
-%\end{figure}
-%
-%\subsection{Theorem-like Constructs}
-%Other common constructs that may occur in your article are
-%the forms for logical constructs like theorems, axioms,
-%corollaries and proofs.  There are
-%two forms, one produced by the
-%command \texttt{{\char'134}newtheorem} and the
-%other by the command \texttt{{\char'134}newdef}; perhaps
-%the clearest and easiest way to distinguish them is
-%to compare the two in the output of this sample document:
-%
-%This uses the \textbf{theorem} environment, created by
-%the\linebreak\texttt{{\char'134}newtheorem} command:
-%\newtheorem{theorem}{Theorem}
-%\begin{theorem}
-%Let $f$ be continuous on $[a,b]$.  If $G$ is
-%an antiderivative for $f$ on $[a,b]$, then
-%\begin{displaymath}\int^b_af(t)dt = G(b) - G(a).\end{displaymath}
-%\end{theorem}
-%
-%The other uses the \textbf{definition} environment, created
-%by the \texttt{{\char'134}newdef} command:
-%\newdef{definition}{Definition}
-%\begin{definition}
-%If $z$ is irrational, then by $e^z$ we mean the
-%unique number which has
-%logarithm $z$: \begin{displaymath}{\log e^z = z}\end{displaymath}
-%\end{definition}
-%
-%Two lists of constructs that use one of these
-%forms is given in the
-%\textit{Author's  Guidelines}.
-% 
-%There is one other similar construct environment, which is
-%already set up
-%for you; i.e. you must \textit{not} use
-%a \texttt{{\char'134}newdef} command to
-%create it: the \textbf{proof} environment.  Here
-%is a example of its use:
-%\begin{proof}
-%Suppose on the contrary there exists a real number $L$ such that
-%\begin{displaymath}
-%\lim_{x\rightarrow\infty} \frac{f(x)}{g(x)} = L.
-%\end{displaymath}
-%Then
-%\begin{displaymath}
-%l=\lim_{x\rightarrow c} f(x)
-%= \lim_{x\rightarrow c}
-%\left[ g{x} \cdot \frac{f(x)}{g(x)} \right ]
-%= \lim_{x\rightarrow c} g(x) \cdot \lim_{x\rightarrow c}
-%\frac{f(x)}{g(x)} = 0\cdot L = 0,
-%\end{displaymath}
-%which contradicts our assumption that $l\neq 0$.
-%\end{proof}
-%
-%Complete rules about using these environments and using the
-%two different creation commands are in the
-%\textit{Author's Guide}; please consult it for more
-%detailed instructions.  If you need to use another construct,
-%not listed therein, which you want to have the same
-%formatting as the Theorem
-%or the Definition\cite{salas:calculus} shown above,
-%use the \texttt{{\char'134}newtheorem} or the
-%\texttt{{\char'134}newdef} command,
-%respectively, to create it.
-%
-%\subsection*{A {\secit Caveat} for the \TeX\ Expert}
-%Because you have just been given permission to
-%use the \texttt{{\char'134}newdef} command to create a
-%new form, you might think you can
-%use \TeX's \texttt{{\char'134}def} to create a
-%new command: \textit{Please refrain from doing this!}
-%Remember that your \LaTeX\ source code is primarily intended
-%to create camera-ready copy, but may be converted
-%to other forms -- e.g. HTML. If you inadvertently omit
-%some or all of the \texttt{{\char'134}def}s recompilation will
-%be, to say the least, problematic.
-%
-%\section{Conclusions}
-%This paragraph will end the body of this sample document.
-%Remember that you might still have Acknowledgments or
-%Appendices; brief samples of these
-%follow.  There is still the Bibliography to deal with; and
-%we will make a disclaimer about that here: with the exception
-%of the reference to the \LaTeX\ book, the citations in
-%this paper are to articles which have nothing to
-%do with the present subject and are used as
-%examples only.
-%%\end{document}  % This is where a 'short' article might terminate
-%
-%%ACKNOWLEDGMENTS are optional
-%\section{Acknowledgments}
-%This section is optional; it is a location for you
-%to acknowledge grants, funding, editing assistance and
-%what have you.  In the present case, for example, the
-%authors would like to thank Gerald Murray of ACM for
-%his help in codifying this \textit{Author's Guide}
-%and the \textbf{.cls} and \textbf{.tex} files that it describes.
-%
-%%
-%% The following two commands are all you need in the
-%% initial runs of your .tex file to
-%% produce the bibliography for the citations in your paper.
-%\bibliographystyle{abbrv}
-%\bibliography{sigproc}  % sigproc.bib is the name of the Bibliography in this case
-%% You must have a proper ".bib" file
-%%  and remember to run:
-%% latex bibtex latex latex
-%% to resolve all references
-%%
-%% ACM needs 'a single self-contained file'!
-%%
-%%APPENDICES are optional
-%%\balancecolumns
-%\appendix
-%Appendix A
-%\section{Headings in Appendices}
-%The rules about hierarchical headings discussed above for
-%the body of the article are different in the appendices.
-%In the \textbf{appendix} environment, the command
-%\textbf{section} is used to
-%indicate the start of each Appendix, with alphabetic order
-%designation (i.e. the first is A, the second B, etc.) and
-%a title (if you include one).  So, if you need
-%hierarchical structure
-%\textit{within} an Appendix, start with \textbf{subsection} as the
-%highest level. Here is an outline of the body of this
-%document in Appendix-appropriate form:
-%\subsection{Introduction}
-%\subsection{The Body of the Paper}
-%\subsubsection{Type Changes and  Special Characters}
-%\subsubsection{Math Equations}
-%\paragraph{Inline (In-text) Equations}
-%\paragraph{Display Equations}
-%\subsubsection{Citations}
-%\subsubsection{Tables}
-%\subsubsection{Figures}
-%\subsubsection{Theorem-like Constructs}
-%\subsubsection*{A Caveat for the \TeX\ Expert}
-%\subsection{Conclusions}
-%\subsection{Acknowledgments}
-%\subsection{Additional Authors}
-%This section is inserted by \LaTeX; you do not insert it.
-%You just add the names and information in the
-%\texttt{{\char'134}additionalauthors} command at the start
-%of the document.
-%\subsection{References}
-%Generated by bibtex from your ~.bib file.  Run latex,
-%then bibtex, then latex twice (to resolve references)
-%to create the ~.bbl file.  Insert that ~.bbl file into
-%the .tex source file and comment out
-%the command \texttt{{\char'134}thebibliography}.
-%% This next section command marks the start of
-%% Appendix B, and does not continue the present hierarchy
-%\section{More Help for the Hardy}
-%The sig-alternate.cls file itself is chock-full of succinct
-%and helpful comments.  If you consider yourself a moderately
-%experienced to expert user of \LaTeX, you may find reading
-%it useful but please remember not to change it.
-%%\balancecolumns % GM June 2007
-%% That's all folks!
+\textbf{B:}
+There is no best horse or best rider.
+When you bet on a ``horse'', you are actually bet on the ``horse+rider''. 
+Human should not always ask machines to do hard tasks
+(that require creative intelligence). 
+We should act as one and each component focus on his own job. 
+Similarly, I will not ask the system to do everything for me. 
+I ask the system to do tedious and repeated tasks like counting the term frequency. 
+I do the creative job myself, i.e. find the proper features. 
+When I mark data, I do not tag everything just as ``good'' or ``bad''. 
+I try to do a finer-grained classification {\bf in a consistent manner}. 
+Try to think, how about telling your horse:
+``Look at my face and what is around. 
+Go as I wish using your past memory.''
+It will not work. 
+
+\textbf{A:}
+I am machine learning expert but I still can not make your system work well. 
+
+\textbf{B:}
+That is natural. 
+Imagine: the best rider is riding the 2nd best horse;
+the 2nd best rider is riding the best horse. 
+Now we change their horses. 
+What will happen? 
+Unless enough training is done, 
+the ``best rider+best horse'' will not outperm 
+the ``2nd best rider+best horse''. 
+The important thing is that the ``training'' is not for horse, 
+but for horse and the rider as a whole. 
+As a new rider with an ordinary horse, we just cooperate well. 
+
+\textbf{A:}
+I eventually managed to make RPR-SGD work well for me. 
+However, when I migrate it to my friend, 
+the performance degrades. 
+Can you make another framework which generalizes better?
+
+\textbf{B:}
+I think many race horses are over trained to a certain race track (standard data set). 
+Those hosrses do not have joy in running. 
+In the straight track, horse A outperforms others;
+In the bent track, horse B outperforms others. 
+The riders keep on arguing whose horse is the best. 
+However, the real situation is, it all depends on 
+the fraction of straight and bent lines. 
+I don't have time to ask my horse to compete with others on a standard track, 
+letting alone count how many standard tracks it ``generalizes'' to. 
+All I know is that it runs well along my way, 
+where I see mountain, river, grass, marsh, etc. 
+When there are fences, I teach him to jump; 
+When there are dust wind, I teach him to sit low in the bushes; 
+When there is a high wall, I tell him ``let's find another way out together''. 
+I do not blame my horse for his deficiency in running a certain type of road. 
+I do not ask my horse to run an imaginary difficult road. 
+I also totally agree that it is not the fast even on my road. 
+We just saw a fast vehicle running across us. 
+Apparently, the highway is not for my horse. 
+In the future, I will rent a vehicle when I need to travel on the highway. 
+When on the grass, I still ride my horse. 
+
 \end{document}
