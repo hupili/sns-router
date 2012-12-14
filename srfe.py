@@ -129,6 +129,13 @@ def config():
         info[ch]['need_auth'] = sp[ch].need_auth()
     return {"info": info, "sp": sp, "ap": ap, "q": q}
 
+@srfe.route('/operation')
+@view('operation')
+@check_login
+def operation():
+    # A stub
+    return {}
+
 @srfe.route('/config/tag/toggle/:tag_id')
 @check_login
 def config_tag_toggle(tag_id):
