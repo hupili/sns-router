@@ -12,5 +12,15 @@
     ["null", "nonsense"],
     ["null", "shit"],
     ["null", "echo"]
+  ],
+  "features": [
+	["basic", "FeatureLength"], 
+	["basic", "FeatureNoise"],
+	["basic", "FeatureLink"],
+	["basic", "FeatureEcho"]
+  ],
+  "__other_features_you_may_enable_later": [
+	["topic", "FeatureTopic"],
+	["user", "FeatureUser"]
   ]
 }
