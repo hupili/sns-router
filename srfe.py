@@ -85,7 +85,7 @@ def check_login(func):
 
 @srfe.route('/logout')
 @view('logout')
-def login_get():
+def logout_get():
     response.set_cookie("account", None, secret = jsonconf['cookie_sign_key'])
     return {}
 
@@ -135,6 +135,15 @@ def config():
 def operation():
     # A stub
     return {}
+
+@srfe.route('/operation/weight/reweight_all/:younger_than')
+@view('result')
+@check_login
+def operation_weight_reweight_all(younger_than):
+    younger_than = int(younger_than)
+    op = "reweight messages younger than %d seconds" % younger_than
+    re = q.reweight_all(younger_than) 
+    return {"operation": op, "result": re}
 
 @srfe.route('/config/tag/toggle/:tag_id')
 @check_login

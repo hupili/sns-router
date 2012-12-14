@@ -527,8 +527,10 @@ class SRFEQueue(SNSBase):
                 self.reweight(m[0])
         except Exception, e:
             logger.warning("Catch exception: %s", e)
+            return False
         end = self.time()
         logger.info("Reweight done. Time elapsed: %.2f", end - begin)
+        return True
 
 if __name__ == '__main__':
     sp = SNSPocket()
