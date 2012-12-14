@@ -65,7 +65,7 @@ def get_gt_relation():
     json_autoweight = json.load(open('conf/autoweight.json'))
     preference = json_autoweight['preference']
     # tag name to id
-    tag_mapping = json.load(open('tag_mapping.json'))
+    tag_mapping = json.load(open('tmp/tag_mapping.json'))
     #if not 'null' in tag_mapping:
     #    tag_mapping['null'] = 0 
     # Force 0 to be the 'null' tag_id

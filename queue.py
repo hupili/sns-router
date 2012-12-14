@@ -530,6 +530,122 @@ class SRFEQueue(SNSBase):
         logger.info("Reweight done. Time elapsed: %.2f", end - begin)
         return True
 
+    def _dump2pickle(self, fn_pickle):
+        # dump all to pickle format
+        cur = self.con.cursor()
+        r = cur.execute('''
+        SELECT id,time,userid,username,text,pyobj,flag FROM msg  
+        ''')
+        message_list = snstype.MessageList()
+        for m in r:
+            obj = self._str2pyobj(m[5])
+            obj.msg_id = m[0]
+            obj.flag = m[6]
+            message_list.append(obj)
+        r = cur.execute('''
+        SELECT msg_id,tag_id FROM msg_tag
+        ''')
+        tag_list = []
+        for m in r:
+            tag_list.append(m)
+        message = {
+                'message_list': message_list, 
+                'tag_list': tag_list
+                }
+        with open(fn_pickle, 'w') as fp:
+            fp.write(Serialize.dumps(message))
+
+    def _preprocess(self):
+        import time
+
+        # load
+        begin = time.time()
+        message = Serialize.loads(open('tmp/message.pickle').read())
+        end = time.time()
+        print "Load finish. Time elapsed: %.3f" % (end - begin)
+
+        # Preprocessing
+
+        # tag2msg and msg2tag dict
+        tl = message['tag_list']
+        td = {}
+        td_r = {}
+        for (msg_id, tag_id) in tl:
+            if not msg_id in td:
+                td[msg_id] = {}
+            td[msg_id][tag_id] = 1
+            if not tag_id in td_r:
+                td_r[tag_id] = {}
+            td_r[tag_id][msg_id] = 1
+        message['dict_msg2tag'] = td
+        message['dict_tag2msg'] = td_r
+
+        # 1. add tags attributes to msg
+        # 2. make msg dict
+        # 3. make seen list
+        ml = message['message_list']
+        md = {}
+        seen_list = []
+        for m in ml:
+            if m.flag == "seen":
+                seen_list.append(m)
+            if m.msg_id in td:
+                m.tags = td[m.msg_id]
+            else:
+                m.tags = {}
+            md[m.msg_id] = m
+        message['dict_msg'] = md 
+        message['seen_list'] = seen_list
+
+        # save 
+        begin = time.time()
+        open('tmp/workspace.pickle', 'w').write(Serialize.dumps(message))
+        end = time.time()
+        print "Save finish. Time elapsed: %.3f" % (end - begin)
+
+    def _tag_mapping(self):
+        cur = self.con.cursor()
+        r = cur.execute('''
+        SELECT name,id from tag;
+        ''')
+
+        d = dict([(t[0],t[1]) for t in r])
+        open('tmp/tag_mapping.json', 'w').write(json.dumps(d))
+
+        #original bash logic
+        #tm="tag_mapping.json"
+        #echo "saving tag mapping to '$tm'"
+        #echo "{" > $tm
+        #$sql 'select name,id from tag;' | tr '|' ' ' | awk '{printf("\"%s\": %d,\n", $1, $2)}' >> $tm
+        ## Just to fit in json format...
+        #echo "\"__fake__\": 99999" >> $tm
+        #echo "}" >> $tm
+
+    def prepare_training_data(self):
+        #self._dump2pickle('tmp/message.pickle')
+        #self._preprocess()
+        self._tag_mapping() 
+        from analysis.select_samples import select_samples
+        from analysis.select_samples import compute_order
+        from analysis.select_samples import save_samples
+        message = Serialize.loads(open('tmp/workspace.pickle').read())
+        samples = select_samples(message)
+        order = compute_order(samples)
+        save_samples(samples, order, 'tmp/samples.pickle')
+
+    def train(self, step = 10000):
+        from analysis.autoweight import AutoWeight
+        from analysis.autoweight import load_weights
+        from analysis.autoweight import save_weights
+        from analysis.autoweight import LearnerSigmoid
+        data = Serialize.loads(open('tmp/samples.pickle').read())
+        samples = data['samples']
+        order = data['order']
+        iweight = load_weights()
+        aw = AutoWeight(samples, order, iweight, LearnerSigmoid())
+        aw.sgd(step)
+        save_weights(aw)
+
 if __name__ == '__main__':
     sp = SNSPocket()
     sp.load_config()
