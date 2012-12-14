@@ -25,6 +25,9 @@
 echo "Gen topic mining dict"
 python gentdict.py
 
+echo "Gen user mining dict"
+python genudict.py
+
 echo "Dump Sqlite to Pickle"
 python sqlite2pickle.py
 
