@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.append('../bottle')
-sys.path.append('../snsapi')
+if __name__ == '__main__':
+    # Run from the current dir
+    sys.path.append('../bottle')
+    sys.path.append('../snsapi')
+#else:
+#    # Run from upper layer, where the dirs are supposed to 
+#    # be added already
+#    sys.path.append('bottle')
+#    sys.path.append('snsapi')
+
 import snsapi
 from snsapi import utils as snsapi_utils
 from snsapi import snstype
