@@ -182,14 +182,14 @@ class Feature(object):
             }
 
     feature_extractors = []
-    from feature_plugin.length import FeatureLength
+    from plugin.length import FeatureLength
     feature_extractors.append(FeatureLength(env))
     feature_extractors.append(FeatureLink(env))
     feature_extractors.append(FeatureFace(env))
     feature_extractors.append(FeatureTopic(env))
     feature_extractors.append(FeatureUser(env))
     feature_extractors.append(FeatureEcho(env))
-    from feature_plugin.noise import FeatureNoise
+    from plugin.noise import FeatureNoise
     feature_extractors.append(FeatureNoise(env))
 
     def __init__(self):

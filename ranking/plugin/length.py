@@ -39,7 +39,7 @@ class FeatureLength(FeatureBase):
             ct = ct.replace(f, '')
         #print ct
         #_STOPWORD = u"的了是在有而以但一我你他它个啊这…、，！。：【】；（）“”《》\";,./1234567890"
-        from wordseg import _STOPWORD
+        from ..wordseg import _STOPWORD
         for w in _STOPWORD:
             ct = ct.replace(w, '')
         #print ct
