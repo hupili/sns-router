@@ -1,1 +1,1 @@
-__ALL__ = ['feature.py', 'score.py']
+__ALL__ = ['feature.py', 'score.py', 'feature_plugin']

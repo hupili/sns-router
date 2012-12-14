@@ -157,16 +157,6 @@ class FeatureFace(FeatureBase):
     def add_features(self, msg):
         msg.feature['test'] = 1
 
-class FeatureNoise(FeatureBase):
-    """docstring for FeatureNoise"""
-    def __init__(self, env):
-        super(FeatureNoise, self).__init__(env)
-        self.schema = {
-                "noise": "numeric"
-                }
-
-    def add_features(self, msg):
-        msg.feature['noise'] = random.random()
 
 class FeatureLink(FeatureBase):
     """docstring for FeatureLink"""
@@ -199,6 +189,7 @@ class Feature(object):
     feature_extractors.append(FeatureTopic(env))
     feature_extractors.append(FeatureUser(env))
     feature_extractors.append(FeatureEcho(env))
+    from feature_plugin.noise import FeatureNoise
     feature_extractors.append(FeatureNoise(env))
 
     def __init__(self):
