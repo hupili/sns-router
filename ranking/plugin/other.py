@@ -20,4 +20,4 @@ class FeatureFace(FeatureBase):
     def add_features(self, msg):
         msg.feature['test'] = 1
 
-logger.debug('Feature module "length" is plugged!')
+logger.debug('Feature module "other" is plugged!')

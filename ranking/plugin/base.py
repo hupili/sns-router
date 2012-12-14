@@ -37,5 +37,5 @@ class FeatureBase(object):
         '''
         msg.feature['feature'] = 1.0
 
-logger.debug('Feature module "length" is plugged!')
+logger.debug('Feature module "base" is plugged!')
 

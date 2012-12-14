@@ -125,4 +125,4 @@ class FeatureNoise(FeatureBase):
     def add_features(self, msg):
         msg.feature['noise'] = random.random()
 
-logger.debug('Feature module "length" is plugged!')
+logger.debug('Feature module "basic" is plugged!')

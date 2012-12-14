@@ -45,4 +45,4 @@ class FeatureTopic(FeatureBase):
         msg.feature['topic_nonsense'] /= 0.25152
         msg.feature['topic_tech'] /= 0.04399
         msg.feature['topic_news'] /= 0.37376
-logger.debug('Feature module "noise" is plugged!')
+logger.debug('Feature module "topic" is plugged!')

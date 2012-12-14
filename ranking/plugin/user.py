@@ -37,4 +37,4 @@ class FeatureUser(FeatureBase):
         msg.feature['user_interesting'] = self._user(self.udict['interesting'], msg)
         msg.feature['user_nonsense'] = self._user(self.udict['nonsense'], msg)
 
-logger.debug('Feature module "length" is plugged!')
+logger.debug('Feature module "user" is plugged!')
