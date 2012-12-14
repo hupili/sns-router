@@ -1,5 +1,11 @@
 # SNSRouter Data Analysis
 
+This directory contains scripts to do offline analysis. 
+It was initiated in the prototyping time. 
+The contents are poorly structured. 
+The corresponding logic in this dir will be moved out 
+so that it integrates with the frontend better. 
+
 ## Usage
 
 After preparing all the resources, run:
