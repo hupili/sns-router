@@ -145,6 +145,23 @@ def operation_weight_reweight_all(younger_than):
     re = q.reweight_all(younger_than) 
     return {"operation": op, "result": re}
 
+@srfe.route('/operation/weight/prepare_training_data')
+@view('result')
+@check_login
+def operation_prepare_training_data():
+    op = "Prepare training data" 
+    re = q.prepare_training_data() 
+    return {"operation": op, "result": re}
+
+@srfe.route('/operation/weight/train/:step')
+@view('result')
+@check_login
+def operation_train(step):
+    step = int(step)
+    op = "Train for %s steps" % step
+    re = q.train(step) 
+    return {"operation": op, "result": re}
+
 @srfe.route('/config/tag/toggle/:tag_id')
 @check_login
 def config_tag_toggle(tag_id):

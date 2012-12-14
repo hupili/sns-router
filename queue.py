@@ -64,6 +64,9 @@ class SRFEQueue(SNSBase):
     #            ch.home_timeline = lambda : func_ht(count = ct)
     #            logger.debug("Set channel '%s' default ht count to %d", ch.jsonconf['channel_name'], ct)
 
+    def reload_config(self, conf = None):
+        self.score.load_weight()
+
     def _create_schema(self):
         cur = self.con.cursor()
         try:
@@ -622,8 +625,8 @@ class SRFEQueue(SNSBase):
         #echo "}" >> $tm
 
     def prepare_training_data(self):
-        #self._dump2pickle('tmp/message.pickle')
-        #self._preprocess()
+        self._dump2pickle('tmp/message.pickle')
+        self._preprocess()
         self._tag_mapping() 
         from analysis.select_samples import select_samples
         from analysis.select_samples import compute_order
@@ -632,6 +635,7 @@ class SRFEQueue(SNSBase):
         samples = select_samples(message)
         order = compute_order(samples)
         save_samples(samples, order, 'tmp/samples.pickle')
+        return "done"
 
     def train(self, step = 10000):
         from analysis.autoweight import AutoWeight
@@ -645,6 +649,8 @@ class SRFEQueue(SNSBase):
         aw = AutoWeight(samples, order, iweight, LearnerSigmoid())
         aw.sgd(step)
         save_weights(aw)
+        self.score.load_weight()
+        return "done"
 
 if __name__ == '__main__':
     sp = SNSPocket()
