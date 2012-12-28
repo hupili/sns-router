@@ -317,7 +317,7 @@ class SRFEQueue(SNSBase):
         
         try:
             # We trust the client string. This software is intended for personal use. 
-            qs = "SELECT msg.id,msg.pyobj FROM msg,msg_tag WHERE %s" % condition
+            qs = "SELECT DISTINCT msg.id,msg.pyobj FROM msg,msg_tag WHERE %s" % condition
             r = cur.execute(qs)
             logger.debug("SQL query string: %s", qs)
 
