@@ -31,9 +31,14 @@ class Score(object):
     def load_weight(self, fn = None):
         if fn is None:
             fn = 'conf/weights.json'
-        self.feature_weight = json.loads(open(fn, 'r').read())
-        self.feature_name = self.feature_weight.keys()
-        logger.info("Loaded weights: %s", self.feature_weight)
+        try:
+            self.feature_weight = json.loads(open(fn, 'r').read())
+            self.feature_name = self.feature_weight.keys()
+            logger.info("Loaded weights: %s", self.feature_weight)
+        except IOError:
+            logger.warning("No '%s' weights config file, use empty setting.", fn)
+            self.feature_weight = {}
+            self.feature_name = self.feature_weight.keys()
 
     def get_score(self, msg):
         Feature.extract(msg)

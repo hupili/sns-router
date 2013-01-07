@@ -7,10 +7,11 @@
 from base import FeatureBase
 from ..feature import url_extract
 from ..feature import user_extract
-from ..feature import wordseg_clean
 from ..feature import logger
 from ..feature import Serialize
 import random
+
+from ..wordseg import wordseg_clean
 
 class FeatureTopic(FeatureBase):
     """docstring for FeatureTopic"""

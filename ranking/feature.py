@@ -15,12 +15,11 @@
 import sys
 sys.path.append('../snsapi')
 #sys.path.append('ranking/feature_plugin')
-import cPickle as Serialize
 import snsapi
 from snsapi import snstype
 from snsapi.snslog import SNSLog as logger
 from snsapi.utils import json
-from wordseg import wordseg_clean
+from snsapi.utils import Serialize
 import re
 import random
 
@@ -60,16 +59,6 @@ class Feature(object):
         logger.warning('No "conf/autoweight.json"!')
     except KeyError:
         logger.warning('No "features" defined"!')
-
-    #from plugin.length import FeatureLength
-    #feature_extractors.append(FeatureLength(env))
-    #feature_extractors.append(FeatureLink(env))
-    #feature_extractors.append(FeatureFace(env))
-    #feature_extractors.append(FeatureTopic(env))
-    #feature_extractors.append(FeatureUser(env))
-    #feature_extractors.append(FeatureEcho(env))
-    #from plugin.noise import FeatureNoise
-    #feature_extractors.append(FeatureNoise(env))
 
     def __init__(self):
         super(Feature, self).__init__()
