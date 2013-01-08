@@ -91,6 +91,8 @@
 
 <h2> Tags </h2>
 
+<i> Parent field is not enabled in this version </i>
+
 <table border=1>
 	<tr>
 		<th> id </th>
