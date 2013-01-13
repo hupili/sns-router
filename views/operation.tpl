@@ -1,3 +1,5 @@
+%include header
+
 <p>
 <a href="/">Back to Home</a>
 </p>
@@ -56,3 +58,5 @@ e.g. after changing the configs, reload them and trigger weight adapation.
 <iframe name="result">
 Init
 </iframe>
+
+%include footer

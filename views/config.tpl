@@ -1,3 +1,5 @@
+%include header
+
 <h1> SNSRouter Config Page </h1>
 
 <p>
@@ -123,3 +125,4 @@
 	<input type="submit" />
 </form>
 
+%include footer

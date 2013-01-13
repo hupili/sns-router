@@ -243,6 +243,7 @@ def home_timeline():
     meta = {
             "unseen_count": q.get_unseen_count()
             }
+    #logger.debug("ht data: %s", sl)
     return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags(), 'meta': meta}
     #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
 

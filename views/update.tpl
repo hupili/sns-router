@@ -1,3 +1,5 @@
+%include header title="Update Status"
+
 <form method="POST" action="/update">
 <textarea name="status" cols=100 rows=5>
 </textarea>
@@ -23,3 +25,5 @@ Result:
 <p>
 <a href="/">Back to Home</a>
 </p>
+
+%include footer
