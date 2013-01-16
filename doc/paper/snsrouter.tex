@@ -41,14 +41,6 @@
 	Please ignore the above and following Copyright statements. 
 	It's from the template. 
 }{...}
-%
-% --- Author Metadata here ---
-%\conferenceinfo{Have Not Submitted to Conference Yet
-%	\footnote{sdfsdfsdfds}
-%}{Earth}
-%\CopyrightYear{2007} % Allows default copyright year (20XX) to be over-ridden - IF NEED BE.
-%\crdata{0-12345-67-8/90/01}  % Allows default copyright data (0-89791-88-6/97/05) to be over-ridden - IF NEED BE.
-% --- End of Author Metadata ---
 
 \title{ {\ttlit SNSRouter} -- 
 	A Framework for  \\
@@ -61,7 +53,7 @@
 	}
 }
 %\subtitle{
-%	Middleware for SNS's and Flexible Personsalized Ranking Framework
+%	Middleware for SNS's and Flexible Personalized Ranking Framework
 %}
 %\subtitle{[Extended Abstract]
 %}}
@@ -120,14 +112,14 @@
 \begin{abstract}
 	Online Social Networks (OSN) has become an essential part of human life today. 
 	They also share a very large portion of Internet traffic in terms of Page Visits. 
-	Successful OSN's are like Facebook, Twitter, Renren, SinaWeibo, etc. 
+	Successful OSNs are like Facebook, Twitter, Renren, SinaWeibo, etc. 
 	Two of the basic functions are: 1) maintain connections with people; 
 	2) read/write updated information in a networked fashion. 
 
-	In this paper, we focus on the function of \textbf{information acquisition and spreading}.
+	In this paper, we focus on the function of \textbf{information acquisition and dissemination}.
 	We build a middleware for heterogeneous Social Network Services (SNS), 
 	thus enabling very easy cross-platform message manipulation. 
-	Besides those traditional OSN's, we can also abstract RSS, Email, SQLite 
+	Besides those traditional OSNs, we can also abstract RSS, Email, SQLite 
 	and more other platforms in the same way. 
 	With this middleware, SNSAPI \cite{github_snsapi}, 
 	many novel applications can be built and they are ready 
@@ -138,7 +130,7 @@
 	SNSRouter \cite{github_snsrouter} project aims at developing 
 	an easier way to perform cross-platform message forwarding (routing). 
 	We propose to leverage combined human and machine intelligence. 
-	More specificly, we propose a Rank Preserving Regression (RPR) formulation 
+	More specifically, we propose a Rank Preserving Regression (RPR) formulation 
 	to personalize incoming messages' ordering. 
 	Users with certain programming knowledge can easily add other personalization features. 
 	An appropriate ordering saves user's time in reviewing those messages. 
@@ -165,7 +157,7 @@
 \section{Introduction}
 \label{sec:Introduction}
 
-Social Network Services minic the real life social networks using modern technology. 
+Social Network Services mimic the real life social networks using modern technology. 
 They come in many different forms. 
 In this section, we first introduce different Social Network Services
 and provide a unified view of them. 
@@ -178,9 +170,9 @@ which motivates the SNSRouter project.
 There are many \gls{sns} nowadays.
 \rfig{\ref{fig:sns-het}} 
 illustrates some of them. 
-If we focus on information acquization and spreading
+If we focus on information acquisition and dissemination
 in a networked fashion, 
-they can all be casted in thte same way:
+they can all be casted in the same way:
 \begin{itemize}
 	\item \gls{osn}. Examples are like Facebook, Twitter, 
 		Renren, SinaWeibo, TecentWeibo in the figure. 
@@ -203,7 +195,7 @@ As one can see, the only differences are:
 3) whether read/write are allowed or only read (or write) is allowed;
 4) whether user authentication/authorization are required.
 Currently, there is no efficient way to abstract all these platforms, 
-so we see people visting several \gls{sns}'s everyday. 
+so we see people visiting several \gls{sns}'s everyday. 
 
 \begin{figure}[t!]
 	\centering
@@ -215,12 +207,10 @@ so we see people visting several \gls{sns}'s everyday.
 \subsection{Cross Platform Message Forwarding}
 \label{sec:Cross Platform Message Forwarding}
 
-%Instead of being trapped in some platforms, people had better focus on information itself.
-%Information shows its value in the process of spreading.
-Information spreading in a single domain is natural. 
+Information dissemination in a single domain is natural. 
 Many platforms have built-in ``forward'' functions, 
 e.g. ``retweet'' on twitter, ``forward'' in email, etc. 
-Many researches have also been done for information spreading on a single platform. 
+Many researches have also been done for information dissemination on a single platform. 
 However, cross-platform behavior is a seldom discussed topic. 
 We believe this is largely due to lack of mature engineering models
 and large collection of data sets. 
@@ -254,7 +244,7 @@ We know Internet routers connect different IP subnet.
 Analogously, those people are routers across different \gls{sns}s. 
 The routing job is done manually at preset. 
 How about making it automated or semi-automated? 
-Can we learn one's preference and use machine intelligence to assit the routing?  
+Can we learn one's preference and use machine intelligence to assist the routing?  
 
 \subsection{Organization}
 \label{sec:Organization}
@@ -269,7 +259,7 @@ In
 , we briefly survey related work. 
 In 
 \rsec{\ref{sec:Philosophy}}
-, we disucss design philosophy of SNSAPI and SNS-Router. 
+, we discuss design philosophy of SNSAPI and SNS-Router. 
 In 
 \rsec{\ref{sec:System Framework}}
 , we present the system framework. 
@@ -407,19 +397,19 @@ For another example, GMail classifies incoming messages
 into ``important'' and ``ordinary'' types 
 so that users can process ``important'' messages first. 
 
-Existing approches focus more on developing better algorithms. 
+Existing approaches focus more on developing better algorithms. 
 Training data is obtained mostly by implicit feedback, 
-e.g. how long a user stay on one message. 
+e.g. how long a user stays on one message. 
 User engagement in the training cycle is very low. 
 Thus the degree of personalization is also low. 
 Besides, those service providers target mass audience
 and provide no flexibility for people who understands how to program. 
 For example, one may suffer spontaneously from someone's overwhelming messages. 
-The common practice is to block his/her mesages (not unlink the user). 
-However, service providers ususally set an upperbound on the number users blocked, 
+The common practice is to block his/her messages (not unlink the user). 
+However, service providers usually set an upperbound on the number users blocked, 
 e.g. 5 for Renren and 15 for SinaWeibo. 
 One needs to upgrade his/her account to paid member in order to grow the upperbound. 
-Anyone who know programming agrees that blocking specified users
+Anyone who knows programming agrees that blocking specified users
 is a very simple task given proper programming interface. 
 To avoid blocking spontaneous noise sources permanently, 
 one can also set some timeout logic or probabilistic blocking logic. 
@@ -441,10 +431,10 @@ which leverage human and machine intelligence simultaneously.
 \begin{itemize}
 	\item \textbf{Focus on solving 80\% problems}. 
 		The Pareto Principle \cite{wiki_pareto} tells us that 
-		(qualitively) one only needs 20\% effort to solve 80\% problems; 
+		(qualitatively) one only needs 20\% effort to solve 80\% problems; 
 		In order to solve the rest 20\% problems, he/she needs to 
 		spend the other 80\% time. 
-		Example: conecptually, we only abstract three methods for \gls{osn}, 
+		Example: conceptually, we only abstract three methods for \gls{osn}, 
 		namely \textbf{read}, \textbf{write} and \textbf{auth}. 
 		The three methods can cover more than 80\% functions one need on an \gls{osn}. 
 		They are also universal across many other \gls{sns}. 
@@ -497,7 +487,7 @@ which leverage human and machine intelligence simultaneously.
 \section{System Framework}
 \label{sec:System Framework}
 
-The system is divited into two parts:
+The system is divided into two parts:
 \begin{itemize}
 	\item SNSAPI is the middleware to interface with 
 		heterogeneous \gls{sns}'s. 
@@ -544,8 +534,8 @@ There are conceptually three layers:
 	\item Application Layer. 
 		Application authors can directly use classes in the interface layer. 
 		e.g. write an auto-reply script by using RenrenStatus (derived from SNSBase);
-		only a dozon of lines are needed. 
-		However, when one want to operate a large collection of channels, this is not efficient. 
+		only a dozen of lines are needed. 
+		However, when one wants to operate a large collection of channels, this is not efficient. 
 		To avoid frequently repeated work, we develop a container class called ``SNSPocket''. 
 		Pocket can hold a collection of channels and perform batch operation 
 		with some simple configurable rules. 
@@ -578,7 +568,7 @@ and consult the developer's wiki.
 \subsection{SNSRouter Architecture}
 \label{sec:SNSRouter Architecture}
 
-In SNSAPI terminology, SNSRouter is an Application bulit upon it. 
+In SNSAPI terminology, SNSRouter is an Application built upon it. 
 As we are Python developers, we choose to use Pocket class as the SAP to SNSAPI. 
 The system part, i.e. \gls{srfe}, can be divided into three parts:
 \begin{itemize}
@@ -590,11 +580,11 @@ The system part, i.e. \gls{srfe}, can be divided into three parts:
 		so that it provides RESTful API to downflow applications. 
 		To build \gls{srfe}, we need HTTP request handler, 
 		URL routing, and simple template engine. 
-		There are many micro frameworks available in Python like cherrypy, flask, and bottle. 
+		There are many micro frameworks available in Python like ``cherrypy'', ``flask'', and ``bottle''. 
 		We choose bottle mainly because of its single file property. 
 		This makes it easy to distribute along with SNSRouter so that minimum dependencies are required. 
 	\item Message Queue. 
-		If Web UI interface with SNSAPI directly, the response cycle will be very long. 
+		If Web UI interfaces with SNSAPI directly, the response cycle will be very long. 
 		This is because SNSAPI's application programming model is synchronous, 
 		e.g. pocket invokes certain method of all channels and wait for response one by one. 
 		We believe this it's the App developers job to choose 
@@ -613,16 +603,16 @@ The system part, i.e. \gls{srfe}, can be divided into three parts:
 
 \rfig{\ref{fig:srfe_hometimeline}} shows a screen shot of 
 ordinary timeline (reverse chronological order). 
-Users can mark a message as "seen" so that it won't appear later in the timeline. 
-"seen" flag will be an important part in the training data later. 
+Users can mark a message as ``seen'' so that it won't appear later in the timeline. 
+``seen'' flag will be an important part in the training data later. 
 Below each message is a set of user defined tags. 
-Different user can have different criterion and interpretation of those tags. 
+Different users can have different criterion and interpretation of those tags. 
 Below tags is the forwarding panel. 
 Users can add his/her own comments and forward the new message to all other platforms. 
 This is further configurable (e.g. which tag to forward to which platform). 
 \rfig{\ref{fig:srfe_rankedtimeline}} shows the screen shot 
 of ranked timeline at the same time. 
-The author's opinion on those messages are depicted in thsoe screenshots. 
+The author's opinion on those messages are depicted in those screenshots. 
 From this pair of screenshots, we can see that ranked version is much cleaner
 so that user can make forwarding decisions more efficiently 
 (Quantitative measures are presented in the evaluation section). 
@@ -683,13 +673,13 @@ Last, we propose a regression model with user preference constraints.
 
 The most aggressive goal of SNSRouter is to make forwarding decisions automatically. 
 However, after one month trial, we argue that this is impossible \textbf{in general}. 
-By analyzing the real traces (167 forwarded messages out of 7.5K ``seen'' messsages), 
-we can qualitively conclude that the forward decision is made by 
+By analyzing the real traces (167 forwarded messages out of 7.5K ``seen'' messages), 
+we can qualitatively conclude that the forward decision is made by 
 considering the following factors:
 \begin{itemize}
 	\item Quality. 
 		This usually applies to knowledge sharing and discussion. 
-	\item Novelity (freshness). 
+	\item Novelty (freshness). 
 		This usually applies to news. 
 	\item Authority. 
 		This usually applies to news. 
@@ -701,7 +691,7 @@ considering the following factors:
 Although people have different tastes, the former three factors
 may be captured by the machine. 
 However, when one looks into the traces, there are more messages 
-of the same (even higher) quality, novelity, and authority. 
+of the same (even higher) quality, novelty, and authority. 
 Why doesn't the user forward them? 
 The user's consideration is beyond those factors, like
 ``I have already forwarded 5 messages today; 
@@ -770,7 +760,7 @@ The overall accuracy of J48 is 87.3684\%
 and is comparable to our later proposals. 
 Although the accuracy is high, 
 the rules generate by J48 is very complex, 
-and the user can assert they are ``incorrect'' by a glance. 
+and the user can assert that they are ``incorrect'' by a glance. 
 We present more data in \textbf{Appendix \ref{sec:app_Classification}}, 
 e.g. the confusion matrix, sample branch of the tree, etc. 
 
@@ -782,11 +772,11 @@ classification formulation has other problems:
 		Classifiers set hard cut rule for each class. 
 		They usually do not output a likelihood or any equivalence.
 		This cause problem when there is one message lie close to 
-		``news'' and ``interesting'' in the the feature space, 
+		``news'' and ``interesting'' in the feature space, 
 		but not close enough to any one of them. 
 		This message will be treated as ``null'' by nature. 
 		However it could be both new and interesting. 
-		Although itermidiate stage of those classifiers may calculate 
+		Although intermediate stage of those classifiers may calculate 
 		such values (e.g. posterior in Naive Bayes, ``likelihood'' in Logit, etc), 
 		tapping into the already packaged algorithm is needed. 
 	\item Human can only process sequentially. 
@@ -798,7 +788,7 @@ classification formulation has other problems:
 		According to our philosophy, 
 		we should avoid solving this more than necessary problem. 
 		On the contrary, if we can order the messages reasonably, 
-		this is already good enogh for human decision stage. 
+		this is already good enough for human decision stage. 
 \end{itemize}
 
 Based on these observations, we proceed to propose a regression formulation. 
@@ -809,11 +799,11 @@ Based on these observations, we proceed to propose a regression formulation.
 Now we have extracted features for messages, $X$. 
 Our goal is to rank them properly. 
 Bear in mind that this is not a pure offline research experiment. 
-New messages are coming in continously and 
+New messages are coming in continuously and 
 users can request timeline from Web UI at any time at any frequency
 (subject to human's Actions Per Minute). 
 We don't want to rerank all the messages 
-everytime when new ones come in and
+every time when new ones come in and
 return the top messages to the user. 
 We want to make the query stage efficient. 
 One simple solution is to assign a score to a message when it comes in, 
@@ -824,7 +814,7 @@ This is standard in database practice and can be done very efficiently.
 How to map features to a single score? 
 Our first thought is of course linear combination, i.e. $Xw$. 
 For one thing, non linear combination can be casted 
-to linear combination by extending the dimension of feautres. 
+to linear combination by extending the dimension of features. 
 For another thing, output of linear combination is highly interpretable, 
 e.g. ``+10 if the message comes from Pili'', 
 ``+5 if the message is about social computing'', etc. 
@@ -874,7 +864,7 @@ Details on how to obtain $E$ is described in
 \section{Algorithm Design}
 \label{sec:Algorithm Design}
 
-In this section, we design the algorithm to train the RPR momdel. 
+In this section, we design the algorithm to train the RPR model. 
 We first discuss how the preference constraints $E$ are obtained. 
 Then we discuss how to tackle with the optimization problem. 
 Besides algorithmic considerations, 
@@ -955,7 +945,7 @@ However, the QP approach has the following problems:
 		if one want to run the algorithm on mobile devices. 
 		This is true for both deploying dependent libraries and executing the algorithm.
 	\item Plain QP implementation only supports batch optimization. 
-		In our problem, $m_i$ comes continously and $E$ is also evolving. 
+		In our problem, $m_i$ comes continuously and $E$ is also evolving. 
 		If we want to capture time variant user interest, we must 
 		solve QP in an incremental fashion. 
 \end{itemize}
@@ -976,7 +966,7 @@ into equality constraints using indicator function:
 	\minimize_{y,w} && ||y - Xw||_2^2 \\
 		\text{s.t.} && I[y_i > y_j] = 1, \; \forall (m_i,m_j) \in E
 \end{eqnarray}
-where $I[.]$ is the indicator fucntion:
+where $I[.]$ is the indicator function:
 \begin{equation}
 	I[x] = \left\lbrace 
 	\begin{matrix}
@@ -1028,7 +1018,7 @@ The supinf problem of \req{\ref{eq:lag_supinf}} becomes the following optimizati
 \end{eqnarray}
 Note that the constraint can be plugged back to objective, 
 so the objective is essentially a function in $w$ 
-and the whole problem is an unconstraint programming. 
+and the whole problem is an unconstrained programming. 
 To make the notation less cluttered, we keep the current form. 
 To this point, we reduce variables from $(N +K)$ to $K$, 
 which is significant in practice. 
@@ -1109,7 +1099,7 @@ Our implementation of SGD can be summarized in \ralg{\ref{alg:rpr_sgd}}.
 In this section, we evaluate our RPR-SGD proposal. 
 We first introduce the data set collected in a time span slightly more than one month. 
 Then we propose to use Kendall's tau correlation coefficient as a metric. 
-Performance v.s. complexity of the algorithm is evaluted
+Performance v.s. complexity of the algorithm is evaluated
 with a set of preliminary features.  
 We also use real feedback to show that user efficiency is significantly improved. 
 Next, we inject noise feature to show the robustness of RPR-SGD. 
@@ -1206,8 +1196,8 @@ approximately (maybe slightly more than) one day's work.
 	\end{tabular}
 \end{table}
 
-Most of the features should be self-explanary. 
-We only ellaborate the ``topic\_X'' and ``user\_X'' features a bit. 
+Most of the features should be self-explanatory. 
+We only elaborate the ``topic\_X'' and ``user\_X'' features a bit. 
 We first discuss how we extract ``topic\_news'' from messages. 
 TF stands for Term Frequency and IDF stands for Inverse Document Frequency. 
 Those two terms are borrowed from Information Retrieval field. 
@@ -1244,7 +1234,7 @@ The code has not been optimized.
 Step size is chosen as $\alpha = 10^{-2}$. 
 When more rounds of SGD is performed, the Kendall's score becomes higher. 
 In this setting, testing K becomes larger than $0.7$ after 
-several dozons of thousand iterations. 
+several dozens of thousand iterations. 
 This is substantial improvement compared to unranked version, 
 meaning $85\%$ pairs are in correct order 
 (i.e. $K = (0.85 |E| - 0.15 |E|) / |E|$). 
@@ -1254,7 +1244,7 @@ Under the same settings,
 GD costs about 30s in one step and 
 needs about 15 steps to walk a point with $K \approx 0.75$. 
 The author is confident that the SGD algorithm can be 
-an order of mangnitude faster by only code level optimization. 
+an order of magnitude faster by only code level optimization. 
 For the time being, we leave it to the future work. 
 
 \begin{table}[htb]
@@ -1277,7 +1267,7 @@ We also remark that:
 \begin{itemize}
 	\item Larger $\alpha$ make SGD go faster but the oscillation around 
 		optimal point is larger. 
-		Small $\alpha$ is convervative so that it goes slower but is more stable. 
+		Small $\alpha$ is conservative so that it goes slower but is more stable. 
 		Users can configure different step size 
 		according to his/her demand and ability of device. 
 	\item Exactly optimizing the weights is not needed, 
@@ -1286,11 +1276,11 @@ We also remark that:
 		to boost the user's efficiency. 
 		Users who are conscious of their domain knowledge 
 		can set the weights manually (or use it as initial point $w^0$). 
-		The first user (Pili) tried to manual craft a set of weights
+		The first user (Pili) tried to manually craft a set of weights
 		before any learner algorithm (e.g. SGD) is available. 
 		He spent 1 minute and came up with a weighting scheme 
 		which reaches a Kendall's score of $0.68$. 
-		As the data set varies, this score may not be comparative to the above socres. 
+		As the data set varies, this score may not be comparative to the above scores. 
 		Nevertheless, he can tell that the ranked timeline is 
 		already significantly better than raw timeline. 
 \end{itemize}
@@ -1342,7 +1332,7 @@ we should note the following facts:
 \begin{itemize}
 	\item Preliminary reranking test was brought online at Nov 26. 
 		One can see the V/S ratio is already slightly higher in week2. 
-	\item In week1, the \gls{srfe} is not running continously day and night, 
+	\item In week1, the \gls{srfe} is not running continuously day and night, 
 		because it is in the intensive debug period. 
 		Number of total messages is significantly smaller. 
 		This is only the number of messages collected during Pili's working time. 
@@ -1355,7 +1345,7 @@ we should note the following facts:
 		He went back to ordinary timeline from time to time. 
 		This is to serve more unbiased samples for the algorithm. 
 		It will lower ``V/S'' somehow, but bring positive effect in the long run. 
-	\item When viewing the ranked timeline, user's criterion will be subconciously higher. 
+	\item When viewing the ranked timeline, user's criterion will be subconsciously higher. 
 		This is natural psychological effect. 
 		If the baseline is better, people tend to be more strict. 
 		Even with perfect ranking, people are unlikely to tag
@@ -1379,7 +1369,7 @@ to improve user efficiency to a higher level.
 
 In this experiment, we test how robust our algorithm is to noise. 
 This is important measurement because we expect user to extract features for themselves. 
-If their feature is not informative under PRP model or is nearly to noise, 
+If their feature is not informative under RPR model or is nearly to noise, 
 our weighting should not deviate too much. 
 Being robust is the first step.
 In the future work, we can add automatic feature selection techniques.
@@ -1388,7 +1378,7 @@ We start with features listed in \rtbl{\ref{tbl:feature}} without ``noise'',
 and run enough steps of SGD to get a point with $K>0.8$. 
 The absolute values of trained weights for the rest features are all less than 10. 
 Then we inject 1 noise feature, which is a random variable $\sim U[0,1]$. 
-We initalize the weight of ``noise'' by 10.
+We initialize the weight of ``noise'' by 10.
 \rtbl{\ref{tbl:noise}} shows the training result. 
 
 \begin{table}[htb]
@@ -1419,7 +1409,7 @@ We have the following remarks:
 		This is left to future work. 
 	\item Although the original purpose of ``noise'' feature is just for experimenting, 
 		we later find that ``noise'' is a very good feature. 
-		With small but not fully negnigible weight, 
+		With small but not fully negligible weight, 
 		it introduces reasonable disturbance into the system, 
 		thus providing less biased samples. 
 		For example, if the user make posting time a feature, 
@@ -1445,7 +1435,7 @@ This is true for most platforms.
 We call those messages ``echo''. 
 \rfig{\ref{fig:echo_ranked_timeline_before}} shows the ranked timeline before echo cancellation. 
 Echo will be more significant when the timeline is ranked: 
-1) A rantional user is most likely to forward valuable (at least to him/her) messages;
+1) A rational user is most likely to forward valuable (at least to him/her) messages;
 2) The ranking algorithm learns the user's preference and rank those messages higher;
 3) When forwarding the message, the user adds some comments, making it 
 more valuable (from the algorithms point of view);
@@ -1492,9 +1482,9 @@ Here is the way to to {\bf softly} cancel echos:
 		Here we only add one preference relation: ``null'' $\succeq$ ``echo''. 
 	\item Add the feature extraction logic as is shown in \rfig{\ref{fig:echo_feature}}. 
 		The user simply derives a feature extractor from base class ``FeatureBase''.
-		Excpet for structural codes, this example feature extractor 
+		Except for structural codes, this example feature extractor 
 		only costs about 10 lines of codes.
-		Many of the 15 feature extractors used in previous evaluation are also only several dozons of lines. 
+		Many of the 15 feature extractors used in previous evaluation are also only several dozens of lines. 
 	\item After the above preparation, 
 		the weights can be trained automatically. 
 		\rfig{\ref{fig:echo_train}} gives an animation of how 
@@ -1583,8 +1573,8 @@ Here is the way to to {\bf softly} cancel echos:
 %The weight of ``echo'' feature goes down iteration by iteration. Messages with ``echo=1''
 %will be ranked lower. This is auto learned by our RPR-SGD framework.
 
-We remark that the weights adapation shown in \rfig{\ref{fig:echo_train}}
-is highly intepretable for the user. 
+We remark that the weights adaption shown in \rfig{\ref{fig:echo_train}}
+is highly interpretable for the user. 
 The ``echo'' feature is either 1 or 0 
 and it recognizes echos by comparing sender name with channel configurations. 
 Since its weight is negative, 
@@ -1599,10 +1589,10 @@ We observe that message forwarding is a major operation on \gls{sns}.
 Cross-platform forwarding behaviour is seldom discussed 
 in both industry and academia. 
 One main reason is that there is no full solution stack to 
-make it automatical or semi-automatical, 
+make it automatic or semi-automatic, 
 in order for researcher to collect enough data. 
 There are also some business considerations discussed in Appendix \ref{sec:Business}.
-In this paper, we take an intial step to takle with the problem 
+In this paper, we take an initial step to tackle with the problem 
 by leveraging system, algorithm and human in the following steps:
 
 \begin{itemize}
@@ -1627,15 +1617,15 @@ This provides a distributed witness force, which help to improve
 their awareness of social responsibility!
 \footnote{
 	Many celebrities on SinaWeibo act like media. 
-	They pursue the speed of spreading information and the exposure rate. 
+	They pursue the speed of dissemination information and the exposure rate. 
 	Many of them do not spend a minute to validate the messages they forward. 
 	After people find out it is rumor, 
 	they just delete the original message quietly 
-	without one word of applogy. 
+	without one word of apology. 
 	Late comers will only see a sentence in original position:
 	``This message is deleted, please consult the customer service for more information''
 	(in Chinese). 
-	However, the influence is already far spreading on the network. 
+	However, the influence is already far spread on the network. 
 	I believe, the \gls{osn}'s will be more reliable if many people are running SNSRouter. 
 	Under this scenario, those celebrities will think twice before they act. 
 	When mistakes are made, they will prefer to fix them rather than hide them. 
@@ -1676,7 +1666,7 @@ We discuss from three aspects: system, algorithm and evaluation.
 
 \begin{itemize}
 	\item Add regularization terms. 
-		First is to alleviate overfiting and standard L2 norm regularization suffices. 
+		First is to alleviate overfitting and standard L2 norm regularization suffices. 
 		Second, we can perform feature selection using L1 regularization first 
 		and only train selected features. 
 	\item Build advanced feature extractors. 
@@ -1692,7 +1682,7 @@ We discuss from three aspects: system, algorithm and evaluation.
 		As is mentioned in evaluation section, 
 		code level optimization for SGD can be done. 
 		We can change to ``numpy'' objects to avoid 
-		time consuming operations like list tranversal. 
+		time consuming operations like list traversal. 
 		We can also implement a dedicated SGD library in C with Python module encapsulation. 
 		To make the code easy to migrate, 
 		the current stupid implementation will be kept as default portability consideration. 
@@ -1705,7 +1695,7 @@ We discuss from three aspects: system, algorithm and evaluation.
 		which can be triggered by the user. 
 		One recent target is to make it online. 
 		The difficulty is not at algorithm side. 
-		Instead, sliding memeory caching is needed to make it possible. 
+		Instead, sliding memory caching is needed to make it possible. 
 		Original plain SQLite interface will cause very large overhead. 
 	\item Deduplication. 
 		As we discussed in evaluation section, 
@@ -1715,7 +1705,7 @@ We discuss from three aspects: system, algorithm and evaluation.
 		As to our application scenario, 
 		we also want to improve the frontend at the same time, 
 		so that users can process duplicated messages quickly. 
-		For example, we can present similar messges in tree structure
+		For example, we can present similar messages in tree structure
 		so that users can``mark as seen'' in a batch. 
 \end{itemize}
 
@@ -1737,9 +1727,10 @@ More subjective tests are to be done:
 \label{sec:Acknowledgements}
 
 SNSAPI is the base of SNSRouter project. 
-We would like to thank Junbo Li from BUPT, who is the cofounder of SNSAPI.  
+We would like to thank Junbo Li from BUPT, who is the co-founder of SNSAPI.  
 We thank other contributors from Github: Chunliang Lu. 
 We also highly appreciate people who answered our technical questions on StackOverflow. 
+We thank Xiaoying Tang for her review of this report. 
 
 \bibliographystyle{abbrv}
 \input{../reference/gen_bib.bbl}
@@ -1776,7 +1767,7 @@ From a few survey, we summarize some of their business considerations:
 \end{itemize}
 
 The first one is out of our consideration. 
-The second one is just placing a thin film to slow down the information spreading process. 
+The second one is just placing a thin film to slow down the information dissemination process. 
 You can not stop users' copy and paste anyway. 
 
 The way they stop such applications is by killing their app keys. 
@@ -1817,7 +1808,7 @@ there were not enough features for ``news''.
 First, they come from a wide spectrum of topics:
 politics, military, science, etc. 
 It is hard to use topic to judge the ``news''-ness, 
-leting alone judge it with our elementary topic miner.
+letting alone judge it with our elementary topic miner.
 
 \begin{figure*}[t!]
 	\centering
@@ -1879,7 +1870,7 @@ All the process is completed in less than 5 seconds.
 	\label{fig:confmat_j48}
 \end{figure*}
 
-One drawback is that overfiting is obvious in J48. 
+One drawback is that overfitting is obvious in J48. 
 We present a sample branch for ``mark''  as follows:
 \begin{Verbatim}
    topic_news <= 0.00603 
@@ -1895,7 +1886,7 @@ We present a sample branch for ``mark''  as follows:
 \end{Verbatim}
 The ``3.0/1.0'' in bracket means that 3 instances are correctly classified 
 along this branch, and 1 instance is incorrectly classified. 
-This small number is one sign of overfiting. 
+This small number is one sign of overfitting. 
 Another sign is the ``id'' branch. 
 It is just the rowid in SQLite DB and should not play any role in classification. 
 Proper tuning may make it work better but the process will be less 
@@ -1994,7 +1985,7 @@ the 2nd best rider is riding the best horse.
 Now we change their horses. 
 What will happen? 
 Unless enough training is done, 
-the ``best rider+best horse'' will not outperm 
+the ``best rider+best horse'' will not outperform 
 the ``2nd best rider+best horse''. 
 The important thing is that the ``training'' is not for horse, 
 but for horse and the rider as a whole. 
@@ -2008,7 +1999,7 @@ Can you make another framework which generalizes better?
 
 \textbf{B:}
 I think many race horses are over trained to a certain race track (standard data set). 
-Those hosrses do not have joy in running. 
+Those horses do not have joy in running. 
 In the straight track, horse A outperforms others;
 In the bent track, horse B outperforms others. 
 The riders keep on arguing whose horse is the best. 
