@@ -30,17 +30,12 @@ class AuthProxy(object):
         self.code_url = "((null))"
         
 ap = AuthProxy()
-#print ap.code_url
-#print ap.request_url
-#ap.request_url("ss")
-#print ap.requested_url
 sp = SNSPocket()
 sp.load_config()
 for c in sp.values():
     c.request_url = lambda url: ap.request_url(url)
     c.fetch_code = lambda : ap.fetch_code()
     c.auth()
-    #c.get_saved_token()
 
 srfe = Bottle()
 
@@ -66,9 +61,12 @@ class InputThread(threading.Thread):
 
     def run(self):
         while (self.keep_running):
-            self.queue.input()
-            logger.debug("Invoke input() on queue")
-            time.sleep(60 * 5) # 5 Minutes per fetch 
+            try:
+                self.queue.input()
+                logger.debug("Invoke input() on queue")
+                time.sleep(60 * 5) # 5 Minutes per fetch 
+            except Exception as e:
+                logger.warning("Catch Exception in InputThread: %s", e)
 
 def check_login(func):
     '''
@@ -236,16 +234,11 @@ def tag(tg, msg_id):
 @view('home_timeline')
 @check_login
 def home_timeline():
-    #sp.auth()
-    #sl = sp.home_timeline(5)
     sl = q.output(20)
-    #sl = q.output(30)
     meta = {
             "unseen_count": q.get_unseen_count()
             }
-    #logger.debug("ht data: %s", sl)
     return {'sl': sl, 'snsapi_utils': snsapi_utils, 'tags': q.get_tags(), 'meta': meta}
-    #return template('home_timeline', sl = sl, snsapi_utils = snsapi_utils)
 
 @srfe.route('/ranked_timeline')
 @view('home_timeline')
@@ -300,35 +293,20 @@ def forward_post(msg_id):
     result = q.forward(msg_id, comment)
     return {'result': result, 'operation': op}
 
-ith = InputThread(q)
-# The following option make the thread end when our 
-# Bottle server ends. 
-# Ref: http://stackoverflow.com/questions/3788208/python-threading-ignores-keyboardinterrupt-exception
-ith.daemon=True
-ith.start()
-#srfe.run(host='localhost', port=8080, debug = True, reloader = True)
-#srfe.run(host='localhost', port=8080, debug = True)
+if __name__ == '__main__':
+    ith = InputThread(q)
+    # The following option make the thread end when our 
+    # Bottle server ends. 
+    # Ref: http://stackoverflow.com/questions/3788208/python-threading-ignores-keyboardinterrupt-exception
+    ith.daemon=True
+    ith.start()
 
-srfe.run(host = jsonconf.get('host', '127.0.0.1'),\
-        port = jsonconf.get('port', 8080),\
-        debug = jsonconf.get('debug', True))
-ith.keep_running = False
+    # Use the line to disable catching "Internal Server Erros"
+    #bottle.app().catchall = False
 
-
-#@srfe.route('/')
-#@srfe.route('/hello/:name')
-#@view('echo')
-#def index(name='World'):
-#    return {"response": name}
-#    #return template('<b>Hell {{name}}</b>!', name=name)
-
-#@route('/:path')
-#def default(path = None):
-#    return template('<red> {{path}} </red>', path = path)
-
-
-# Use the line to disable catching "Internal Server Erros"
-#bottle.app().catchall = False
-
-#run(host='localhost', port=8080)
-#run(host='192.168.64.88', port=8080)
+    srfe.run(host = jsonconf.get('host', '127.0.0.1'),
+            port = jsonconf.get('port', 8080),
+            debug = jsonconf.get('debug', True),
+            reloader = jsonconf.get('reloader', False)
+            )
+    ith.keep_running = False
