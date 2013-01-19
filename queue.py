@@ -223,11 +223,13 @@ class SRFEQueue(SNSBase):
 
     def _home_timeline(self, channel):
         ch = self.sp[channel]
-        if 'home_timeline' in ch.jsonconf:
-            ct = ch.jsonconf['home_timeline']['count']
-        else:
-            ct = 20
-        return ch.home_timeline(ct)
+        return ch.home_timeline()
+        # The following logic is moved into SNSAPI
+        #if 'home_timeline' in ch.jsonconf:
+        #    ct = ch.jsonconf['home_timeline']['count']
+        #else:
+        #    ct = 20
+        #return ch.home_timeline(ct)
 
     def input(self, channel = None):
         if channel:
