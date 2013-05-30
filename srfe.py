@@ -53,6 +53,9 @@ except IOError:
             "password": "test"
             }
 
+INPUT_GAP = jsonconf.get('input_gap', 60 * 5) # 5 Minutes per fetch
+logger.debug("INPUT_GAP: %s", INPUT_GAP)
+
 class InputThread(threading.Thread):
     def __init__(self, queue):
         super(InputThread, self).__init__()
@@ -64,7 +67,7 @@ class InputThread(threading.Thread):
             try:
                 self.queue.input()
                 logger.debug("Invoke input() on queue")
-                time.sleep(60 * 5) # 5 Minutes per fetch 
+                time.sleep(INPUT_GAP) 
             except Exception as e:
                 logger.warning("Catch Exception in InputThread: %s", e)
 
