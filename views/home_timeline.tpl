@@ -1,5 +1,8 @@
 %include header
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script src="static/polish.js"></script>
+
 <h1> home_timeline </h1>
 
 <p>
@@ -46,9 +49,10 @@ Unseen Messages: {{meta['unseen_count']}}
 	<a target="result" href="/flag/seen/{{!s.msg_id}}">[Mark as Seen]</a>
 	<font color="red"> {{s.weight}} </font> 
 	<a href="/why/{{!s.msg_id}}" > why? </a>
-	<p>
+	<div class="message_body">
 		{{s.parsed.text.strip()}}
-		<br />
+	</div>
+	<div>
 		%for (k,v) in tags.items():
 			<a target="result" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
 		%end
@@ -57,8 +61,7 @@ Unseen Messages: {{meta['unseen_count']}}
 		<input name="comment" type="text" />
 		<input type="submit" value="forward"/>
 		</form>
-	</p>
-
+	</div>
 </div>
 %end
 
