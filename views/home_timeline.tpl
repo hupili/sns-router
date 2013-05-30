@@ -14,6 +14,10 @@ Unseen Messages: {{meta['unseen_count']}}
 
 %for s in sl:
 <div>
+	<div>
+		channel: <pre style="display:inline;color:red">{{s.ID.channel}}</pre>
+	</div>
+
 	<a target="_blank" href="/raw/{{!s.msg_id}}">[raw]</a>
 
 	%if s.platform == "SinaWeiboStatus":
@@ -32,6 +36,8 @@ Unseen Messages: {{meta['unseen_count']}}
 	<img src="http://www.girlmeetsdress.com/images/Favicon_RSS.jpg" />
 	%elif s.platform == "RSS2RW":
 	<img src="http://www.girlmeetsdress.com/images/Favicon_RSS.jpg" />
+	%elif s.platform == "RSSSummary":
+	<img src="http://www.girlmeetsdress.com/images/Favicon_RSS.jpg" />
 	%elif s.platform == "Email":
 	<img src="https://mail.google.com/favicon.ico" />
 	%end
@@ -49,7 +55,7 @@ Unseen Messages: {{meta['unseen_count']}}
 		<br />
 		<form target="result" method="POST" action="/forward/{{!s.msg_id}}">
 		<input name="comment" type="text" />
-		<input type="submit" />
+		<input type="submit" value="forward"/>
 		</form>
 	</p>
 
