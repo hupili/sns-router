@@ -1,3 +1,5 @@
+%include header title="Login"
+
 %if state == "new":
 	<form method="POST" action="/login">
 	Username: <input type="text" name="username" length=20 /> 
@@ -25,3 +27,5 @@
 %else:
 	Unknown state..?
 %end
+
+%include footer

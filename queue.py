@@ -37,9 +37,6 @@ class SRFEQueue(SNSBase):
     def __init__(self, snspocket = None):
         super(SRFEQueue, self).__init__(self.SQLITE_QUEUE_CONF)
         self.sp = snspocket # SNSPocket object
-        #self.__mount_default_home_timeline_count()
-        #self.queue_conf = json.load(open('conf/queue.json', 'r'))
-        #self.feature_weight = self.queue_conf['feature_weight']
 
         try:
             self.queue_conf = json.loads(open('conf/queue.json', 'r').read())
@@ -55,14 +52,6 @@ class SRFEQueue(SNSBase):
         else:
             self.score = None
             self._weight_feature = lambda m: 0
-
-    #def __mount_default_home_timeline_count(self):
-    #    for ch in self.sp.values():
-    #        if 'home_timeline' in ch.jsonconf:
-    #            ct = ch.jsonconf['home_timeline']['count']
-    #            func_ht = ch.home_timeline
-    #            ch.home_timeline = lambda : func_ht(count = ct)
-    #            logger.debug("Set channel '%s' default ht count to %d", ch.jsonconf['channel_name'], ct)
 
     def reload_config(self, conf = None):
         self.score.load_weight()
@@ -157,9 +146,13 @@ class SRFEQueue(SNSBase):
     def _inqueue(self, message):
         cur = self.con.cursor()
         try:
-            #Deduplicate
-            #digest = self._digest_pyobj(message)
-            #digest = message.digest_parsed()
+            # Deduplicate
+            # Explain the problem of the following two methods for future reference:
+            # 1. digest = self._digest_pyobj(message)
+            #    Python object are hashed to different values even the SNS message 
+            #    fields are all the same. 
+            # 2. digest = message.digest_parsed()
+            #    I forget what is the problem.. I should have noted before. 
             digest = message.digest()
             #logger.debug("message pyobj digest '%s'", digest)
             r = cur.execute('''
@@ -229,12 +222,14 @@ class SRFEQueue(SNSBase):
             return False
 
     def _home_timeline(self, channel):
-        ch = self.sp[channel]
-        if 'home_timeline' in ch.jsonconf:
-            ct = ch.jsonconf['home_timeline']['count']
-        else:
-            ct = 20
-        return ch.home_timeline(ct)
+        return self.sp.home_timeline(channel=channel)
+        #ch = self.sp[channel]
+        # The following logic is moved into SNSAPI
+        #if 'home_timeline' in ch.jsonconf:
+        #    ct = ch.jsonconf['home_timeline']['count']
+        #else:
+        #    ct = 20
+        #return ch.home_timeline(ct)
 
     def input(self, channel = None):
         if channel:
@@ -280,16 +275,6 @@ class SRFEQueue(SNSBase):
             obj.msg_id = m[0]
             obj.weight = m[6]
             message_list.append(obj)
-        #for m in r:
-        #    message_list.append(self.Message({
-        #            'time':m[0],
-        #            'userid':m[1],
-        #            'username':m[2],
-        #            'text':m[3]
-        #            },\
-        #            platform = self.jsonconf['platform'],\
-        #            channel = self.jsonconf['channel_name']\
-        #            ))
 
         return message_list
 
@@ -317,7 +302,7 @@ class SRFEQueue(SNSBase):
         
         try:
             # We trust the client string. This software is intended for personal use. 
-            qs = "SELECT msg.id,msg.pyobj FROM msg,msg_tag WHERE %s" % condition
+            qs = "SELECT DISTINCT msg.id,msg.pyobj FROM msg,msg_tag WHERE %s" % condition
             r = cur.execute(qs)
             logger.debug("SQL query string: %s", qs)
 
@@ -485,13 +470,6 @@ class SRFEQueue(SNSBase):
         #    This is distinguished from "weight". 
         return self.score.get_score(msg)
 
-    #    Feature.extract(msg)
-    #    score = 0.0
-    #    for (f, w) in self.feature_weight.items():
-    #        if f in msg.feature:
-    #            score += msg.feature[f] * w
-    #    return score
-
     def reweight(self, msg_id):
         cur = self.con.cursor()
         try:
@@ -514,11 +492,6 @@ class SRFEQueue(SNSBase):
         begin = self.time()
         cur = self.con.cursor()
         try:
-            #if last_update_time is None:
-            #    r = cur.execute('''
-            #    SELECT id from msg
-            #    ''')
-            #else:
             latest_time = int(self.time() - younger_than)
             r = cur.execute('''
             SELECT id from msg
@@ -615,15 +588,6 @@ class SRFEQueue(SNSBase):
         d = dict([(t[0],t[1]) for t in r])
         open('tmp/tag_mapping.json', 'w').write(json.dumps(d))
 
-        #original bash logic
-        #tm="tag_mapping.json"
-        #echo "saving tag mapping to '$tm'"
-        #echo "{" > $tm
-        #$sql 'select name,id from tag;' | tr '|' ' ' | awk '{printf("\"%s\": %d,\n", $1, $2)}' >> $tm
-        ## Just to fit in json format...
-        #echo "\"__fake__\": 99999" >> $tm
-        #echo "}" >> $tm
-
     def prepare_training_data(self):
         self._dump2pickle('tmp/message.pickle')
         self._preprocess()
@@ -663,29 +627,3 @@ if __name__ == '__main__':
     #q.input()
 
     #print sp.home_timeline()
-
-
-#    def _update_text(self, text):
-#        m = self.Message({\
-#                'time':int(self.time()),
-#                'userid':self.jsonconf['userid'],
-#                'username':self.jsonconf['username'],
-#                'text':text
-#                }, \
-#                platform = self.jsonconf['platform'],\
-#                channel = self.jsonconf['channel_name']\
-#                )
-#        return self._update_message(m)
-#
-#    def _update_message(self, message):
-#
-#    def update(self, text):
-#        if isinstance(text, str):
-#            return self._update_text(text)
-#        elif isinstance(text, unicode):
-#            return self._update_text(text)
-#        elif isinstance(text, snstype.Message):
-#            return self._update_message(text)
-#        else:
-#            logger.warning('unknown type: %s', type(text))
-#            return False

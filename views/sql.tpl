@@ -1,3 +1,5 @@
+%include header title="SQL"
+
 <h1> SQL </h1>
 
 % setdefault('submit', False)
@@ -62,3 +64,5 @@ SELECT msg.id,msg.pyobj FROM msg,msg_tag WHERE <br />
 	%end
 
 %end
+
+%include footer

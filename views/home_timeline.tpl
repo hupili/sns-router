@@ -1,3 +1,5 @@
+%include header
+
 <h1> home_timeline </h1>
 
 <p>
@@ -39,16 +41,16 @@ Unseen Messages: {{meta['unseen_count']}}
 	<font color="red"> {{s.weight}} </font> 
 	<a href="/why/{{!s.msg_id}}" > why? </a>
 	<p>
-	{{s.parsed.text}}
-	<br />
-	%for (k,v) in tags.items():
-		<a target="result" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
-	%end
-	<br />
-	<form target="result" method="POST" action="/forward/{{!s.msg_id}}">
-	<input name="comment" type="text" />
-	<input type="submit" />
-	</form>
+		{{s.parsed.text.strip()}}
+		<br />
+		%for (k,v) in tags.items():
+			<a target="result" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
+		%end
+		<br />
+		<form target="result" method="POST" action="/forward/{{!s.msg_id}}">
+		<input name="comment" type="text" />
+		<input type="submit" />
+		</form>
 	</p>
 
 </div>
@@ -61,3 +63,5 @@ Operation result frame: <br />
 <iframe name="result">
 Init
 </iframe>
+
+%include footer
