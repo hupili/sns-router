@@ -12,6 +12,7 @@ from snsapi import snstype
 from snsapi.utils import Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
+from snsapi.utils import timeout, TimeoutException
 
 import base64
 import hashlib
@@ -221,23 +222,45 @@ class SRFEQueue(SNSBase):
             #raise e
             return False
 
-    def _home_timeline(self, channel):
+    def _home_timeline_direct(self, channel):
+        logger.debug("channel '%s'", channel)
         return self.sp.home_timeline(channel=channel)
-        #ch = self.sp[channel]
-        # The following logic is moved into SNSAPI
-        #if 'home_timeline' in ch.jsonconf:
-        #    ct = ch.jsonconf['home_timeline']['count']
-        #else:
-        #    ct = 20
-        #return ch.home_timeline(ct)
 
-    def input(self, channel = None):
+    def _home_timeline(self, time_wait, channel):
+        logger.debug("channel '%s', timeout '%s'", channel, time_wait)
+        if time_wait is None:
+            return self.sp.home_timeline(channel=channel)
+        else:
+            func = timeout(time_wait)(self._home_timeline_direct)
+            try:
+                return func(channel=channel)
+            except TimeoutException:
+                logger.warning("channel '%s' read hometimeline timeout.", channel)
+                return snstype.MessageList()
+
+    def _home_timeline_2(self, time_wait, channel):
+        logger.debug("channel '%s', timeout '%s'", channel, time_wait)
+        if time_wait is None:
+            return self.sp.home_timeline(channel=channel)
+        else:
+            func = timeout(time_wait)(self.sp.home_timeline)
+            try:
+                return func(channel=channel)
+            except TimeoutException:
+                logger.warning("channel '%s' read hometimeline timeout.", channel)
+                return snstype.MessageList()
+
+    def input(self, time_wait = None, channel = None):
+        '''
+        :param time_wait:
+            The waiting time for each channel.
+        '''
         if channel:
-            ml = self._home_timeline(channel)
+            ml = self._home_timeline(time_wait, channel)
         else:
             ml = snstype.MessageList()
             for chn in self.sp:
-                ml.extend(self._home_timeline(chn))
+                ml.extend(self._home_timeline(time_wait, chn))
 
         count = 0 
         for m in ml:

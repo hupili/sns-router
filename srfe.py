@@ -54,6 +54,7 @@ except IOError:
             }
 
 INPUT_GAP = jsonconf.get('input_gap', 60 * 5) # 5 Minutes per fetch
+INPUT_WAIT = jsonconf.get('input_wait', 20) # Wati 20 seconds for each channel
 logger.debug("INPUT_GAP: %s", INPUT_GAP)
 
 class InputThread(threading.Thread):
@@ -65,7 +66,7 @@ class InputThread(threading.Thread):
     def run(self):
         while (self.keep_running):
             try:
-                self.queue.input()
+                self.queue.input(INPUT_WAIT)
                 logger.debug("Invoke input() on queue")
                 time.sleep(INPUT_GAP) 
             except Exception as e:
