@@ -121,6 +121,10 @@ class SRFEQueue(SNSBase):
         )
         """)
 
+        cur.execute("""
+        CREATE INDEX msg_digest_index on msg(digest)
+        """)
+
         self.con.commit()
 
     def log(self, text):
