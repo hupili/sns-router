@@ -53,6 +53,14 @@ class SRFEQueue(SNSBase):
             self.score = None
             self._weight_feature = lambda m: 0
 
+        # Hooks: this is an important way for you to customize the usage
+        try:
+            import myhooks as hooks
+        except Exception as e:
+            import hooks
+        self._hook_new_message = hooks.hook_new_message
+        
+
     def reload_config(self, conf = None):
         self.score.load_weight()
 
@@ -165,6 +173,7 @@ class SRFEQueue(SNSBase):
                 return False
             else:
                 logger.debug("message '%s' is new", digest)
+                self._hook_new_message(self, message)
 
             #TODO:
             #    This is temporary solution for object digestion. 
