@@ -125,6 +125,10 @@ class SRFEQueue(SNSBase):
         CREATE INDEX msg_digest_index on msg(digest)
         """)
 
+        cur.execute("""
+        CREATE INDEX msg_get_latest_index on msg(flag, time)
+        """)
+
         self.con.commit()
 
     def log(self, text):
