@@ -1,6 +1,7 @@
 import sys
-sys.path.append('bottle')
-sys.path.append('snsapi')
+sys.path.append('../')
+sys.path.append('../bottle')
+sys.path.append('../snsapi')
 import snsapi
 from snsapi.utils import report_time
 
