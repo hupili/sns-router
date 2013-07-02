@@ -11,7 +11,7 @@ from snsapi.snslog import SNSLog as logger
 distribute_conf = {
   "description": "Use this channel to distribute your aggregated timeline", 
   "platform": "RSS2RW", 
-  "url": "distribute.atom", 
+  "url": "distribute.rss", 
   "channel_name": "new_channel_name", 
   "message": {
     "timezone_correction": None
