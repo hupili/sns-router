@@ -46,10 +46,12 @@ Unseen Messages: {{meta['unseen_count']}}
 	<img src="http://www.girlmeetsdress.com/images/Favicon_RSS.jpg" />
 	%elif s.platform == "Email":
 	<img src="https://mail.google.com/favicon.ico" />
+	%elif s.platform == "FacebookFeed":
+	<img src="http://facebook.com/favicon.ico" />
 	%end
 
 	<b>{{s.parsed.username}}</b> @ <i>{{snsapi_utils.utc2str(s.parsed.time)}}</i>
-	<a target="result" href="/flag/seen/{{!s.msg_id}}">[Mark as Seen]</a>
+	<a target="result" href="/flag/seen/{{!s.msg_id}}">[Flag as Seen]</a>
 	<font color="red"> {{s.weight}} </font> 
 	<a href="/why/{{!s.msg_id}}" > why? </a>
 	<div class="message_body">
