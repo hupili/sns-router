@@ -1,10 +1,10 @@
 $(function(){
 	$('.message_body').map(function(){
 		// Extract and truncate link
-		$(this).html($(this).html().replace(/http:\/\/[a-z0-9:\/%\.\-&?=_;~]+/i, function(link){ 
-			if (r = /(http:\/\/([a-z0-9:%\.\-]+)\/[a-z0-9:\/%\.\-&?=_;~]+)/i.exec(link)){
+		$(this).html($(this).html().replace(/https?:\/\/[a-z0-9:\/%\.\-&?=_;~]+/i, function(link){ 
+			if (r = /(https?:\/\/([a-z0-9:%\.\-]+)\/[a-z0-9:\/%\.\-&?=_;~]+)/i.exec(link)){
 			//if (r=/http:\/\/[a-z0-9:\/%\.\-]+[^a-z0-9:\/%\.\-]/.exec(link)){
-				return '<a class="truncated_link" href="' + r[1] 
+				return '<a target="_blank" class="truncated_link" href="' + r[1] 
 						+ '" title="' + r[1] 
 						+ '" short_href="' + r[2] 
 						+'">' + r[2] + '...</a>';

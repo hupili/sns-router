@@ -57,6 +57,19 @@ Unseen Messages: {{meta['unseen_count']}}
 	<div class="message_body">
 		{{s.parsed.text.strip()}}
 	</div>
+	%for a in s.parsed.attachments:
+	<div>
+		%if a['format'][0] == 'link':
+			%if a['type'] == 'picture':
+				pic:
+				<br />
+				<img width="400" src="{{a['data']}}" alt="" />
+			%else:
+				link: <a href="{{a['data']}}" target="_blank">{{a['data']}}</a>
+			%end
+		%end
+	</div>
+	%end
 	<div>
 		%for (k,v) in tags.items():
 			<a target="result" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
