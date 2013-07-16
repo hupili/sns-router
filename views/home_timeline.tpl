@@ -28,9 +28,15 @@ Unseen Messages: {{meta['unseen_count']}}
 
 	%if s.platform == "SinaWeiboStatus":
 	<img src="http://weibo.com/favicon.ico" />
+	%elif s.platform == "SinaWeiboWapStatus":
+	<img src="http://weibo.com/favicon.ico" />
 	%elif s.platform == "RenrenStatus":
 	<img src="http://xnimg.cn/favicon.ico" />
 	%elif s.platform == "RenrenShare":
+	<img src="http://xnimg.cn/favicon.ico" />
+	%elif s.platform == "RenrenFeed":
+	<img src="http://xnimg.cn/favicon.ico" />
+	%elif s.platform == "RenrenBlog":
 	<img src="http://xnimg.cn/favicon.ico" />
 	%elif s.platform == "TencentWeiboStatus":
 	<img src="http://t.qq.com/favicon.ico" />
@@ -63,7 +69,7 @@ Unseen Messages: {{meta['unseen_count']}}
 			%if a['type'] == 'picture':
 				pic:
 				<br />
-				<img width="400" src="{{a['data']}}" alt="" />
+				<a href="{{a['data']}}" rel=noreferrer target="_blank"><img width="400" src="{{a['data']}}" alt="" onerror="loadImage(this);"/></a>
 			%else:
 				link: <a href="{{a['data']}}" target="_blank">{{a['data']}}</a>
 			%end
