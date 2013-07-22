@@ -130,6 +130,13 @@ def config():
         info[ch]['need_auth'] = sp[ch].need_auth()
     return {"info": info, "sp": sp, "ap": ap, "q": q}
 
+@srfe.route('/input')
+@view('result')
+@check_login
+def config():
+    q.input()
+    redirect('/home_timeline')
+
 @srfe.route('/operation')
 @view('operation')
 @check_login

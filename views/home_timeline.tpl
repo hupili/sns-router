@@ -16,6 +16,10 @@ Unseen Messages: {{meta['unseen_count']}}
 <a href="/">Back to Home</a>
 </p>
 
+<p>
+<a href="/input">Input New Messages</a>
+</p>
+
 <hr />
 
 %for s in sl:
@@ -79,7 +83,7 @@ Unseen Messages: {{meta['unseen_count']}}
 			%if a['type'] == 'picture':
 				pic:
 				<br />
-				<a href="{{a['data']}}" rel=noreferrer target="_blank"><img width="400" src="{{a['data']}}" alt="" onerror="loadImage(this);"/></a>
+-				<a href="{{a['data']}}" rel=noreferrer target="_blank"><img width="400" src="{{a['data']}}" alt="" onerror="loadImage(this);"/></a>
 			%else:
 				link: <a href="{{a['data']}}" target="_blank">{{a['data']}}</a>
 			%end

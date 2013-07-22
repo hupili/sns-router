@@ -268,6 +268,7 @@ class SRFEQueue(SNSBase):
                 count += 1
         logger.info("Input %d new message", count)
         self.log("Input %d new message" % count)
+        return "Input %s new messages" % count
 
     def get_unseen_count(self):
         cur = self.con.cursor()
