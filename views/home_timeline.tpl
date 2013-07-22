@@ -63,6 +63,16 @@ Unseen Messages: {{meta['unseen_count']}}
 	<div class="message_body">
 		{{s.parsed.text.strip()}}
 	</div>
+	<div>
+		%for (k,v) in tags.items():
+			<a target="result" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
+		%end
+		<br />
+		<form target="result" method="POST" action="/forward/{{!s.msg_id}}">
+		<input name="comment" type="text" />
+		<input type="submit" value="forward"/>
+		</form>
+	</div>
 	%for a in s.parsed.attachments:
 	<div>
 		%if a['format'][0] == 'link':
@@ -76,16 +86,8 @@ Unseen Messages: {{meta['unseen_count']}}
 		%end
 	</div>
 	%end
-	<div>
-		%for (k,v) in tags.items():
-			<a target="result" href="/tag/{{k}}/{{!s.msg_id}}">{ {{v}} }</a>
-		%end
-		<br />
-		<form target="result" method="POST" action="/forward/{{!s.msg_id}}">
-		<input name="comment" type="text" />
-		<input type="submit" value="forward"/>
-		</form>
-	</div>
+
+	<hr />
 </div>
 %end
 

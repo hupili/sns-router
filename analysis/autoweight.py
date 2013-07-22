@@ -13,7 +13,16 @@ import cPickle as Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
 
-from feature import Feature
+###NOTE:
+###    Write one 'Feature' class to this module from the client
+###    Implement 'extract' method in it
+
+from os import path
+_dir_root = path.dirname(path.dirname(path.abspath(__file__)))
+print _dir_root
+sys.path.insert(0, _dir_root)
+from ranking.feature import Feature
+
 from evaluation import evaluate_kendall
 
 import base64
@@ -289,15 +298,15 @@ class AutoWeight(object):
                 new_w.append(self.w[k] - a * g[k])
             self.w = new_w
             #print "%d" % i
-            if i % 500000 == 0:
+            if i % 50000 == 0:
                 print "Round %d" % i
                 new_obj = self.learner.objective(self.X, new_w, self.order)
                 print "Obj: %.7f" % new_obj
                 if abs(new_obj - last_obj) / last_obj < 1e-4:
                     print "Small gap, termiante"
                     break
-            #print "Kendall's score %.7f" % self.evaluate()
         print "Terminate due to maximum number of rounds"
+        print "Kendall's score %.7f" % self.evaluate()
 
         return self.dictw()
         
@@ -374,7 +383,7 @@ class AutoWeight(object):
 
     def evaluate(self):
         ranked = sorted(self.samples.values(), key = lambda m: self._weight_feature(m), reverse = True)
-        ret = evaluate_kendall([m.msg_id for m in ranked], order)
+        ret = evaluate_kendall([m.msg_id for m in ranked], self.order)
         return ret
 
     def init_weight_kendall(self, feature_name, samples, order):

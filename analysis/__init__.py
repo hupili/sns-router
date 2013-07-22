@@ -1,1 +1,1 @@
-__ALL__ = ['sqlite2pickle']
+__ALL__ = ['sqlite2pickle', 'autoweight']

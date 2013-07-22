@@ -16,7 +16,14 @@ import cPickle as Serialize
 from snsapi.snsbase import SNSBase
 from snsapi.snslog import SNSLog as logger
 
-from feature import Feature
+#See the comments in 'autoweight.py'
+#from feature import Feature
+from os import path
+_dir_root = path.dirname(path.dirname(path.abspath(__file__)))
+print _dir_root
+sys.path.insert(0, _dir_root)
+from ranking.feature import Feature
+
 
 import networkx as nx
 

@@ -49,6 +49,12 @@ class SRFEQueue(SNSBase):
             from ranking import feature
             self.score = score.Score()
             self.Feature = feature.Feature
+            ####TODO:
+            ####    original contents under 'analysis' will all be moved to 'ranking'
+            ####    The following is a temporary hack around
+            ###from analysis import autoweight, select_samples
+            ###autoweight.Feature = feature.Feature
+            ###select_samples.Feature = feature.Feature
         else:
             self.score = None
             self._weight_feature = lambda m: 0
@@ -618,7 +624,7 @@ class SRFEQueue(SNSBase):
         save_samples(samples, order, 'tmp/samples.pickle')
         return "done"
 
-    def train(self, step = 10000):
+    def train(self, step = 100000):
         from analysis.autoweight import AutoWeight
         from analysis.autoweight import load_weights
         from analysis.autoweight import save_weights
