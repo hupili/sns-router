@@ -51,8 +51,11 @@ class LearnerSigmoid(Learner):
         super(LearnerSigmoid, self).__init__()
         
     def _S(self, t):
-        #coeff = 10.0
-        coeff = 100.0
+        #TODO:
+        #    Make this adaptive according to the value range of X and w
+        #coeff = 1.0
+        coeff = 10.0
+        #coeff = 100.0
         #coeff = 1000.0
         return 1.0 / (1.0 + numpy.exp(- coeff * t))
     
