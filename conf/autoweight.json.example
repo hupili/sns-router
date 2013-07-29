@@ -17,7 +17,8 @@
 	["basic", "FeatureLength"], 
 	["basic", "FeatureNoise"],
 	["basic", "FeatureLink"],
-	["basic", "FeatureEcho"]
+	["basic", "FeatureEcho"],
+	["pic", "FeaturePic"]
   ],
   "__other_features_you_may_enable_later": [
 	["topic", "FeatureTopic"],
