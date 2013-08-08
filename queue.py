@@ -53,13 +53,15 @@ class SRFEQueue(SNSBase):
             self.score = None
             self._weight_feature = lambda m: 0
 
+        self._reload_hook()
+
+    def _reload_hook(self):
         # Hooks: this is an important way for you to customize the usage
         try:
             import myhooks as hooks
         except Exception as e:
             import hooks
         self._hook_new_message = hooks.hook_new_message
-        
 
     def reload_config(self, conf = None):
         self.score.load_weight()
@@ -249,6 +251,8 @@ class SRFEQueue(SNSBase):
         #return ch.home_timeline(ct)
 
     def input(self, channel = None):
+        self._reload_hook()
+
         if channel:
             ml = self._home_timeline(channel)
         else:
