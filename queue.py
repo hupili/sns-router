@@ -240,25 +240,27 @@ class SRFEQueue(SNSBase):
             #raise e
             return False
 
-    def _home_timeline(self, channel):
-        return self.sp.home_timeline(channel=channel)
-        #ch = self.sp[channel]
-        # The following logic is moved into SNSAPI
-        #if 'home_timeline' in ch.jsonconf:
-        #    ct = ch.jsonconf['home_timeline']['count']
-        #else:
-        #    ct = 20
-        #return ch.home_timeline(ct)
+    #def _home_timeline(self, channel):
+    #    return self.sp.home_timeline(channel=channel)
+    #    #ch = self.sp[channel]
+    #    # The following logic is moved into SNSAPI
+    #    #if 'home_timeline' in ch.jsonconf:
+    #    #    ct = ch.jsonconf['home_timeline']['count']
+    #    #else:
+    #    #    ct = 20
+    #    #return ch.home_timeline(ct)
 
     def input(self, channel = None):
         self._reload_hook()
 
-        if channel:
-            ml = self._home_timeline(channel)
-        else:
-            ml = snstype.MessageList()
-            for chn in self.sp:
-                ml.extend(self._home_timeline(chn))
+        #if channel:
+        #    ml = self._home_timeline(channel)
+        #else:
+        #    ml = snstype.MessageList()
+        #    for chn in self.sp:
+        #        ml.extend(self._home_timeline(chn))
+
+        ml = self.sp.home_timeline()
 
         count = 0 
         for m in ml:
