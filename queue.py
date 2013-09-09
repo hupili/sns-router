@@ -61,6 +61,7 @@ class SRFEQueue(SNSBase):
             import myhooks as hooks
         except Exception as e:
             import hooks
+        reload(hooks)
         self._hook_new_message = hooks.hook_new_message
 
     def reload_config(self, conf = None):
